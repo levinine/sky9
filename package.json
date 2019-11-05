@@ -1,0 +1,22 @@
+{
+  "name": "sky9",
+  "version": "1.0.0",
+  "description": "AWS accounts and users management",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/levinine/sky9.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/levinine/sky9/issues"
+  },
+  "homepage": "https://github.com/levinine/sky9#readme",
+  "devDependencies": {
+    "serverless-offline": "^5.12.0"
+  }
+}
