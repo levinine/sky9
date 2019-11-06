@@ -4,7 +4,7 @@ const responseHandler = (responseData) => {
         headers: {
           "Access-Control-Allow-Origin": "*",
         },
-        body: responseData
+        body: JSON.stringify(responseData)
     }
 };
 
