@@ -10,7 +10,7 @@ const getAccount =  async event => {
 
 const getAccounts = async () => {
   const accounts = await accountService.getAccounts();
-  return responseHandler(accounts); 
+  return responseHandler(accounts);
 };
 
 const createAccount= async event => {
@@ -24,3 +24,4 @@ module.exports = {
   getAccounts,
   createAccount
 };
+

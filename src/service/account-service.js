@@ -10,13 +10,13 @@ new AWS.DynamoDB.DocumentClient({
 const getAccounts = () => {
   try {
     const params = {
-      TableName: process.env.AccountTableName, 
-    }    
+      TableName: process.env.AccountTableName,
+    }
     return dynamoDB.scan(params).promise();
-  } catch(error){ 
+  } catch(error){
     console.log(error.message);
     throw error;
-  }  
+  }
 };
 
 const getAccount = id => {
@@ -35,7 +35,7 @@ const getAccount = id => {
 };
 
 const createAccount = async data => {
-  try { 
+  try {
     const params = {
       TableName: process.env.AccountTableName,
       Item:{
@@ -45,7 +45,7 @@ const createAccount = async data => {
         status: data.status,
         IAMUsers: data.IAMUsers
       }
-    }   
+    }
     await dynamoDB.put(params).promise();
     return params.Item;
   } catch(error) {
@@ -59,4 +59,3 @@ module.exports = {
   getAccount,
   createAccount
 };
-  
