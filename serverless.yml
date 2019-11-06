@@ -6,7 +6,7 @@ provider:
   stage: dev
   region: eu-west-2
   environment:
-    AccountTableName: Account
+    TableName: Ta
 
 plugins:
   - serverless-dynamodb-local
