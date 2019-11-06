@@ -1,22 +1,38 @@
 'use strict';
 const accountService = require('../service/account-service');
+const errorHandler = require('../../infrastructure/error-handler');
 
 const getAccount =  async event => {
-  const id = event.pathParameters;
-  return accountService.getAccount(id);
+  try {
+    const id = event.pathParameters;
+    const account = accountService.getAccount(id);
+    return account;
+  } catch(error) {
+    return errorHandler(error);
+  }
+  
 };
 
 const getAccounts = async event => {
-  const accounts = await accountService.getAccounts();
-  return {
-    statusCode:200,
-    body: JSON.stringify(accounts)
-  } 
+  try {
+    const accounts = await accountService.getAccounts();
+    return accounts;
+  } catch(error) {
+    return errorHandler(error);
+  }
+  
+  
 };
 
 const createAccount= async event => {
-  const data = JSON.parse(event.body);
-  return accountService.createAccount(data);
+  try {
+    const data = JSON.parse(event.body);
+    const account = accountService.createAccount(data);
+    return account;
+  } catch(error) {
+    return errorHandler(error);
+  }
+    
 }
 
 module.exports = {
