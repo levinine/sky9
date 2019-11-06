@@ -6,18 +6,39 @@ provider:
   stage: dev
   region: eu-west-2
   environment:
-    variable1: value1
+    AccountTableName: Account
 
 plugins:
+  - serverless-dynamodb-local
   - serverless-offline
 
 functions:
+  createAccount:
+    handler: /src/handler/account-handler.createAccount
+    events:
+      - http:
+          path: accounts
+          method: post
   getAccounts:
-    handler: account-handler.getAccounts
+    handler: src/handler/account-handler.getAccounts
     events:
       - http:
           path: accounts
           method: get
+  getAccount:
+    handler: src/handler/account-handler.getAccount
+    events:
+      - http:
+          path: account/{id}
+          method: get
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      migrate: true
+      port: 8000
 
 resources:
   Resources:
@@ -28,10 +49,6 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
-          # - AttributeName: name
-          #   AttributeType: S
-          # - AttributeName: email
-          #   AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH

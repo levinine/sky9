@@ -1,17 +1,26 @@
 'use strict';
+const accountService = require('../service/account-service');
 
-module.exports.getAccounts = async event => {
+const getAccount =  async event => {
+  const id = event.pathParameters;
+  return accountService.getAccount(id);
+};
+
+const getAccounts = async event => {
+  const accounts = await accountService.getAccounts();
   return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: 'Go Serverless v1.0! Your function executed successfully!'
-      },
-      null,
-      2
-    ),
-  };
+    statusCode:200,
+    body: JSON.stringify(accounts)
+  } 
+};
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
+const createAccount= async event => {
+  const data = JSON.parse(event.body);
+  return accountService.createAccount(data);
+}
+
+module.exports = {
+  getAccount,
+  getAccounts,
+  createAccount
 };
