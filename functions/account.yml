@@ -1,0 +1,18 @@
+CreateAccount:
+  handler: src/handler/account-handler.createAccount
+  events:
+    - http:
+        path: accounts
+        method: post
+GetAccounts:
+  handler: src/handler/account-handler.getAccounts
+  events:
+    - http:
+        path: accounts
+        method: get
+GetAccount:
+  handler: src/handler/account-handler.getAccount
+  events:
+    - http:
+        path: account/{id}
+        method: get
