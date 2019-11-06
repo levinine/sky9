@@ -12,14 +12,15 @@ const getAccounts = () => {
     const params = {
       TableName: process.env.AccountTableName, 
     }    
-    return  dynamoDB.scan(params).promise();
+    return dynamoDB.scan(params).promise();
   } catch(error){ 
     console.log(error.message);
     throw error;
   }  
 };
 
-const getAccount = id => {
+const getAccount = async id => {
+  console.log(id);
   try {
     const params = {
       TableName: process.env.AccountTableName,
@@ -27,7 +28,9 @@ const getAccount = id => {
         "id": id
       }
     }
-    return dynamoDB.getItem(params).promise();
+    //On returning promise error is thrown? 
+    const account = await dynamoDB.get(params).promise();
+    return JSON.stringify(account);
   } catch(error) {
     console.log(error.message);
     throw error;

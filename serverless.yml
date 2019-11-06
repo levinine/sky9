@@ -6,7 +6,7 @@ provider:
   stage: dev
   region: eu-west-2
   environment:
-    TableName: Ta
+    AccountTableName: Account
 
 plugins:
   - serverless-dynamodb-local
@@ -14,7 +14,7 @@ plugins:
 
 functions:
   createAccount:
-    handler: /src/handler/account-handler.createAccount
+    handler: src/handler/account-handler.createAccount
     events:
       - http:
           path: accounts
@@ -49,6 +49,10 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          # - AttributeName: name
+          #   AttributeType: S
+          # - AttributeName: email
+          #   AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
