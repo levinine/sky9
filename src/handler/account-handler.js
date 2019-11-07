@@ -1,5 +1,6 @@
 'use strict';
 const accountService = require('../service/account-service');
+const errorHandler = require('../../infrastructure/error-handler');
 const responseHandler = require('../../infrastructure/response-handler');
 
 const getAccount =  async event => {
@@ -8,7 +9,7 @@ const getAccount =  async event => {
     const account = await accountService.getAccount(id)
     return responseHandler(account);
   } catch(error) {
-    //error handler
+    return errorHandler(error);
   }
 };
 
@@ -17,7 +18,7 @@ const getAccounts = async () => {
     const accounts = await accountService.getAccounts();
     return responseHandler(accounts);
   } catch(error) {
-    //error handler
+    return errorHandler(error);
   }
 };
 
@@ -27,8 +28,9 @@ const createAccount= async event => {
     const account = await accountService.createAccount(data);
     return responseHandler(account);
   } catch(error) {
-    //error handler
+    return errorHandler(error);
   }  
+
 }
 
 module.exports = {
