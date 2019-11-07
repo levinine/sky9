@@ -14,5 +14,5 @@ GetAccount:
   handler: src/handler/account-handler.getAccount
   events:
     - http:
-        path: account/{id}
+        path: accounts/{id}
         method: get
