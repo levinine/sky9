@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-const request = require('supertest');
+const request = require('supertest')
 const testAccount = {
     "email": "test@email.com",
     "name": "test skripta",
@@ -16,7 +16,7 @@ describe('Create Account API Test', () => {
     it('should return the created account', async () => {
         const res = await request(process.env.API_ENDPOINT)
         .post('/accounts/')
-        .send(testAccount);
+        .send(testAccount)
         const account = JSON.parse(res.text);
         testGetAccount = account;
         expect(res.statusCode).toEqual(200)
@@ -35,7 +35,6 @@ describe('Get Accounts API Test', () => {
       expect(Array.isArray(accounts)).toEqual(true)
       accounts.forEach((account) => {
           expect(typeof account).toEqual('object')
-          console.log(Object.keys(account));
           expect(Object.keys(account)).toEqual([
             'IAMUsers',
             'id',
@@ -44,9 +43,11 @@ describe('Get Accounts API Test', () => {
             'status',
           ])
 
-          expect(typeof account.name).toEqual('string');
-          expect(typeof account.email).toEqual('string');
-          expect(typeof account.status).toEqual('string');
+          expect(typeof account.name).toEqual('string')
+          expect(typeof account.email).toEqual('string')
+          expect(typeof account.status).toEqual('string')
+          expect(typeof account.id).toEqual('string')
+          expect(Array.isArray(account.IAMUsers)).toEqual(true)
       });
     });
   });
