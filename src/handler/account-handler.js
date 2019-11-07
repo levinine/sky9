@@ -29,7 +29,7 @@ const createAccount= async event => {
     return responseHandler(account);
   } catch(error) {
     return errorHandler(error);
-  }  
+  }
 
 }
 
