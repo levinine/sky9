@@ -3,8 +3,8 @@ const AWS = require('aws-sdk');
 
 const dynamoDB = 
 new AWS.DynamoDB.DocumentClient({
-  region: 'localhost',
-  endpoint: 'http://localhost:8000'
+  region: process.env.REGION,
+  endpoint: process.env.ENDPOINT
 })
 
 const getAccounts = () => {
@@ -12,7 +12,7 @@ const getAccounts = () => {
     const params = {
       TableName: process.env.AccountTableName, 
     }    
-    return  dynamoDB.scan(params).promise();
+    return dynamoDB.scan(params).promise();
   } catch(error){ 
     console.log(error.message);
     throw error;

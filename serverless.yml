@@ -11,6 +11,7 @@ provider:
 plugins:
   - serverless-dynamodb-local
   - serverless-offline
+  - serverless-dotenv-plugin
 
 functions:
   createAccount:
