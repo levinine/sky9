@@ -13,24 +13,9 @@ plugins:
   - serverless-offline
 
 functions:
-  createAccount:
-    handler: /src/handler/account-handler.createAccount
-    events:
-      - http:
-          path: accounts
-          method: post
-  getAccounts:
-    handler: src/handler/account-handler.getAccounts
-    events:
-      - http:
-          path: accounts
-          method: get
-  getAccount:
-    handler: src/handler/account-handler.getAccount
-    events:
-      - http:
-          path: account/{id}
-          method: get
+  GetAccount: ${file(./functions/account.yml):GetAccount}
+  GetAccounts: ${file(./functions/account.yml):GetAccounts}
+  CreateAccount: ${file(./functions/account.yml):CreateAccount}
 
 custom:
   dynamodb:
@@ -40,19 +25,7 @@ custom:
       migrate: true
       port: 8000
 
+
 resources:
-  Resources:
-    Account:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: Account
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+  - ${file(./resources/dynamoDB.yml)}
   
