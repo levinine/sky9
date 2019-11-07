@@ -16,7 +16,6 @@ functions:
   GetAccount: ${file(./functions/account.yml):GetAccount}
   GetAccounts: ${file(./functions/account.yml):GetAccounts}
   CreateAccount: ${file(./functions/account.yml):CreateAccount}
-   
 
 custom:
   dynamodb:
@@ -29,6 +28,4 @@ custom:
 
 resources:
   - ${file(./resources/dynamoDB.yml)}
-
-      
   
