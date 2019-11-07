@@ -35,32 +35,18 @@ describe('Get Accounts API Test', () => {
       expect(Array.isArray(accounts)).toEqual(true)
       accounts.forEach((account) => {
           expect(typeof account).toEqual('object')
-          expect(Object.keys(account)).toEqual('id')
+          console.log(Object.keys(account));
+          expect(Object.keys(account)).toEqual([
+            'IAMUsers',
+            'id',
+            'email',
+            'name',
+            'status',
+          ])
 
           expect(typeof account.name).toEqual('string');
           expect(typeof account.email).toEqual('string');
           expect(typeof account.status).toEqual('string');
-      })
-    })
-  })
-
-
-  describe('myDataSource.json', () => {
-    it('Should contain an array of objects matching the intended shape.', () => {
-      expect(Array.isArray(myDataSource)).toEqual(true);
-      myDataSource.forEach((dataPoint) => {
-          
-        expect(typeof dataPoint).toEqual('object');
-        expect(Object.keys(dataPoint).sort()).toEqual([
-          'description',
-          'footnotes',
-          'title',
-          'value',
-        ]);
-   
-        expect(typeof dataPoint.description).toEqual('string');
-        expect(typeof dataPoint.title).toEqual('string');
-        expect(typeof dataPoint.value).toEqual('number');
       });
     });
   });
