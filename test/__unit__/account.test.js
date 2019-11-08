@@ -22,6 +22,8 @@ describe('Create Account API Test', () => {
         expect(res.statusCode).toEqual(200)
         expect(account.name).toEqual(testAccount.name)
         expect(account.email).toEqual(testAccount.email)
+        expect(account.status).toEqual(testAccount.status)
+        expect(account.IAMUsers).toEqual(testAccount.IAMUsers)
     });
 });
 
@@ -35,10 +37,10 @@ describe('Get Accounts API Test', () => {
       expect(Array.isArray(accounts)).toEqual(true)
       accounts.forEach((account) => {
           expect(typeof account).toEqual('object')
-          expect(Object.keys(account)).toEqual([
+          expect(Object.keys(account).sort()).toEqual([
             'IAMUsers',
-            'id',
             'email',
+            'id',
             'name',
             'status',
           ])
