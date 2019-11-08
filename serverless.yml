@@ -3,15 +3,14 @@ service: sky9
 provider:
   name: aws
   runtime: nodejs10.x
-  stage: dev
+  stage: ${opt:stage, "dev"}
   region: eu-west-2
-  environment:
-    AccountTableName: Account
+  environment: ${file(./sls-env.yml):${self:provider.stage}}
 
 plugins:
   - serverless-dynamodb-local
   - serverless-offline
-  - serverless-dotenv-plugin
+  # - serverless-dotenv-plugin
 
 functions:
   GetAccount: ${file(./functions/account.yml):getAccount}

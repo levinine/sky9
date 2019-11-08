@@ -1,0 +1,13 @@
+default: &default
+  REGION: eu-west-2
+  ACCOUNT_TABLE: Account
+  DB_ENDPOINT: http://localhost:8000
+  API_ENDPOINT: http://localhost:3000
+
+dev:
+  <<: *default
+  DB_ENDPOINT: dynamodb.eu-west-2.amazonaws.com
+test:
+  <<: *default
+  
+  
