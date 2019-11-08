@@ -22,7 +22,7 @@ const getAccounts = async () => {
   }
 };
 
-const createAccount= async event => {
+const createAccount = async event => {
   try{
     const data = JSON.parse(event.body);
     const account = await accountService.createAccount(data);
@@ -30,7 +30,6 @@ const createAccount= async event => {
   } catch(error) {
     return errorHandler(error);
   }
-
 };
 
 const deleteAccount = async event => {

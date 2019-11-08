@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
 const dynamoDB =
 new AWS.DynamoDB.DocumentClient({
   region: process.env.REGION,
-  endpoint: process.env.ENDPOINT
+  endpoint: process.env.DB_ENDPOINT
 })
 
 const getAccounts = () => {
