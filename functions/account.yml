@@ -1,18 +1,24 @@
-CreateAccount:
+createAccount:
   handler: src/handler/account-handler.createAccount
   events:
     - http:
-        path: accounts
+        path: accounts/create
         method: post
-GetAccounts:
+getAccounts:
   handler: src/handler/account-handler.getAccounts
   events:
     - http:
         path: accounts
         method: get
-GetAccount:
+getAccount:
   handler: src/handler/account-handler.getAccount
   events:
     - http:
         path: accounts/{id}
         method: get
+updateAccount:
+  handler: src/handler/account-handler.updateAccount
+  events:
+    - http:
+        path: accounts/update
+        method: put

@@ -39,7 +39,7 @@ const createAccount = async data => {
   return params.Item;
 };
 
-const updateAccount = async accountData => {
+const updateAccount = accountData => {
   console.log(accountData);
   const params = {
     TableName: process.env.ACCOUNT_TABLE,
