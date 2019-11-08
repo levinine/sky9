@@ -54,8 +54,20 @@ const createAccount = async data => {
   }
 };
 
+const deleteAccount = id => {
+  const params = {
+    TableName: process.env.AccountTableName,
+    Key: {
+      "id": id
+    }
+  }
+  dynamoDB.delete(params).promise();
+  return params.Key;
+};
+
 module.exports = {
   getAccounts,
   getAccount,
-  createAccount
+  createAccount,
+  deleteAccount
 };

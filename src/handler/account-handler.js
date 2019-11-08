@@ -29,12 +29,23 @@ const createAccount= async event => {
     return responseHandler(account);
   } catch(error) {
     return errorHandler(error);
-  }  
+  }
 
+};
+
+const deleteAccount = async event => {
+  try{
+    const id = event.pathParameters.id;
+    const account = await accountService.deleteAccount(id);
+    return responseHandler(account);
+  }catch(error) {
+    return errorHandler(error);
+  }
 }
 
 module.exports = {
   getAccount,
   getAccounts,
-  createAccount
+  createAccount,
+  deleteAccount
 };
