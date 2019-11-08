@@ -39,7 +39,7 @@ const createAccount = async data => {
   return params.Item;
 };
 
-const UpdateAccount = async accountData => {
+const updateAccount = async accountData => {
   console.log(accountData);
   const params = {
     TableName: process.env.ACCOUNT_TABLE,
@@ -64,5 +64,5 @@ module.exports = {
   getAccounts,
   getAccount,
   createAccount,
-  UpdateAccount
+  updateAccount
 };
