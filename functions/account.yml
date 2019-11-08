@@ -16,3 +16,9 @@ GetAccount:
     - http:
         path: accounts/{id}
         method: get
+DeleteAccount:
+  handler: src/handler/account-handler.deleteAccount
+  events:
+    - http:
+        path: accounts/{id}
+        method: delete        

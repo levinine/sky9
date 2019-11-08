@@ -13,10 +13,5 @@
         "ecmaVersion": 2018
     },
     "rules": {
-        "no-trailing-spaces": "error",
-        "no-empty": 1,
-        "no-console": 1,
-        "no-irregular-whitespace": 1,
-        "no-unused-vars":1
     }
 }

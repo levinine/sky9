@@ -1,10 +1,10 @@
 const uuid = require('uuid');
 const AWS = require('aws-sdk');
 
-const dynamoDB = 
+const dynamoDB =
 new AWS.DynamoDB.DocumentClient({
   region: process.env.REGION,
-  endpoint: process.env.ENDPOINT
+  endpoint: process.env.DB_ENDPOINT
 })
 
 const getAccounts = () => {
@@ -54,8 +54,19 @@ const createAccount = async data => {
   }
 };
 
+const deleteAccount = id => {
+  const params = {
+    TableName: process.env.ACCOUNT_TABLE,
+    Key: {
+      "id": id
+    }
+  }
+  return dynamoDB.delete(params).promise();
+};
+
 module.exports = {
   getAccounts,
   getAccount,
-  createAccount
+  createAccount,
+  deleteAccount
 };
