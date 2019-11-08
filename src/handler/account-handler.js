@@ -22,7 +22,7 @@ const getAccounts = async () => {
   }
 };
 
-const createAccount= async event => {
+const createAccount = async event => {
   try{
     const data = JSON.parse(event.body);
     const account = await accountService.createAccount(data);
@@ -30,7 +30,7 @@ const createAccount= async event => {
   } catch(error) {
     return errorHandler(error);
   }
-}
+};
 
 const updateAccount = async event => {
   try {
@@ -38,13 +38,22 @@ const updateAccount = async event => {
     const account = await accountService.updateAccount(data);
     return responseHandler(account);
   } catch(error) {
+};
+
+const deleteAccount = async event => {
+  try{
+    const id = event.pathParameters.id;
+    const account = await accountService.deleteAccount(id);
+    return responseHandler(account);
+  }catch(error) {
     return errorHandler(error);
   }
-}
+};
 
 module.exports = {
   getAccount,
   getAccounts,
   createAccount,
-  updateAccount
+  updateAccount,
+  deleteAccount
 };

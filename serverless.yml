@@ -18,6 +18,7 @@ functions:
   GetAccounts: ${file(./functions/account.yml):getAccounts}
   CreateAccount: ${file(./functions/account.yml):createAccount}
   UpdateAccount: ${file(./functions/account.yml):updateAccount}
+  DeleteAccount: ${file(./functions/account.yml):DeleteAccount}
 custom:
   dynamodb:
     stages:

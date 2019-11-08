@@ -22,3 +22,9 @@ updateAccount:
     - http:
         path: accounts/update
         method: put
+DeleteAccount:
+  handler: src/handler/account-handler.deleteAccount
+  events:
+    - http:
+        path: accounts/{id}
+        method: delete       
