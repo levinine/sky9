@@ -15,7 +15,7 @@ let testGetAccount = {};
 describe('Create Account API Test', () => {
     it('should return the created account', async () => {
         const res = await request(process.env.API_ENDPOINT)
-        .post('/accounts/')
+        .post('/accounts/create')
         .send(testAccount)
         const account = JSON.parse(res.text);
         testGetAccount = account;
@@ -37,6 +37,7 @@ describe('Get Accounts API Test', () => {
       expect(Array.isArray(accounts)).toEqual(true)
       accounts.forEach((account) => {
           expect(typeof account).toEqual('object')
+          console.log(Object.keys(account).sort())
           expect(Object.keys(account).sort()).toEqual([
             'IAMUsers',
             'email',
