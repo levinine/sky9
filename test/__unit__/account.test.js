@@ -1,29 +1,38 @@
 /* eslint-disable no-undef */
 const request = require('supertest')
-const testAccount = {
-    "email": "test@email.com",
-    "name": "test skripta",
+const createAccount = {
+    "email": "pera@email.com",
+    "name": "Pera",
     "status": "inactive",
     "IAMUsers": [
-        "user3",
+        "djura",
         "user2",
         "user6"
     ]
 }
-let testGetAccount = {};
+let testAccount = {
+    "email":"zika@email.com",
+    "name": "Zika",
+    "status": "active",
+    "IAMUsers": [
+        "lola",
+        "user2",
+        "user3"
+    ]
+};
 
 describe('Create Account API Test', () => {
     it('should return the created account', async () => {
         const res = await request(process.env.API_ENDPOINT)
         .post('/accounts/create')
-        .send(testAccount)
+        .send(createAccount)
         const account = JSON.parse(res.text);
-        testGetAccount = account;
+        testAccount.id = account.id;
         expect(res.statusCode).toEqual(200)
-        expect(account.name).toEqual(testAccount.name)
-        expect(account.email).toEqual(testAccount.email)
-        expect(account.status).toEqual(testAccount.status)
-        expect(account.IAMUsers).toEqual(testAccount.IAMUsers)
+        expect(account.name).toEqual(createAccount.name)
+        expect(account.email).toEqual(createAccount.email)
+        expect(account.status).toEqual(createAccount.status)
+        expect(account.IAMUsers).toEqual(createAccount.IAMUsers)
     });
 });
 
@@ -37,7 +46,6 @@ describe('Get Accounts API Test', () => {
       expect(Array.isArray(accounts)).toEqual(true)
       accounts.forEach((account) => {
           expect(typeof account).toEqual('object')
-          console.log(Object.keys(account).sort())
           expect(Object.keys(account).sort()).toEqual([
             'IAMUsers',
             'email',
@@ -58,10 +66,33 @@ describe('Get Accounts API Test', () => {
 describe('Get Account API Test', () => {
     it('should return a given account', async () => {
         const res = await request(process.env.API_ENDPOINT)
-        .get('/accounts/' + testGetAccount.id )
+        .get('/accounts/' + testAccount.id )
         .send();
         const account = JSON.parse(res.text).Item;
         expect(res.statusCode).toEqual(200)
-        expect(account.id).toEqual(testGetAccount.id);
+        expect(account.id).toEqual(testAccount.id);
     });
+});
+
+describe('Update Account API Test', () => {
+    it('should return updated account', async () => {
+        const res = await request(process.env.API_ENDPOINT)
+        .put('/accounts/update')
+        .send(testAccount);
+        const updatedAccount = JSON.parse(res.text).Attributes;
+        expect(res.statusCode).toEqual(200)
+        expect(updatedAccount.name).toEqual(testAccount.name)
+        expect(updatedAccount.email).toEqual(testAccount.email)
+        expect(updatedAccount.status).toEqual(testAccount.status)
+        expect(updatedAccount.IAMUsers).toEqual(testAccount.IAMUsers)
+    });
+});
+
+describe('Delete Account API Test', () => {
+    it('should fail to find account after deletion', async () => {
+        const res = await request(process.env.API_ENDPOINT)
+        .delete('/accounts/' + testAccount.id)
+        .send();
+        expect(res.statusCode).toEqual(200)
+    })
 });
