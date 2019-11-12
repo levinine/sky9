@@ -2,7 +2,7 @@ createAccount:
   handler: src/handler/account-handler.createAccount
   events:
     - http:
-        path: accounts/create
+        path: accounts
         method: post
 getAccounts:
   handler: src/handler/account-handler.getAccounts
@@ -20,7 +20,7 @@ updateAccount:
   handler: src/handler/account-handler.updateAccount
   events:
     - http:
-        path: accounts/update
+        path: accounts/{id}
         method: put
 deleteAccount:
   handler: src/handler/account-handler.deleteAccount

@@ -24,7 +24,7 @@ let testAccount = {
 describe('Create Account API Test', () => {
     it('should return the created account', async () => {
         const res = await request(process.env.API_ENDPOINT)
-        .post('/accounts/create')
+        .post('/accounts')
         .send(createAccount)
         const account = JSON.parse(res.text);
         testAccount.id = account.id;
@@ -77,7 +77,7 @@ describe('Get Account API Test', () => {
 describe('Update Account API Test', () => {
     it('should return updated account', async () => {
         const res = await request(process.env.API_ENDPOINT)
-        .put('/accounts/update')
+        .put('/accounts/' + testAccount.id)
         .send(testAccount);
         const updatedAccount = JSON.parse(res.text).Attributes;
         expect(res.statusCode).toEqual(200)

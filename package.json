@@ -33,6 +33,8 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ],
-    "setupFiles": ["./envModuleForTest"]
+    "setupFiles": [
+      "./envModuleForTest"
+    ]
   }
 }
