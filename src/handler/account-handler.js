@@ -34,9 +34,14 @@ const createAccount = async event => {
 
 const updateAccount = async event => {
   try {
+    const id = event.pathParameters.id;
     const data = JSON.parse(event.body);
-    const account = await accountService.updateAccount(data);
-    return responseHandler(account);
+    if(id === data.id){
+      const account = await accountService.updateAccount(data);
+      return responseHandler(account);
+    }else{
+      return errorHandler("Id doesnt match");
+    }
   } catch(error) {
     return errorHandler(error);
   }

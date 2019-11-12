@@ -40,7 +40,6 @@ const createAccount = async data => {
 };
 
 const updateAccount = accountData => {
-  console.log(accountData);
   const params = {
     TableName: process.env.ACCOUNT_TABLE,
     Key:{
@@ -65,7 +64,8 @@ const deleteAccount = id => {
     TableName: process.env.ACCOUNT_TABLE,
     Key: {
       "id": id
-    }
+    },
+    ReturnValues: "ALL_OLD"
   }
   return dynamoDB.delete(params).promise();
 };
