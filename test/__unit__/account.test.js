@@ -5,9 +5,9 @@ const createAccount = {
     "name": "Pera",
     "status": "inactive",
     "IAMUsers": [
-        "djura",
-        "user2",
-        "user6"
+        "djura@email.com",
+        "user2@email.com",
+        "user6@email.com"
     ]
 }
 let testAccount = {
@@ -15,9 +15,9 @@ let testAccount = {
     "name": "Zika",
     "status": "active",
     "IAMUsers": [
-        "lola",
-        "user2",
-        "user3"
+        "lola@email.com",
+        "user2@email.com",
+        "user3@email.com"
     ]
 };
 
@@ -81,10 +81,7 @@ describe('Update Account API Test', () => {
         .send(testAccount);
         const updatedAccount = JSON.parse(res.text).Attributes;
         expect(res.statusCode).toEqual(200)
-        expect(updatedAccount.name).toEqual(testAccount.name)
-        expect(updatedAccount.email).toEqual(testAccount.email)
-        expect(updatedAccount.status).toEqual(testAccount.status)
-        expect(updatedAccount.IAMUsers).toEqual(testAccount.IAMUsers)
+        expect(updatedAccount.id).toEqual(testAccount.id)
     });
 });
 

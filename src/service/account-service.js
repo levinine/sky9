@@ -5,22 +5,24 @@ const ajv = new Ajv();
 
 
 const accountSchema = {
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" },
-    "email": { "type": "string", "format": "date" },
-    "status": { "type": "string" },
-    "IAMUsers": {
-      "type": "array",
-      "items": [{
-         "type": "string", 
-         "format": "date" 
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    email: { type: "string", format: "email" },
+    status: { type: "string" },
+    IAMUsers: {
+      type: "array",
+      items: [{
+         type: "string", 
+         format: "email" 
       }]
     }
-  }
+  },
+  required: ["name", "email", "status", "IAMUsers"],
+  additionalProperties: true
 }
 
-const validator = ajv.addSchema(accountSchema);
+const validate = ajv.compile(accountSchema);
 
 const dynamoDB =
 new AWS.DynamoDB.DocumentClient({
@@ -46,9 +48,7 @@ const getAccount = id => {
 };
 
 const createAccount = async data => {
-  const valid = validator.validate(data);
-  console.log(valid);
-  if(!valid) return valid;
+  if(!validate(data)) return validate.errors;
   const params = {
     TableName: process.env.ACCOUNT_TABLE,
     Item:{
@@ -64,6 +64,7 @@ const createAccount = async data => {
 };
 
 const updateAccount = accountData => {
+  if(!validate(accountData)) return validate.errors;
   const params = {
     TableName: process.env.ACCOUNT_TABLE,
     Key:{
@@ -77,7 +78,7 @@ const updateAccount = accountData => {
       ":status": accountData.status,
       ":IAMUsers": accountData.IAMUsers
     },
-    ReturnValues: "UPDATED_NEW"
+    ReturnValues: "ALL_NEW"
   }
   const updatedAccount = dynamoDB.update(params).promise();
   return updatedAccount;
