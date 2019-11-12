@@ -38,6 +38,8 @@ const updateAccount = async event => {
     const account = await accountService.updateAccount(data);
     return responseHandler(account);
   } catch(error) {
+    return errorHandler(error);
+  }
 };
 
 const deleteAccount = async event => {
