@@ -1,7 +1,8 @@
 const uuid = require('uuid');
-const AWS = require('aws-sdk');
+const {dynamoDB} = require('../../infrastructure/dynamoDbLib');
 const Ajv = require('ajv');
 const ajv = new Ajv();
+
 
 
 const accountSchema = {
@@ -24,11 +25,6 @@ const accountSchema = {
 
 const validate = ajv.compile(accountSchema);
 
-const dynamoDB =
-new AWS.DynamoDB.DocumentClient({
-  region: process.env.REGION,
-  endpoint: process.env.DB_ENDPOINT
-})
 
 const getAccounts = () => {
   const params = {
