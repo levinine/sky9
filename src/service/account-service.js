@@ -14,8 +14,10 @@ const accountSchema = {
     IAMUsers: {
       type: "array",
       items: [{
-         type: "string", 
-         format: "email" 
+         type: "object",
+         properties: {
+           email:{ type:"string", format:"email" }
+         }  
       }]
     }
   },
