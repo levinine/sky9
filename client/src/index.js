@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import config from './config';
 import Amplify from 'aws-amplify';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 Amplify.configure({
   API: {
@@ -16,4 +17,9 @@ Amplify.configure({
     }
 })
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+  <Router>
+    <App />
+  </Router>,
+  document.getElementById('root')
+);
