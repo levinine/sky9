@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ListGroup, ListGroupItem, Form } from 'react-bootstrap';
 import './accountsListView.css';
 
-const accountsListView = (props) => {
+const AccountsListView = (props) => {
   const accounts = props.accounts;
   const accountsList = accounts.map((account) => (
     <Link key={account.id} to={`/accounts/` + account.id }>
@@ -28,4 +28,4 @@ const accountsListView = (props) => {
   )
 }
 
-export default accountsListView;
+export default AccountsListView;

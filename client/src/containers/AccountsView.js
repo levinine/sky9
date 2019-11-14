@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import AccountsListView from '../components/accountsListView';
-import AccountCreateView from '../components/accountCreateView';
+import AccountsListView from '../components/AccountsListView';
+import AccountCreateView from '../components/AccountCreateView';
 import { getAccounts } from '../service/apiCalls';
 
 export default class AccountsView extends Component {
@@ -15,12 +15,19 @@ export default class AccountsView extends Component {
      accounts
    })
   }
+
+  validateEmail = (email) => {
+    // eslint-disable-next-line
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  }
+
   render() {     
     return (
         <div className='container-fluid'>
            <div className="row">
             <div className="col">
-              <AccountCreateView />
+              <AccountCreateView validateEmail={this.validateEmail} />
             </div>
             <div className="col">
               <AccountsListView accounts={this.state.accounts}/>
