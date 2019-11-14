@@ -7,5 +7,6 @@ export default function Routes() {
       <Switch>
         <Route path="/accounts" exact component={AccountsView} />
       </Switch>
+
     )
 }
