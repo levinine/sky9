@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import {API} from 'aws-amplify'
+import {updateAccount,getAccount} from '../service/apiCalls'
+import {API} from 'aws-amplify';
 export default class UpdateAccountView extends React.Component {
    constructor(props){
        super(props);
@@ -10,8 +11,7 @@ export default class UpdateAccountView extends React.Component {
            status: "",
            IAMUsers: "",
            id: ""
-       }
-       this.updateAccount = this.updateAccount.bind(this);  
+       }          
        this.handleChange = this.handleChange.bind(this);
        this.handleSubmit = this.handleSubmit.bind(this);
    }
@@ -25,46 +25,31 @@ export default class UpdateAccountView extends React.Component {
 
    handleSubmit(event) {
        event.preventDefault();
-       this.updateAccount();
-   }
-    getAccount = async(id) => {
-        const account = await API.get("accounts",  "/accounts/c8e455a0-053e-11ea-a6fc-9d92540b60af")
-        console.log(account);
-         this.setState({
-            id: account.Item.id,
-            account: account.Item,
-            name: account.Item.name,
-            email: account.Item.email,
-            status: account.Item.status,
-            IAMUsers: account.Item.IAMUsers,
-         })    
-         
-   }
-   componentDidMount(){
-       this.getAccount();
-   }
-   updateAccount = async() => {
-     try{
-       let apiName ='accounts';
-       let path = '/accounts/c8e455a0-053e-11ea-a6fc-9d92540b60af';
-       let account = {
-           body:{
-               IAMUsers: this.state.IAMUsers,
-               email: this.state.email,
-               name: this.state.name,
-               status: this.state.status,
-               id:this.state.id
-           }
-            
+       const accountUpdate = {
+         body: {
+           name:this.state.name,
+           email:this.state.email,
+           status:this.state.status,
+           IAMUsers:this.state.IAMUsers,
+           id: this.state.id
+         }  
        }
-       console.log(account);
-      const up =  await API.put(apiName, path, account)
-      console.log(up);
-     } catch(error){
-         console.log(error);
-     } 
+       console.log(accountUpdate);
+       updateAccount(accountUpdate);    
    }
-
+    
+   async componentDidMount(){
+       const account = await getAccount();
+       this.setState({
+        id: account.Item.id,
+        account: account.Item,
+        name: account.Item.name,
+        email: account.Item.email,
+        status: account.Item.status,
+        IAMUsers: account.Item.IAMUsers,
+     })    
+   }
+   
    isDisabled = () => {
        
     if (this.state.account.name === this.state.name &&
