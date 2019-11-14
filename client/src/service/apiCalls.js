@@ -5,8 +5,8 @@ const getAccounts = async () => {
    return accounts.Items;
 }
 
-const createAccount = async (account) => {
-  const createdAccount = await API.post('accounts', '/accounts', {
+const createAccount = (account) => {
+  const createdAccount = API.post('accounts', '/accounts', {
     body: account
   });
   return createdAccount;
