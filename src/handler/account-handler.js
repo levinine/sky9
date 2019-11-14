@@ -3,6 +3,10 @@ const accountService = require('../service/account-service');
 const errorHandler = require('../../infrastructure/error-handler');
 const responseHandler = require('../../infrastructure/response-handler');
 
+
+//opening new merge to develop, will remove this later
+
+
 const getAccount =  async event => {
   try{
     const id = event.pathParameters.id;
