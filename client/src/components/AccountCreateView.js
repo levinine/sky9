@@ -1,5 +1,5 @@
 import React from 'react'
-import { createAccount } from '../service/apiCalls';
+import { createAccount } from '../service/accountService';
 import AccountForm from './AccountForm';
 
 const AccountCreate = (props) => {
