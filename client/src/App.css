@@ -1,5 +1,10 @@
 .App {
   text-align: center;
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .App-logo {
@@ -20,3 +25,12 @@
 .App-link {
   color: #09d3ac;
 }
+
+    h1{
+      font-size: 4em;
+      margin-bottom: 0.5em;
+      color: white;
+      font-weight: lighter;
+      letter-spacing: 0.2em;
+      text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.9);
+    }
