@@ -1,14 +1,31 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
-import AccountCardView from './accountCardView';
+import { ListGroup, ListGroupItem, Form } from 'react-bootstrap';
+import './accountsListView.css';
 
 const accountsListView = (props) => {
   const accounts = props.accounts;
-  return accounts.map((account) => (
-     <Link key={account.id} to={`/accounts/` + account.id }>
-        <AccountCardView account={account}/>
-     </Link>
+  const accountsList = accounts.map((account) => (
+    <Link key={account.id} to={`/accounts/` + account.id }>
+      <ListGroupItem header={account.name}>
+        <span class="pull-left">
+        {account.name} 
+        </span>
+        <span class="pull-right">
+          ajajajajjja puertoriccoooo
+        </span> 
+      </ListGroupItem>     
+    </Link>
   ))  
+  return (
+    <div>
+      <Form>
+        {/* //dodaj search */}
+      </Form>
+      <ListGroup>{accountsList}</ListGroup>
+    </div>
+    
+  )
 }
 
 export default accountsListView;

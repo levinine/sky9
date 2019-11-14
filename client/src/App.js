@@ -1,11 +1,10 @@
 import React from 'react';
-import Accounts from './containers/accounts';
+import Routes from './Routes';
 
 function App() {
   return (
-    <div className="App">
-      <Accounts/>
-    </div>
+    
+    <Routes/>
   );
 }
 
