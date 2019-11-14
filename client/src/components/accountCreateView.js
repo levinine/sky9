@@ -1,90 +1,83 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import { createAccount } from '../service/apiCalls';
 import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
 
-export default class AccountCreate extends Component {
-  constructor() {
-    super();
-    this.state = { 
-      IAMUser: "",
-      name:'',
-      email:'',
-      status:'Active',
-      IAMUsers: []
-    };
+const AccountCreate = () => {
+  const [IAMUser, setIAMUser] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('Active');
+  const [IAMUsers, setIAMUsers] = useState([]);
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleArrayChange = this.handleArrayChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
+  const [IAMUserError, setIAMUserError] = useState(null);
+  const [emailError, setEmailError] = useState(null);
 
-  handleChange(event) {
-    this.setState({[event.target.id]: event.target.value});
-  }
-
-  handleArrayChange() {
-    const newUser = this.state.IAMUser;
+  const handleArrayChange = () => {
+    console.log(new RegExp(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,15}/g).test('sddsfdgsg'))
+    console.log(new RegExp(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,15}/g).test('arulgetsolute@gmail.com'))
+    console.log(new RegExp(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,15}/g).test('arulgetsolute@gmail.'))
+    if(!IAMUser.includes('@')) {
+      setIAMUserError('IAM User needs to be an email!');
+      return;
+    } 
+    const newUser = IAMUser;
     if(newUser.length > 0) {
-      this.setState({
-        IAMUsers: this.state.IAMUsers.concat([newUser]),
-        IAMUser: ''
-      })
+      setIAMUsers(IAMUsers.concat([newUser]));
+      setIAMUser('');
+      setIAMUserError('');
     }
   }
 
-  handleSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const account = {
-        name: this.state.name,
-        email: this.state.email,
-        status: this.state.status,
-        IAMUsers: this.state.IAMUsers
+        name: name,
+        email: email,
+        status: status,
+        IAMUsers: IAMUsers
       }
       const createdAccount = await createAccount(account);
-      this.setState({
-        name:'',
-        email:'',
-        status:'Active',
-        IAMUsers:[]
-      })
+      setName('');
+      setEmail('');
+      setStatus('');
+      setIAMUsers('');
       return createdAccount;
     } catch(error) {
       alert(error.message);
     }
   }
-
-  render() {
-    return (
-      <Form onSubmit={this.handleSubmit}>
-        <FormGroup controlId="name">
-          <FormLabel>Name:</FormLabel>
-          <FormControl type="text" value={this.state.name} onChange={this.handleChange} placeholder="Enter name" />
-        </FormGroup>
-        <FormGroup controlId="email">
-          <FormLabel>Email:</FormLabel>
-          <FormControl type="text" value={this.state.email} onChange={this.handleChange} placeholder="Enter email" />
-        </FormGroup>
-        <Form.Group controlId="status">
-          <Form.Label>Status</Form.Label>
-          <Form.Control as="select" onChange={this.handleChange} value={this.state.status}>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </Form.Control>
-        </Form.Group>
-        <Form.Group controlId="IAMUser">
-          <Form.Label>IAM Users</Form.Label>
-          <Form.Control type="text" value={this.state.IAMUser} onChange={this.handleChange} placeholder="Add IAM User"/>
-          <Button onClick={this.handleArrayChange} variant="primary" size="md">
-            Add user
-          </Button>
-          {this.state.IAMUsers}
-        </Form.Group>
-        <Button onClick={this.handleArrayChange} type="submit" variant="primary" size="lg">
-          Submit
+  return (
+    <Form onSubmit={handleSubmit}>
+      <FormGroup controlId="name">
+        <FormLabel>Name:</FormLabel>
+        <FormControl type="text" value={name} onChange={event => setName(event.target.value)} placeholder="Enter name" />
+      </FormGroup>
+      <FormGroup controlId="email">
+        <FormLabel>Email:</FormLabel>
+        <FormControl type="text" value={email} onChange={event => setEmail(event.target.value)} placeholder="Enter email" />
+      </FormGroup>
+      <Form.Group controlId="status">
+        <Form.Label>Status</Form.Label>
+        <Form.Control as="select" onChange={event => setStatus(event.target.value)} value={status}>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </Form.Control>
+      </Form.Group>
+      <Form.Group controlId="IAMUser">
+        <Form.Label>IAM Users</Form.Label>
+        <Form.Control type="text" value={IAMUser} onChange={event => setIAMUser(event.target.value)} placeholder="Add IAM User"/>
+        {IAMUserError}
+        <Button onClick={handleArrayChange} disabled={false} variant="primary" size="md">
+          Add user
         </Button>
-      </Form>
-      
-    );
-  }
+        {IAMUsers}
+      </Form.Group>
+      <Button onClick={handleArrayChange} type="submit" variant="primary" size="lg">
+        Submit
+      </Button>
+    </Form>
+  );
 }
+
+export default AccountCreate;

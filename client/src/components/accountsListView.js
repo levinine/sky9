@@ -8,10 +8,10 @@ const accountsListView = (props) => {
   const accountsList = accounts.map((account) => (
     <Link key={account.id} to={`/accounts/` + account.id }>
       <ListGroupItem header={account.name}>
-        <span class="pull-left">
+        <span className="pull-left">
         {account.name} 
         </span>
-        <span class="pull-right">
+        <span className="pull-right">
           ajajajajjja puertoriccoooo
         </span> 
       </ListGroupItem>     

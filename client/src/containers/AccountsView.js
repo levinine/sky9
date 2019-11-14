@@ -17,12 +17,12 @@ export default class AccountsView extends Component {
   }
   render() {     
     return (
-        <div class='container-fluid'>
-           <div class="row">
-            <div class="col">
+        <div className='container-fluid'>
+           <div className="row">
+            <div className="col">
               <AccountCreateView />
             </div>
-            <div class="col">
+            <div className="col">
               <AccountsListView accounts={this.state.accounts}/>
             </div>
           </div>
