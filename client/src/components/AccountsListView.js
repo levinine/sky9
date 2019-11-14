@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import SearchField from '../components/SearchField';
@@ -26,7 +26,7 @@ const AccountsListView = (props) => {
    
   const filterSearch = (event) => {
     setFilter(event.target.value);
-    if(filter != "") {
+    if(filter !== "") {
       const newList = accounts.filter(account =>{
         const lowerCaseAccount = account.name.toLowerCase();
         const lowerCaseFilter = (filter).toLowerCase();
