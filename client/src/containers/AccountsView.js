@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import AccountsListView from '../components/AccountsListView';
 import AccountCreateView from '../components/AccountCreateView';
-import { getAccounts } from '../service/apiCalls';
+import { getAccounts } from '../service/accountService';
 
 export default class AccountsView extends Component {
   constructor() {
