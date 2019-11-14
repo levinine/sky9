@@ -25,6 +25,8 @@ custom:
     start:
       migrate: true
       port: 8000
+  serverless-offline:
+    port: 4000
 
 
 resources:

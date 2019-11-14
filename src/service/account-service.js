@@ -1,11 +1,32 @@
 const uuid = require('uuid');
-const AWS = require('aws-sdk');
+const {dynamoDB} = require('../../infrastructure/dynamoDbLib');
+const Ajv = require('ajv');
+const ajv = new Ajv();
 
-const dynamoDB =
-new AWS.DynamoDB.DocumentClient({
-  region: process.env.REGION,
-  endpoint: process.env.DB_ENDPOINT
-})
+
+
+const accountSchema = {
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    email: { type: "string", format: "email" },
+    status: { type: "string" },
+    IAMUsers: {
+      type: "array",
+      items: [{
+         type: "object",
+         properties: {
+           email:{ type:"string", format:"email" }
+         }  
+      }]
+    }
+  },
+  required: ["name", "email", "status", "IAMUsers"],
+  additionalProperties: true
+}
+
+const validate = ajv.compile(accountSchema);
+
 
 const getAccounts = () => {
   const params = {
@@ -25,6 +46,7 @@ const getAccount = id => {
 };
 
 const createAccount = async data => {
+  if(!validate(data)) return validate.errors;
   const params = {
     TableName: process.env.ACCOUNT_TABLE,
     Item:{
@@ -40,6 +62,10 @@ const createAccount = async data => {
 };
 
 const updateAccount = accountData => {
+<<<<<<< HEAD
+=======
+  if(!validate(accountData)) return validate.errors;
+>>>>>>> data-validation
   const params = {
     TableName: process.env.ACCOUNT_TABLE,
     Key:{
@@ -53,10 +79,9 @@ const updateAccount = accountData => {
       ":status": accountData.status,
       ":IAMUsers": accountData.IAMUsers
     },
-    ReturnValues: "UPDATED_NEW"
+    ReturnValues: "ALL_NEW"
   }
-  const updatedAccount = dynamoDB.update(params).promise();
-  return updatedAccount;
+  return dynamoDB.update(params).promise();
 }
 
 const deleteAccount = id => {
