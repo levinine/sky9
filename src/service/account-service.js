@@ -78,8 +78,7 @@ const updateAccount = accountData => {
     },
     ReturnValues: "ALL_NEW"
   }
-  const updatedAccount = dynamoDB.update(params).promise();
-  return updatedAccount;
+  return dynamoDB.update(params).promise();
 }
 
 const deleteAccount = id => {
