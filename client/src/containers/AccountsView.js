@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import AccountsListView from '../components/AccountsListView';
 import AccountCreateView from '../components/AccountCreateView';
-import { getAccounts } from '../service/accountService';
+import { getAccounts, deleteAccount } from '../service/accountService';
 
 export default class AccountsView extends Component {
   constructor() {
@@ -25,6 +25,12 @@ export default class AccountsView extends Component {
     return re.test(email);
   }
 
+  deleteAccountHandler = (id, event) => {
+      console.log(event);
+      const del = deleteAccount(id);
+      console.log(del);
+  }
+
   render() {     
     return (
         <div className='container-fluid'>
@@ -34,7 +40,7 @@ export default class AccountsView extends Component {
               { this.state.show === 'update' && <AccountCreateView validateEmail={this.validateEmail} /> }
             </div>
             <div className="col">
-              <AccountsListView accounts={this.state.accounts}/>
+              <AccountsListView accounts={this.state.accounts} deleteAccount={this.deleteAccountHandler}/>
             </div>
           </div>
               

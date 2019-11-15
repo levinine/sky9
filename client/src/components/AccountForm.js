@@ -2,27 +2,32 @@ import React, { useState } from 'react'
 import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
 
 const AccountForm = (props) => {
-  const [IAMUser, setIAMUser] = useState('');
+  const [IAMUser, setIAMUser] = useState({'email':''});
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('Active');
   const [IAMUsers, setIAMUsers] = useState([]);
-
+  const [IAMUsersRender, setIAMUsersRender] = useState();
   const [IAMUserError, setIAMUserError] = useState(null);
   const [emailError, setEmailError] = useState(null);
   const [nameError, setNameError] = useState(null);
   
 
   const handleArrayChange = () => {
-    if(IAMUser.length > 0 && !props.validateEmail(IAMUser)) {
+    if(IAMUser.email.length > 0 && !props.validateEmail(IAMUser.email)) {
       setIAMUserError('IAM User needs to be an email!');
       return;
     } 
+    if (IAMUsers.filter(i => i.email === IAMUser.email).length > 0) {
+      setIAMUserError('IAM User already exists!');
+      return;
+    }
     const newUser = IAMUser;
-    if(newUser.length > 0) {
+    if(newUser.email.length > 0) {
       setIAMUsers(IAMUsers.concat([newUser]));
-      setIAMUser('');
+      setIAMUser({"email": ''});
       setIAMUserError('');
+      setIAMUsersRender(renderIAMUsers(newUser));
     }
   }
 
@@ -56,6 +61,14 @@ const AccountForm = (props) => {
     }
   }
 
+  const renderIAMUsers = (newUser) => {
+    return IAMUsers.concat([newUser]).map(IAMUser => (
+      <div key={IAMUser.email}>
+        {IAMUser.email}
+      </div>
+    ))
+  }
+
   return (
     <Form onSubmit={handleSubmit}>
       <FormGroup controlId="name">
@@ -77,12 +90,12 @@ const AccountForm = (props) => {
       </Form.Group>
       <Form.Group controlId="IAMUser">
         <Form.Label>IAM Users</Form.Label>
-        <Form.Control type="text" value={IAMUser} onChange={event => setIAMUser(event.target.value)} placeholder="Add IAM User"/>
+        <Form.Control type="text" value={IAMUser.email} onChange={event => setIAMUser({"email": event.target.value})} placeholder="Add IAM User"/>
         {IAMUserError}
         <Button onClick={handleArrayChange} disabled={false} variant="primary" size="md">
           Add user
         </Button>
-        {IAMUsers}
+        {IAMUsersRender}
       </Form.Group>
       <Button onClick={handleArrayChange} type="submit" variant="primary" size="lg">
         Submit
