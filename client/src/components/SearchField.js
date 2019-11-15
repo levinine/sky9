@@ -6,7 +6,7 @@ export default function SearchField(props) {
     <Form>
       <FormGroup>
         <FormLabel>Search</FormLabel>
-        <FormControl type="text" value={props.filter} onChange={event => props.filterSearch(event)} placeholder="Search..." />
+        <FormControl type="text" value={props.searchTerm} onChange={event => props.onChange(event)} placeholder="Search..." />
       </FormGroup>
     </Form>
   )
