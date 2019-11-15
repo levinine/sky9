@@ -6,7 +6,10 @@ import { getAccounts } from '../service/accountService';
 export default class AccountsView extends Component {
   constructor() {
     super();
-    this.state = { accounts: [] };
+    this.state = { 
+      accounts: [],
+      show: 'create' 
+    };
   }
 
   async componentDidMount() {
@@ -27,7 +30,8 @@ export default class AccountsView extends Component {
         <div className='container-fluid'>
            <div className="row">
             <div className="col">
-              <AccountCreateView validateEmail={this.validateEmail} />
+              { this.state.show === 'create' && <AccountCreateView validateEmail={this.validateEmail} /> }
+              { this.state.show === 'update' && <AccountCreateView validateEmail={this.validateEmail} /> }
             </div>
             <div className="col">
               <AccountsListView accounts={this.state.accounts}/>
