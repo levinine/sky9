@@ -10,16 +10,16 @@ const AccountsListView = (props) => {
   const accounts = props.accounts;
   const renderAccountsList = (accounts) => {
     return accounts.map((account) => (
-      <Link key={account.id} to={`/accounts/` + account.id }>
-        <ListGroupItem header={account.name}>
+      
+        <ListGroupItem key={account.id} header={account.name}>
+          <Link  to={`/accounts/` + account.id }>
           <span className="pull-left">
           {account.name} 
           </span>
-          <span className="pull-right">
-            ajajajajjja puertoriccoooo
-          </span> 
+          </Link>
+          <button onClick={event => props.deleteAccount(account.id, event)}>Delete</button> 
         </ListGroupItem>     
-      </Link>
+      
     ))  
   }
   let renderedAccounts = renderAccountsList(props.accounts);

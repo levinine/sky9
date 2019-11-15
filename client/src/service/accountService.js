@@ -11,8 +11,15 @@ const createAccount = (account) => {
   });
   return createdAccount;
 }
+const deleteAccount = async id => {
+  const deletedAccount = await API.del('accounts', '/accounts/' + id);
+  console.log(id);
+  console.log(deletedAccount);
+  return deletedAccount;
+}
 
 export {
   getAccounts,
-  createAccount
+  createAccount,
+  deleteAccount
 }
