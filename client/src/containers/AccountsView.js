@@ -4,19 +4,20 @@ import AccountCreateView from '../components/AccountCreateView';
 import AccountUpdateView from '../components/AccountUpdateView';
 import { getAccounts, deleteAccount } from '../service/accountService';
 
+
 export default class AccountsView extends Component {
   constructor() {
     super();
     this.state = { 
       accounts: [],
-      show: 'create',
       account:{
         email: "",
         name: "",
         status: "Active",
         IAMUsers:[],
         id: ""
-      }
+      },
+      show:'create'
     };
   }
 
@@ -33,10 +34,8 @@ export default class AccountsView extends Component {
     return re.test(email);
   }
 
-  deleteAccountHandler = (id, event) => {
-      console.log(event);
-      const del = deleteAccount(id);
-      console.log(del);
+  deleteAccountHandler = id => {
+    deleteAccount(id);
   }
 
   handleShowChange = (showStage, selectedAccount) => {

@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom';
-import { ListGroup, ListGroupItem, Button } from 'react-bootstrap';
+import {  Button } from 'react-bootstrap';
 import SearchField from '../components/SearchField';
 import './AccountsListView.css';
+import ModalDialog from '../components/Modal';
 
 const AccountsListView = (props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredList, setFilteredList] = useState([]);
+  const [deleteAccountID, setDeleteAccountID] = useState(null);
   const accounts = props.accounts;
   const handleChange = event => {
     setSearchTerm(event.target.value);
@@ -14,16 +15,27 @@ const AccountsListView = (props) => {
 
   const renderAccountsList = useCallback(
     (accounts) => {
-      return accounts.map((account) => (
-        <ListGroupItem key={account.id} header={account.name}>
-          <Link  to={`/accounts/` + account.id }>
-          <span className="pull-left">
-          {account.name} 
-          </span>
-          </Link>
-          <Button variant="secondary" onClick={() => props.handleShowChange("update", account)}>Edit</Button>
-          <Button variant ="danger" onClick={event => props.deleteAccount(account.id, event)}>Delete</Button> 
-        </ListGroupItem>     
+      return accounts.map((account,index) => (
+        <tr data-href={'/accounts/' + account.id} key={account.id}>
+          <th scope="row">{index + 1}</th>
+          <td>{account.name}</td>
+          <td>{account.email}</td>
+          <td>{account.status}</td>
+          <td>{account.IAMUsers.length}</td>
+          <td> 
+            <Button 
+              variant="secondary" 
+              onClick={() => props.handleShowChange("update", account)}>
+                Edit
+            </Button>
+            <Button 
+              variant ="danger" 
+              onClick={() => setDeleteAccountID(account.id) }>
+                Delete
+            </Button> 
+            
+          </td> 
+        </tr>
     ))  
     }, [props]);
 
@@ -42,10 +54,35 @@ const AccountsListView = (props) => {
   return (
     <div>
       <SearchField onChange={handleChange} searchTerm={searchTerm} />
-      <ListGroup>{filteredList.length === 0 ? renderedAccounts : filteredList} </ListGroup>
+      <table className="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Status</th>
+            <th scope="col"># IAM Users</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredList.length === 0 ? renderedAccounts : filteredList}
+        </tbody>
+      </table>
+      <ModalDialog 
+        show={deleteAccountID} 
+        handleClose={() => setDeleteAccountID(null)} 
+        handleDelete={() => {
+          props.deleteAccount(deleteAccountID);
+          setDeleteAccountID(null);
+        }} 
+        message="Are you sure you want to delete?" 
+        title="Delete account" 
+        buttonMessage="Delete"
+      />
     </div>
-    
   )
 }
 
 export default AccountsListView;
+
