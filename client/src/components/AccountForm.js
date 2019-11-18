@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
 
 const AccountForm = (props) => {
+
+  //needed here for initializing IAMUsers in update form
   const renderIAMUsers = (newUser) => {
     if(newUser != null) {
       return IAMUsers.concat([newUser]).map(IAMUser => (
@@ -19,10 +22,12 @@ const AccountForm = (props) => {
     }
     return;
   }
-  const [IAMUser, setIAMUser] = useState({'email':''});
+
+  
   const [name, setName] = useState(props.selectedAccount.name);
   const [email, setEmail] = useState(props.selectedAccount.email);
   const [status, setStatus] = useState(props.selectedAccount.status);
+  const [IAMUser, setIAMUser] = useState({'email':''});
   const [IAMUsers, setIAMUsers] = useState(props.selectedAccount.IAMUsers);
   const [IAMUsersRender, setIAMUsersRender] = useState(renderIAMUsers(null));
 
@@ -43,7 +48,7 @@ const AccountForm = (props) => {
   const handleArrayChange = () => {
     const newUser = IAMUser;
     if(IAMUser.email.length > 0 && !props.validateEmail(IAMUser.email)) {
-      setIAMUserError('IAM User needs to be an email!');
+      setIAMUserError('IAM User has  to be an email!');
       return;
     } 
     if (IAMUsers.filter(i => i.email === IAMUser.email).length > 0) {
@@ -55,6 +60,8 @@ const AccountForm = (props) => {
       setIAMUser({"email": ''});
       setIAMUserError('');
       setIAMUsersRender(renderIAMUsers(newUser));
+    } else {
+      setIAMUserError('IAM User can\'t be empty');
     }
   }
 
@@ -99,17 +106,18 @@ const AccountForm = (props) => {
       setName('');
       setEmail('');
       setStatus('');
+      setIAMUser({'email':''});
       setIAMUsers([]);
       setEmailError('');
       setNameError('');
       setIAMUserError('');
       setIAMUsersRender(renderIAMUsers(null));
-      const addedAccount = await props.apiFunction(account);
-      if(!(Object.entries(addedAccount).length === 0 && addedAccount.constructor === Object)) {
-        props.refreshList(addedAccount, "create");
+      const returnedAccount = await props.apiFunction(account);
+      if(!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
+        props.refreshList(returnedAccount, props.stage);
       }
     } catch(error) {
-      alert(error.message);
+      console.log(error);
     }
   }
 
@@ -150,6 +158,14 @@ const AccountForm = (props) => {
       </Form>
     </div>
   );
+}
+
+AccountForm.propTypes = {
+  stage: PropTypes.string.isRequired,
+  selectedAccount: PropTypes.object.isRequired,
+  validateEmail: PropTypes.func.isRequired,
+  refreshList: PropTypes.func.isRequired,
+  apiFunction: PropTypes.func.isRequired
 }
 
 export default AccountForm;

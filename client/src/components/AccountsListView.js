@@ -1,17 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import {  Button } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 import SearchField from '../components/SearchField';
-import './AccountsListView.css';
 import ModalDialog from '../components/Modal';
+import {  Button } from 'react-bootstrap';
+import './AccountsListView.css';
+
+
 
 const AccountsListView = (props) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredList, setFilteredList] = useState([]);
-  const [deleteAccountID, setDeleteAccountID] = useState(null);
-  const accounts = props.accounts;
-  const handleChange = event => {
-    setSearchTerm(event.target.value);
-  }
 
   const renderAccountsList = useCallback(
     (accounts) => {
@@ -40,6 +36,13 @@ const AccountsListView = (props) => {
     }, [props]);
 
   const renderedAccounts = renderAccountsList(props.accounts);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredList, setFilteredList] = useState([]);
+  const [deleteAccountID, setDeleteAccountID] = useState(null);
+  const accounts = props.accounts;
+  const handleChange = event => {
+    setSearchTerm(event.target.value);
+  }
 
   useEffect(() => {
     const results = accounts.filter(account =>{
@@ -54,21 +57,23 @@ const AccountsListView = (props) => {
   return (
     <div>
       <SearchField onChange={handleChange} searchTerm={searchTerm} />
-      <table className="table table-hover">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Status</th>
-            <th scope="col"># IAM Users</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredList.length === 0 ? renderedAccounts : filteredList}
-        </tbody>
-      </table>
+      <div className="list-table">
+        <table className="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Status</th>
+              <th scope="col"># IAM Users</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredList.length === 0 ? renderedAccounts : filteredList}
+          </tbody>
+        </table>
+      </div>
       <ModalDialog 
         show={deleteAccountID} 
         handleClose={() => setDeleteAccountID(null)} 
@@ -83,6 +88,13 @@ const AccountsListView = (props) => {
       />
     </div>
   )
+}
+
+AccountsListView.propTypes = {
+  accounts: PropTypes.array.isRequired,
+  deleteAccount: PropTypes.func.isRequired,
+  handleShowChange: PropTypes.func.isRequired,
+  refreshList: PropTypes.func.isRequired
 }
 
 export default AccountsListView;

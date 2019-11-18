@@ -5,7 +5,7 @@ import AccountsView from './containers/AccountsView';
 export default function Routes() {
     return (
       <Switch>
-        <Route path="/accounts" exact component={AccountsView} />
+        <Route path="/" exact component={AccountsView} />
       </Switch>
 
     )

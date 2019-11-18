@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import AccountsListView from '../components/AccountsListView';
-import AccountCreateView from '../components/AccountCreateView';
-import AccountUpdateView from '../components/AccountUpdateView';
+import AccountCreateFormView from '../components/AccountCreateFormView';
+import AccountUpdateFormView from '../components/AccountUpdateFormView';
 import { getAccounts, deleteAccount } from '../service/accountService';
 
 export default class AccountsView extends Component {
@@ -51,19 +51,23 @@ export default class AccountsView extends Component {
   }
 
   refreshList = (account, action) => {
-    if(action === "create"){
+    if(action === "Create new account"){
       this.setState({
         accounts: this.state.accounts.concat(account)
       })
     } else if (action === "delete") {
-      //in the case of delete account we receive only ID 
       this.setState({
         accounts: this.state.accounts.filter(a => a.id !== account)
       })
-    } else if (action === "update") {
-      
-      this.setState({
-        
+    } else if (action === "Update account") {
+      const accountIndex = this.state.accounts.findIndex(acc => acc.id === account.id);
+      this.setState((oldState) => {
+          const newAccountList = [...oldState.accounts];
+          newAccountList[accountIndex] = account;
+          return { 
+            accounts: newAccountList,
+            account: newAccountList[accountIndex]
+          };
       })
     }
   }
@@ -82,15 +86,16 @@ export default class AccountsView extends Component {
             </div>
             <div className="col">
               { this.state.show === 'create' && 
-                <AccountCreateView 
+                <AccountCreateFormView 
                 refreshList={this.refreshList} 
                 selectedAccount={this.state.account} 
                 validateEmail={this.validateEmail} /> }
 
               { this.state.show === 'update' && 
-                <AccountUpdateView 
+                <AccountUpdateFormView 
                 selectedAccount={this.state.account} 
-                validateEmail={this.validateEmail} /> }
+                validateEmail={this.validateEmail}
+                refreshList={this.refreshList} /> }
             </div>
           </div>
         </div>

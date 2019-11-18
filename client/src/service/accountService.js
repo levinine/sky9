@@ -1,8 +1,13 @@
 import {API} from 'aws-amplify';
 
 const getAccounts = async () => {
-   const accounts = await API.get("accounts", "/accounts");
-   return accounts.Items;
+  try {
+    const accounts = await API.get("accounts", "/accounts");
+    return accounts.Items;
+  }catch(error) {
+    console.log(error);
+  }
+   
 }
 
 const getAccount =  id => {
@@ -15,25 +20,29 @@ const getAccount =  id => {
 }
 
 const createAccount = (account) => {
-  const createdAccount = API.post('accounts', '/accounts', {
-    body: account
-  });
-  return createdAccount;
+  try {
+    const createdAccount = API.post('accounts', '/accounts', {
+      body: account
+    });
+    return createdAccount;
+  } catch(error) {
+    console.log(error);
+  }
+  
 }
 const deleteAccount = async id => {
   try {
     const deletedAccount = await API.del('accounts', '/accounts/' + id);
     return deletedAccount;
   }catch(error) {
-    console.log(error.message)
+    console.log(error)
   }
 }
 
 const updateAccount = async account => {
   try{
-     console.log(account);
-     const up =  await API.put('accounts', '/accounts/' + account.id, {body:account})
-     console.log(up);
+     const updatedAccount = await API.put('accounts', '/accounts/' + account.id, {body:account}) 
+     return updatedAccount.Attributes;
     } catch(error){
         console.log(error);
     } 
