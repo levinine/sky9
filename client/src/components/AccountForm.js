@@ -5,7 +5,7 @@ import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap
 const AccountForm = (props) => {
 
   //needed here for initializing IAMUsers in update form
-  const renderIAMUsers = (newUser) => {
+  const renderIAMUsers = newUser => {
     if(newUser != null) {
       return IAMUsers.concat([newUser]).map(IAMUser => (
         <div key={IAMUser.email}>
