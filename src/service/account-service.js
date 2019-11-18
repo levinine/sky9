@@ -3,8 +3,6 @@ const {dynamoDB} = require('../../infrastructure/dynamoDbLib');
 const Ajv = require('ajv');
 const ajv = new Ajv();
 
-
-
 const accountSchema = {
   type: "object",
   properties: {
@@ -61,11 +59,8 @@ const createAccount = async data => {
   return params.Item;
 };
 
-const updateAccount = accountData => {
-<<<<<<< HEAD
-=======
+const updateAccount = async accountData => {
   if(!validate(accountData)) return validate.errors;
->>>>>>> data-validation
   const params = {
     TableName: process.env.ACCOUNT_TABLE,
     Key:{
@@ -81,7 +76,7 @@ const updateAccount = accountData => {
     },
     ReturnValues: "ALL_NEW"
   }
-  return dynamoDB.update(params).promise();
+  return await dynamoDB.update(params).promise();
 }
 
 const deleteAccount = id => {

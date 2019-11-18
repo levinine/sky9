@@ -5,9 +5,9 @@ const createAccount = {
     "name": "Pera",
     "status": "inactive",
     "IAMUsers": [
-        "djura@email.com",
-        "user2@email.com",
-        "user6@email.com"
+        {"email":"djura@email.com"},
+        {"email":"user2@email.com"},
+        {"email":"user6@email.com"}
     ]
 }
 let testAccount = {
@@ -15,15 +15,15 @@ let testAccount = {
     "name": "Zika",
     "status": "active",
     "IAMUsers": [
-        "lola@email.com",
-        "user2@email.com",
-        "user3@email.com"
+        { "email":"lola@email.com"},
+        { "email":"user2@email.com"},
+        { "email":"user3@email.com"}
     ]
 };
 
 describe('Create Account API Test', () => {
     it('should return the created account', async () => {
-        const res = await request(process.env.API_ENDPOINT)
+        const res = await request(API_ENDPOINT)
         .post('/accounts')
         .send(createAccount)
         const account = JSON.parse(res.text);
@@ -38,7 +38,7 @@ describe('Create Account API Test', () => {
 
 describe('Get Accounts API Test', () => {
     it('should return all accounts', async () => {
-      const res = await request(process.env.API_ENDPOINT)
+      const res = await request(API_ENDPOINT)
       .get('/accounts')
       .send()
       expect(res.statusCode).toEqual(200)
@@ -65,7 +65,7 @@ describe('Get Accounts API Test', () => {
 
 describe('Get Account API Test', () => {
     it('should return a given account', async () => {
-        const res = await request(process.env.API_ENDPOINT)
+        const res = await request(API_ENDPOINT)
         .get('/accounts/' + testAccount.id )
         .send();
         const account = JSON.parse(res.text).Item;
@@ -76,7 +76,7 @@ describe('Get Account API Test', () => {
 
 describe('Update Account API Test', () => {
     it('should return updated account', async () => {
-        const res = await request(process.env.API_ENDPOINT)
+        const res = await request(API_ENDPOINT)
         .put('/accounts/' + testAccount.id)
         .send(testAccount);
         const updatedAccount = JSON.parse(res.text).Attributes;
@@ -87,7 +87,7 @@ describe('Update Account API Test', () => {
 
 describe('Delete Account API Test', () => {
     it('should fail to find account after deletion', async () => {
-        const res = await request(process.env.API_ENDPOINT)
+        const res = await request(API_ENDPOINT)
         .delete('/accounts/' + testAccount.id)
         .send();
         expect(res.statusCode).toEqual(200)
