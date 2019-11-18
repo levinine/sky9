@@ -154,6 +154,14 @@ const AccountForm = (props) => {
         <Button  type="submit" variant="primary" size="lg">
           Submit
         </Button>
+        {
+          props.stage === "Update account" &&
+          <Button 
+              variant="secondary" 
+              onClick={() => props.handleViewChange("Create new account", null )}>
+                Cancel
+          </Button>
+        }
         {updateError}
       </Form>
     </div>

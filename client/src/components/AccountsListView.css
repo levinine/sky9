@@ -1,9 +1,0 @@
-.list-group {
-    max-height: 500px;
-    margin-bottom: 10px;
-    overflow-y: scroll; 
-}
-
-.list-group::-webkit-scrollbar { 
-  display: none;
-}

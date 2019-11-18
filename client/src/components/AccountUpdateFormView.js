@@ -10,13 +10,15 @@ const UpdateAccountView = props => {
     validateEmail={props.validateEmail}
     refreshList={props.refreshList}
     apiFunction={updateAccount}
+    handleViewChange={props.handleViewChange}
   />  
 }
 
 UpdateAccountView.propTypes = {
   selectedAccount: PropTypes.object.isRequired,
   validateEmail: PropTypes.func.isRequired,
-  refreshList: PropTypes.func.isRequired
+  refreshList: PropTypes.func.isRequired,
+  handleViewChange: PropTypes.func.isRequired 
 }
 
 export default UpdateAccountView;
