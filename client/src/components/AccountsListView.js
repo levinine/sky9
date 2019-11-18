@@ -74,6 +74,7 @@ const AccountsListView = (props) => {
         handleClose={() => setDeleteAccountID(null)} 
         handleDelete={() => {
           props.deleteAccount(deleteAccountID);
+          props.refreshList(deleteAccountID, "delete");
           setDeleteAccountID(null);
         }} 
         message="Are you sure you want to delete?" 

@@ -8,6 +8,7 @@ const AccountCreate = (props) => {
             stage={"Create new account"}
             apiFunction={createAccount} 
             validateEmail={props.validateEmail} 
+            refreshList={props.refreshList}
           />  
 }
 export default AccountCreate;

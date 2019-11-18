@@ -41,6 +41,7 @@ const AccountForm = (props) => {
   }, [props]);
 
   const handleArrayChange = () => {
+    const newUser = IAMUser;
     if(IAMUser.email.length > 0 && !props.validateEmail(IAMUser.email)) {
       setIAMUserError('IAM User needs to be an email!');
       return;
@@ -49,7 +50,6 @@ const AccountForm = (props) => {
       setIAMUserError('IAM User already exists!');
       return;
     }
-    const newUser = IAMUser;
     if(newUser.email.length > 0) {
       setIAMUsers(IAMUsers.concat([newUser]));
       setIAMUser({"email": ''});
@@ -104,7 +104,10 @@ const AccountForm = (props) => {
       setNameError('');
       setIAMUserError('');
       setIAMUsersRender(renderIAMUsers(null));
-      return await props.apiFunction(account);
+      const addedAccount = await props.apiFunction(account);
+      if(!(Object.entries(addedAccount).length === 0 && addedAccount.constructor === Object)) {
+        props.refreshList(addedAccount, "create");
+      }
     } catch(error) {
       alert(error.message);
     }
