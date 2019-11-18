@@ -21,15 +21,18 @@ const createAccount = (account) => {
   return createdAccount;
 }
 const deleteAccount = async id => {
-  const deletedAccount = await API.del('accounts', '/accounts/' + id);
-  console.log(id);
-  console.log(deletedAccount);
-  return deletedAccount;
+  try {
+    const deletedAccount = await API.del('accounts', '/accounts/' + id);
+    return deletedAccount;
+  }catch(error) {
+    console.log(error.message)
+  }
 }
 
-const updateAccount = async(account) => {
+const updateAccount = async account => {
   try{
-     const up =  await API.put('accounts', '/accounts/c8e455a0-053e-11ea-a6fc-9d92540b60af', account)
+     console.log(account);
+     const up =  await API.put('accounts', '/accounts/' + account.id, {body:account})
      console.log(up);
     } catch(error){
         console.log(error);
