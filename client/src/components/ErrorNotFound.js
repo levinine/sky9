@@ -6,8 +6,7 @@ export default class ErrorNotFound extends Component {
         return (
             <div id='error'>
                 <h1 className="notFoundTitle" align='center'>404</h1>
-                <h2 className="notFoundTitle" align='center'> page not found</h2>
-                
+                <h2 className="notFoundTitle" align='center'> page not found</h2>     
             </div>
         );  
     }
