@@ -34,8 +34,8 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ],
-    "setupFiles": [
-      "./envModuleForTest"
-    ]
+    "globals": {
+      "API_ENDPOINT": "http://localhost:3000"
+    }
   }
 }
