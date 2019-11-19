@@ -7,7 +7,7 @@ const getAccounts = async () => {
   }catch(error) {
     console.log(error);
   }
-   
+  return [];
 }
 
 const getAccount =  id => {

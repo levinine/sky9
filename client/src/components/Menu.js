@@ -8,7 +8,7 @@ const appUrl = 'http://localhost:3000';
 
 class Menu extends React.Component {
   login = () => {
-    window.location.href = `${cognitoUrl}/oauth2/authorize?identity_provider=levi9&redirect_uri=${appUrl}&response_type=TOKEN&client_id=${clientId}&scope=openid`;
+    window.location.href = `${cognitoUrl}/oauth2/authorize?redirect_uri=${appUrl}&response_type=TOKEN&client_id=${clientId}&scope=openid`;
   }
 
   logout = () => {
@@ -23,7 +23,7 @@ class Menu extends React.Component {
 
   render() {
     return (
-      <Navbar inverse fixedtop bg="dark" variant="dark" className="justify-content-between">
+      <Navbar bg="dark" variant="dark" className="justify-content-between">
         <Navbar.Brand href="/">Sky9</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         { this.getUser() === null && <Button variant="primary" className="pull-right" onClick={this.login}>Login</Button> }

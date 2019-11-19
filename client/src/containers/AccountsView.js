@@ -21,7 +21,7 @@ export default class AccountsView extends Component {
   }
 
   async componentDidMount() {
-   const accounts = await getAccounts();
+   const accounts = await getAccounts() || [];
    this.setState({
      accounts
    })

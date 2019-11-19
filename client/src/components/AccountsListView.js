@@ -13,7 +13,7 @@ const AccountsListView = (props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredList, setFilteredList] = useState(props.accounts);
   const [deleteAccountID, setDeleteAccountID] = useState(null);
-  const accounts = props.accounts;
+  const accounts = props.accounts || [];
   
   const handleChange = event => {
     setSearchTerm(event.target.value);
