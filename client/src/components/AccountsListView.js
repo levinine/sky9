@@ -1,18 +1,58 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types';
 import SearchField from '../components/SearchField';
-import ModalDialog from '../components/Modal';
+import DeleteModalDialog from './DeleteModalDialog';
+import AccountViewModal from './AccountViewModal';
 import {  Button } from 'react-bootstrap';
 import ReactTable from 'react-table';
+import viewIcon from '../assets/view.png';
 import 'react-table/react-table.css';
-
 
 const AccountsListView = (props) => {
 
+  const {
+    accounts,
+    deleteAccount,
+    handleViewChange,
+    refreshList
+  } = props;
+
+  const columns = [{
+    Header: 'Name',
+    accessor: 'name',
+  }, {
+    Header: 'Email',
+    accessor: 'email',
+  }, {
+    Header: 'Status',
+    accessor: 'status',
+  }, {
+    Cell: row => (
+      <div>
+         <Button 
+          variant="primary" 
+          onClick={() => setDetailViewAccount(row.original)}>
+            View
+        </Button>
+         <Button 
+          variant="secondary" 
+          onClick={ e => handleViewChange("Update account", row.original)}>
+            Edit
+        </Button>
+        <Button 
+          variant ="danger" 
+          onClick={() => setDeleteAccountID(row.original.id) }>
+            Delete
+        </Button> 
+       
+      </div>
+  )
+  }]
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredList, setFilteredList] = useState(props.accounts);
+  const [filteredList, setFilteredList] = useState(accounts);
   const [deleteAccountID, setDeleteAccountID] = useState(null);
-  const accounts = props.accounts;
+  const [detailViewAccount, setDetailViewAccount] = useState(null);
   
   const handleChange = event => {
     setSearchTerm(event.target.value);
@@ -30,50 +70,32 @@ const AccountsListView = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, accounts])
 
-  const columns = [{
-    Header: 'Name',
-    accessor: 'name'
-  }, {
-    Header: 'Email',
-    accessor: 'email',
-  }, {
-    Header: 'Status',
-    accessor: 'status'
-  }, {
-    Cell: row => (
-      <div>
-         <Button 
-              variant="secondary" 
-              onClick={() => props.handleViewChange("Update account", row.original)}>
-                Edit
-            </Button>
-            <Button 
-              variant ="danger" 
-              onClick={() => setDeleteAccountID(row.original.id) }>
-                Delete
-            </Button> 
-      </div>
-  )
-  }]
-
   return (
     <div>
       <SearchField onChange={handleChange} searchTerm={searchTerm} />
       <ReactTable 
         data={filteredList}
         columns={columns}
+        className="-highlight"
+        showPageSizeOptions={false}
+        defaultPageSize={15}
       />
-      <ModalDialog 
+      <DeleteModalDialog 
         show={deleteAccountID} 
         handleClose={() => setDeleteAccountID(null)} 
         handleDelete={() => {
-          props.deleteAccount(deleteAccountID);
-          props.refreshList(deleteAccountID, "delete");
+          deleteAccount(deleteAccountID);
+          refreshList(deleteAccountID, "delete");
           setDeleteAccountID(null);
-        }} 
-        message="Are you sure you want to delete?" 
-        title="Delete account" 
+        }}
+        message="Are you sure you want to delete?"
+        title="Delete account"
         buttonMessage="Delete"
+      />
+      <AccountViewModal 
+        show={detailViewAccount} 
+        handleClose={() => setDetailViewAccount(null)}  
+        account={detailViewAccount}
       />
     </div>
   )

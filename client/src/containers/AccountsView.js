@@ -30,7 +30,7 @@ export default class AccountsView extends Component {
    })
   }
 
-  handleViewChange = (showStage, selectedAccount) => {
+  handleViewChange = (showStage, selectedAccount) => {  
     if(selectedAccount === null) {
       this.setState({
         show:showStage,

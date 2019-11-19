@@ -146,18 +146,18 @@ const AccountForm = (props) => {
           <Form.Label>IAM Users</Form.Label>
           <Form.Control type="text" value={IAMUser.email} onChange={event => setIAMUser({"email": event.target.value})} placeholder="Add IAM User"/>
           {IAMUserError}
-          <Button onClick={handleArrayChange} variant="primary" size="md">
+          <Button onClick={handleArrayChange} variant="primary">
             Add user
           </Button>
           {IAMUsersRender}
         </Form.Group>
-        <Button  type="submit" variant="primary" size="lg">
+        <Button  type="submit" variant="primary">
           Submit
         </Button>
         {
           props.stage === "Update account" &&
           <Button 
-              variant="secondary" 
+              variant="primary" 
               onClick={() => props.handleViewChange("Create new account", null )}>
                 Cancel
           </Button>
