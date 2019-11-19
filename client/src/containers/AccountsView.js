@@ -16,18 +16,34 @@ export default class AccountsView extends Component {
         IAMUsers:[],
         id: ""
       },
-      show:'create'
+      show:'Create new account'
     };
   }
 
   async componentDidMount() {
    const accounts = await getAccounts();
+   if(accounts === null) {
+    return;
+   }
    this.setState({
      accounts
    })
   }
 
-  handleShowChange = (showStage, selectedAccount) => {
+  handleViewChange = (showStage, selectedAccount) => {  
+    if(selectedAccount === null) {
+      this.setState({
+        show:showStage,
+        account:{
+          email: "",
+          name: "",
+          status: "Active",
+          IAMUsers:[],
+          id: ""
+        }
+      })
+      return;
+    }
     this.setState({
       show: showStage,
       account: {
@@ -80,22 +96,23 @@ export default class AccountsView extends Component {
               <AccountsListView
                accounts={this.state.accounts} 
                deleteAccount={this.deleteAccountHandler} 
-               handleShowChange={this.handleShowChange}
+               handleViewChange={this.handleViewChange}
                refreshList={this.refreshList}
                />
             </div>
             <div className="col">
-              { this.state.show === 'create' && 
+              { this.state.show === 'Create new account' && 
                 <AccountCreateFormView 
                 refreshList={this.refreshList} 
                 selectedAccount={this.state.account} 
                 validateEmail={this.validateEmail} /> }
 
-              { this.state.show === 'update' && 
+              { this.state.show === 'Update account' && 
                 <AccountUpdateFormView 
                 selectedAccount={this.state.account} 
                 validateEmail={this.validateEmail}
-                refreshList={this.refreshList} /> }
+                refreshList={this.refreshList}
+                handleViewChange={this.handleViewChange} /> }
             </div>
           </div>
         </div>
