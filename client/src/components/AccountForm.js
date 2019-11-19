@@ -1,26 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
+import './Form.css';
 
 const AccountForm = (props) => {
 
   //needed here for initializing IAMUsers in update form
   const renderIAMUsers = newUser => {
+    let users = null;
     if(newUser != null) {
-      return IAMUsers.concat([newUser]).map(IAMUser => (
-        <div key={IAMUser.email}>
-          {IAMUser.email}
-        </div>
-      ))
+      users = IAMUsers.concat([newUser]).map((IAMUser,index) => <tr key={IAMUser.email}><td>{index+1}</td><td>{IAMUser.email}</td></tr> )
+      return(
+        <table width="100%">
+          <tr>                    
+            <th>#</th>
+            <th>IAM Users</th>  
+          </tr>
+          {users}
+      </table>
+      )
     }
     if(IAMUsers.length > 0) {
-      return IAMUsers.map(IAMUser => (
-        <div key={IAMUser.email}>
-          {IAMUser.email}
-        </div>
-      ))
+      users = IAMUsers.map((IAMUser,index) => <tr key={IAMUser.email}><td>{index+1}</td><td>{IAMUser.email}</td></tr> )
+      return(
+        <table width="100%">
+          <tr>                    
+            <th>#</th>
+            <th>IAM Users</th>  
+          </tr>
+          {users}
+        </table>
+      )
     }
-    return;
   }
 
   

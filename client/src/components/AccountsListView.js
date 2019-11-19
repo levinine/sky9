@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
 import SearchField from '../components/SearchField';
 import DeleteModalDialog from './DeleteModalDialog';
-import AccountViewModal from './AccountViewModal';
 import {  Button } from 'react-bootstrap';
 import ReactTable from 'react-table';
-import viewIcon from '../assets/view.png';
 import 'react-table/react-table.css';
 
 const AccountsListView = (props) => {
@@ -31,11 +29,6 @@ const AccountsListView = (props) => {
       <div>
          <Button 
           variant="primary" 
-          onClick={() => setDetailViewAccount(row.original)}>
-            View
-        </Button>
-         <Button 
-          variant="secondary" 
           onClick={ e => handleViewChange("Update account", row.original)}>
             Edit
         </Button>
@@ -52,7 +45,6 @@ const AccountsListView = (props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredList, setFilteredList] = useState(accounts);
   const [deleteAccountID, setDeleteAccountID] = useState(null);
-  const [detailViewAccount, setDetailViewAccount] = useState(null);
   
   const handleChange = event => {
     setSearchTerm(event.target.value);
@@ -91,11 +83,6 @@ const AccountsListView = (props) => {
         message="Are you sure you want to delete?"
         title="Delete account"
         buttonMessage="Delete"
-      />
-      <AccountViewModal 
-        show={detailViewAccount} 
-        handleClose={() => setDetailViewAccount(null)}  
-        account={detailViewAccount}
       />
     </div>
   )
