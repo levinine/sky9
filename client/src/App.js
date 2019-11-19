@@ -6,7 +6,7 @@ function App() {
   return (
    <div>
       <Menu/>
-      <div class="space" >
+      <div className="space" >
       <Routes/>
       </div>
    </div>
