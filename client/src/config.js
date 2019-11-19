@@ -1,11 +1,18 @@
-const local = {
+const development = {
   apiGateway: {
-    REGION: "eu-west-2",
     URL: "http://localhost:3000"
   }
 };
 
-const stage = local;
+const production = {
+  apiGateway: {
+    REGION: "eu-west-2",
+    URL: ""
+  }
+};
+
+
+const stage = process.env.NODE_ENV === "production" ? production : development;
 
 export default {
   stage

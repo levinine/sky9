@@ -1,19 +1,50 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
 import SearchField from '../components/SearchField';
-import ModalDialog from '../components/Modal';
+import DeleteModalDialog from './DeleteModalDialog';
 import {  Button } from 'react-bootstrap';
-import './AccountsListView.css';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 
-
 const AccountsListView = (props) => {
 
+  const {
+    accounts,
+    deleteAccount,
+    handleViewChange,
+    refreshList
+  } = props;
+
+  const columns = [{
+    Header: 'Name',
+    accessor: 'name',
+  }, {
+    Header: 'Email',
+    accessor: 'email',
+  }, {
+    Header: 'Status',
+    accessor: 'status',
+  }, {
+    Cell: row => (
+      <div>
+         <Button 
+          variant="primary" 
+          onClick={ e => handleViewChange("Update account", row.original)}>
+            Edit
+        </Button>
+        <Button 
+          variant ="danger" 
+          onClick={() => setDeleteAccountID(row.original.id) }>
+            Delete
+        </Button> 
+       
+      </div>
+  )
+  }]
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredList, setFilteredList] = useState(props.accounts);
+  const [filteredList, setFilteredList] = useState(accounts);
   const [deleteAccountID, setDeleteAccountID] = useState(null);
-  const accounts = props.accounts || [];
   
   const handleChange = event => {
     setSearchTerm(event.target.value);
@@ -21,39 +52,15 @@ const AccountsListView = (props) => {
 
   useEffect(() => {
     const results = accounts.filter(account =>{
-      const lowerCaseAccount = account.name.toLowerCase();
       const lowerCaseSearchTerm = (searchTerm).toLowerCase();
-      return lowerCaseAccount.includes(lowerCaseSearchTerm);
+      return ( 
+        account.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+        account.email.toLowerCase().includes(lowerCaseSearchTerm) 
+      )
     })
     setFilteredList(results);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, accounts])
-
-  const columns = [{
-    Header: 'Name',
-    accessor: 'name' // String-based value accessors!
-  }, {
-    Header: 'Email',
-    accessor: 'email',
-  }, {
-    Header: 'Status',
-    accessor: 'status' // Custom value accessors!
-  }, {
-    Cell: row => (
-      <div>
-         <Button 
-              variant="secondary" 
-              onClick={() => props.handleShowChange("update", row.original)}>
-                Edit
-            </Button>
-            <Button 
-              variant ="danger" 
-              onClick={() => setDeleteAccountID(row.original.id) }>
-                Delete
-            </Button> 
-      </div>
-  )
-  }]
 
   return (
     <div>
@@ -61,17 +68,20 @@ const AccountsListView = (props) => {
       <ReactTable 
         data={filteredList}
         columns={columns}
+        className="-highlight"
+        showPageSizeOptions={false}
+        defaultPageSize={15}
       />
-      <ModalDialog 
+      <DeleteModalDialog 
         show={deleteAccountID} 
         handleClose={() => setDeleteAccountID(null)} 
         handleDelete={() => {
-          props.deleteAccount(deleteAccountID);
-          props.refreshList(deleteAccountID, "delete");
+          deleteAccount(deleteAccountID);
+          refreshList(deleteAccountID, "delete");
           setDeleteAccountID(null);
-        }} 
-        message="Are you sure you want to delete?" 
-        title="Delete account" 
+        }}
+        message="Are you sure you want to delete?"
+        title="Delete account"
         buttonMessage="Delete"
       />
     </div>
@@ -81,7 +91,7 @@ const AccountsListView = (props) => {
 AccountsListView.propTypes = {
   accounts: PropTypes.array.isRequired,
   deleteAccount: PropTypes.func.isRequired,
-  handleShowChange: PropTypes.func.isRequired,
+  handleViewChange: PropTypes.func.isRequired,
   refreshList: PropTypes.func.isRequired
 }
 
