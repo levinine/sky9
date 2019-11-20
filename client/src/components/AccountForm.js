@@ -5,18 +5,27 @@ import './Form.css';
 
 const AccountForm = (props) => {
 
+  const {
+    stage,
+    selectedAccount,
+    validateEmail,
+    refreshList,
+    apiFunction,
+    handleViewChange
+  } = props;
+
   //needed here for initializing IAMUsers in update form
-  const renderIAMUsers = newUser => {
-    
+  const renderIAMUsers = newUser => {    
     let users = null;
     if(newUser != null) {
-      users = IAMUsers.concat([newUser]).map((IAMUser,index) => <tr key={IAMUser.email}><td>{index+1}</td><td>{IAMUser.email}</td></tr> )
+      users = IAMUsers.concat([newUser]).map((IAMUser,index) => <tr key={IAMUser.email}><td>{index+1}</td><td>{IAMUser.email}</td><td><Button size="sm" variant="danger"  onClick={() => deleteIAMUser(index)}>Delete</Button></td></tr> )
       return(
-        <table width="100%">
+        <table id="myTable" width="100%">
           <tbody>
             <tr>                    
               <th>#</th>
-              <th>IAM Users</th>  
+              <th>IAM Users</th> 
+              <th></th>
             </tr>
             {users}
           </tbody>
@@ -24,13 +33,16 @@ const AccountForm = (props) => {
       )
     }
     if(IAMUsers.length > 0) {
-      users = IAMUsers.map((IAMUser,index) => <tr key={IAMUser.email}><td>{index+1}</td><td>{IAMUser.email}</td></tr> )
+      console.log('probo sam');
+      users = IAMUsers.map((IAMUser,index) => <tr key={IAMUser.email}><td>{index+1}</td><td>{IAMUser.email}</td><td><Button size="sm" variant="danger" onClick={() => deleteIAMUser(index)} >Delete</Button></td></tr> )
+      console.log(users);
       return(
-        <table width="100%">
+        <table id= "myTable" width="100%">
           <tbody>
             <tr>                    
               <th>#</th>
-              <th>IAM Users</th>  
+              <th>IAM Users</th>
+              <th></th>  
             </tr>
             {users}
           </tbody>
@@ -39,31 +51,45 @@ const AccountForm = (props) => {
     }
   }
 
-  
-  const [name, setName] = useState(props.selectedAccount.name);
-  const [email, setEmail] = useState(props.selectedAccount.email);
-  const [status, setStatus] = useState(props.selectedAccount.status);
+  const [name, setName] = useState(selectedAccount.name);
+  const [email, setEmail] = useState(selectedAccount.email);
+  const [status, setStatus] = useState(selectedAccount.status);
   const [IAMUser, setIAMUser] = useState({'email':''});
-  const [IAMUsers, setIAMUsers] = useState(props.selectedAccount.IAMUsers);
+  const [IAMUsers, setIAMUsers] = useState(selectedAccount.IAMUsers);
   const [IAMUsersRender, setIAMUsersRender] = useState(renderIAMUsers(null));
-
+  
   const [updateError, setUpdateError] = useState(null);
   const [IAMUserError, setIAMUserError] = useState(null);
   const [emailError, setEmailError] = useState(null);
   const [nameError, setNameError] = useState(null);
 
+  let initialAccount = null;
   useEffect(() => {
-    setName(props.selectedAccount.name);
-    setEmail(props.selectedAccount.email);
-    setStatus(props.selectedAccount.status);
-    setIAMUsers(props.selectedAccount.IAMUsers);
+    initialAccount = selectedAccount
+  }, [])
+
+  useEffect(() => {
+    setName(selectedAccount.name);
+    setEmail(selectedAccount.email);
+    setStatus(selectedAccount.status);
+    setIAMUsers(selectedAccount.IAMUsers);
     setIAMUsersRender(renderIAMUsers(null));
+    console.log('ofjjjj');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props]);
 
+  const deleteIAMUser = index => {
+    const newIAMUsersArray = IAMUsers;
+    newIAMUsersArray.splice(index,1);
+    setIAMUsers(newIAMUsersArray);
+    console.log("prvi pt")
+    setIAMUsersRender(renderIAMUsers(null));
+    console.log("drugi pt")
+  }
+
   const handleArrayChange = () => {
     const newUser = IAMUser;
-    if(IAMUser.email.length > 0 && !props.validateEmail(IAMUser.email)) {
+    if(IAMUser.email.length > 0 && !validateEmail(IAMUser.email)) {
       setIAMUserError('IAM User has  to be an email!');
       return;
     } 
@@ -84,21 +110,26 @@ const AccountForm = (props) => {
   const validateForm = () => {
     if(!name.length > 0) {
       setNameError('Name is required!')  
+      console.log("pao na prvoj");
       return false;
     } 
-    else if(!props.validateEmail(email)) {
+    else if(!validateEmail(email)) {
       setEmailError('This needs to be an email!');
+      console.log("pao na drugoj");
       return false;
-    } else if(props.stage === "Update account") {
+    } else if(stage === "Update account") {  
       const currentAccount = {
         name: name,
         email: email,
         status: status,
-        IAMUsers:IAMUsers,
-        id: props.selectedAccount.id
+        IAMUsers: IAMUsers,
+        id: selectedAccount.id
       }
-      if(JSON.stringify(currentAccount) === JSON.stringify(props.selectedAccount)){ 
+      if(JSON.stringify(currentAccount) === JSON.stringify(initialAccount)){ 
         setUpdateError('User has no changes to update!');
+        console.log("pao na trecoj");
+        console.log(currentAccount);
+        console.log(initialAccount);
         return false;
       }
     }
@@ -117,20 +148,22 @@ const AccountForm = (props) => {
         email: email,
         status: status,
         IAMUsers: IAMUsers,
-        id:props.selectedAccount.id
+        id:selectedAccount.id
+      }
+      if(stage === "Create new account") {
+        setIAMUsers([]);
       }
       setName('');
       setEmail('');
       setStatus('');
       setIAMUser({'email':''});
-      setIAMUsers([]);
       setEmailError('');
       setNameError('');
       setIAMUserError('');
       setIAMUsersRender(renderIAMUsers(null));
-      const returnedAccount = await props.apiFunction(account);
+      const returnedAccount = await apiFunction(account);
       if(!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
-        props.refreshList(returnedAccount, props.stage);
+        refreshList(returnedAccount, stage);
       }
     } catch(error) {
       console.log(error);
@@ -139,7 +172,7 @@ const AccountForm = (props) => {
 
   return (
     <div>
-      <h2>{props.stage}</h2>
+      <h2>{stage}</h2>
       <Form onSubmit={handleSubmit}>
         <FormGroup controlId="name">
           <FormLabel>Name:</FormLabel>
@@ -171,10 +204,10 @@ const AccountForm = (props) => {
           Submit
         </Button>
         {
-          props.stage === "Update account" &&
+          stage === "Update account" &&
           <Button 
               variant="primary" 
-              onClick={() => props.handleViewChange("Create new account", null )}>
+              onClick={() => handleViewChange("Create new account", null )}>
                 Cancel
           </Button>
         }
