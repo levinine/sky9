@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
 import './Form.css';
@@ -151,11 +151,16 @@ const AccountForm = (props) => {
       console.log(error);
     }
   }
-
+  
   return (
     <div>
       <h2>{stage}</h2>
-      <Form onSubmit={handleSubmit}>
+      <Form 
+        onSubmit={handleSubmit} 
+        onKeyPress={e => {
+          if (e.key === 'Enter') 
+            e.preventDefault();
+        }}>
         <FormGroup controlId="name">
           <FormLabel>Name:</FormLabel>
           <FormControl type="text" value={name} onChange={event => setName(event.target.value)} placeholder="Enter name" />
@@ -182,7 +187,7 @@ const AccountForm = (props) => {
           </Button>
           {renderIAMUsers()}
         </Form.Group>
-        <Button  type="submit" variant="primary">
+        <Button  type="submit" variant="primary" >
           Submit
         </Button>
         {
