@@ -15,34 +15,8 @@ const AccountForm = (props) => {
   } = props;
 
   //needed here for initializing IAMUsers in update form
-  const renderIAMUsers = newUser => {    
+  const renderIAMUsers = () => {    
     let users = null;
-    if(newUser != null) {
-      users = IAMUsers.concat([newUser]).map((IAMUser,index) => (
-        <tr key={IAMUser.email}>
-          <td>{index+1}</td>
-          <td>{IAMUser.email}</td>
-          <td>
-            <Button 
-              size="sm" 
-              variant="danger" 
-              onClick={() => deleteIAMUser(index)}
-            >Delete</Button>
-          </td>
-        </tr> ))
-      return(
-        <table id="myTable" width="100%">
-          <tbody>
-            <tr>                    
-              <th>#</th>
-              <th>IAM Users</th> 
-              <th></th>
-            </tr>
-            {users}
-          </tbody>
-        </table>
-      )
-    }
     if(IAMUsers.length > 0) {
       console.log('probo sam sa' + IAMUsers.map(a => a.email));
       users = IAMUsers.map((IAMUser,index) => (
@@ -71,6 +45,7 @@ const AccountForm = (props) => {
         </table>
       )
     }
+    return null;
   }
 
   const [name, setName] = useState(selectedAccount.name);
@@ -94,7 +69,7 @@ const AccountForm = (props) => {
     setEmail(selectedAccount.email);
     setStatus(selectedAccount.status);
     setIAMUsers(selectedAccount.IAMUsers);
-    renderIAMUsers(null);
+    renderIAMUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props]);
 
