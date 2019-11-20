@@ -1,10 +1,7 @@
 # Sky9
-
+UI React application
 ## Prerequisites
     - NodeJS
-To create a project with React, run:
-### `npm create-react-app my-app`
-
 ## Available Scripts
 
 In the project directory, you can run:

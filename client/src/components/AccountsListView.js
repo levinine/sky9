@@ -18,15 +18,18 @@ const AccountsListView = (props) => {
   const columns = [{
     Header: 'Name',
     accessor: 'name',
+    Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
   }, {
     Header: 'Email',
     accessor: 'email',
+    Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
   }, {
     Header: 'Status',
     accessor: 'status',
+    Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
   }, {
     Cell: row => (
-      <div>
+      <div  style={{ textAlign: "center" }}>
          <Button 
           variant="primary" 
           onClick={ e => handleViewChange("Update account", row.original)}>
