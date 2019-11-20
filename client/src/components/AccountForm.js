@@ -18,7 +18,18 @@ const AccountForm = (props) => {
   const renderIAMUsers = newUser => {    
     let users = null;
     if(newUser != null) {
-      users = IAMUsers.concat([newUser]).map((IAMUser,index) => <tr key={IAMUser.email}><td>{index+1}</td><td>{IAMUser.email}</td><td><Button size="sm" variant="danger"  onClick={() => deleteIAMUser(index)}>Delete</Button></td></tr> )
+      users = IAMUsers.concat([newUser]).map((IAMUser,index) => (
+        <tr key={IAMUser.email}>
+          <td>{index+1}</td>
+          <td>{IAMUser.email}</td>
+          <td>
+            <Button 
+              size="sm" 
+              variant="danger" 
+              onClick={() => deleteIAMUser(index)}
+            >Delete</Button>
+          </td>
+        </tr> ))
       return(
         <table id="myTable" width="100%">
           <tbody>
@@ -29,13 +40,24 @@ const AccountForm = (props) => {
             </tr>
             {users}
           </tbody>
-      </table>
+        </table>
       )
     }
     if(IAMUsers.length > 0) {
-      console.log('probo sam');
-      users = IAMUsers.map((IAMUser,index) => <tr key={IAMUser.email}><td>{index+1}</td><td>{IAMUser.email}</td><td><Button size="sm" variant="danger" onClick={() => deleteIAMUser(index)} >Delete</Button></td></tr> )
-      console.log(users);
+      console.log('probo sam sa' + IAMUsers.map(a => a.email));
+      users = IAMUsers.map((IAMUser,index) => (
+        <tr key={IAMUser.email}>
+          <td>{index+1}</td>
+          <td>{IAMUser.email}</td>
+          <td>
+            <Button 
+              size="sm" 
+              variant="danger" 
+              onClick={() => deleteIAMUser(index)}
+            >Delete</Button>
+          </td>
+        </tr> )
+      )
       return(
         <table id= "myTable" width="100%">
           <tbody>
@@ -56,8 +78,7 @@ const AccountForm = (props) => {
   const [status, setStatus] = useState(selectedAccount.status);
   const [IAMUser, setIAMUser] = useState({'email':''});
   const [IAMUsers, setIAMUsers] = useState(selectedAccount.IAMUsers);
-  const [IAMUsersRender, setIAMUsersRender] = useState(renderIAMUsers(null));
-  
+
   const [updateError, setUpdateError] = useState(null);
   const [IAMUserError, setIAMUserError] = useState(null);
   const [emailError, setEmailError] = useState(null);
@@ -73,18 +94,15 @@ const AccountForm = (props) => {
     setEmail(selectedAccount.email);
     setStatus(selectedAccount.status);
     setIAMUsers(selectedAccount.IAMUsers);
-    setIAMUsersRender(renderIAMUsers(null));
-    console.log('ofjjjj');
+    renderIAMUsers(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props]);
+
 
   const deleteIAMUser = index => {
     const newIAMUsersArray = IAMUsers;
     newIAMUsersArray.splice(index,1);
-    setIAMUsers(newIAMUsersArray);
-    console.log("prvi pt")
-    setIAMUsersRender(renderIAMUsers(null));
-    console.log("drugi pt")
+    setIAMUsers([...newIAMUsersArray]);
   }
 
   const handleArrayChange = () => {
@@ -101,7 +119,6 @@ const AccountForm = (props) => {
       setIAMUsers(IAMUsers.concat([newUser]));
       setIAMUser({"email": ''});
       setIAMUserError('');
-      setIAMUsersRender(renderIAMUsers(newUser));
     } else {
       setIAMUserError('IAM User can\'t be empty');
     }
@@ -110,12 +127,10 @@ const AccountForm = (props) => {
   const validateForm = () => {
     if(!name.length > 0) {
       setNameError('Name is required!')  
-      console.log("pao na prvoj");
       return false;
     } 
     else if(!validateEmail(email)) {
       setEmailError('This needs to be an email!');
-      console.log("pao na drugoj");
       return false;
     } else if(stage === "Update account") {  
       const currentAccount = {
@@ -127,9 +142,6 @@ const AccountForm = (props) => {
       }
       if(JSON.stringify(currentAccount) === JSON.stringify(initialAccount)){ 
         setUpdateError('User has no changes to update!');
-        console.log("pao na trecoj");
-        console.log(currentAccount);
-        console.log(initialAccount);
         return false;
       }
     }
@@ -160,7 +172,6 @@ const AccountForm = (props) => {
       setEmailError('');
       setNameError('');
       setIAMUserError('');
-      setIAMUsersRender(renderIAMUsers(null));
       const returnedAccount = await apiFunction(account);
       if(!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
         refreshList(returnedAccount, stage);
@@ -198,7 +209,7 @@ const AccountForm = (props) => {
           <Button onClick={handleArrayChange} variant="primary">
             Add user
           </Button>
-          {IAMUsersRender}
+          {renderIAMUsers()}
         </Form.Group>
         <Button  type="submit" variant="primary">
           Submit
