@@ -7,16 +7,19 @@ const AccountForm = (props) => {
 
   //needed here for initializing IAMUsers in update form
   const renderIAMUsers = newUser => {
+    
     let users = null;
     if(newUser != null) {
       users = IAMUsers.concat([newUser]).map((IAMUser,index) => <tr key={IAMUser.email}><td>{index+1}</td><td>{IAMUser.email}</td></tr> )
       return(
         <table width="100%">
-          <tr>                    
-            <th>#</th>
-            <th>IAM Users</th>  
-          </tr>
-          {users}
+          <tbody>
+            <tr>                    
+              <th>#</th>
+              <th>IAM Users</th>  
+            </tr>
+            {users}
+          </tbody>
       </table>
       )
     }
@@ -24,11 +27,13 @@ const AccountForm = (props) => {
       users = IAMUsers.map((IAMUser,index) => <tr key={IAMUser.email}><td>{index+1}</td><td>{IAMUser.email}</td></tr> )
       return(
         <table width="100%">
-          <tr>                    
-            <th>#</th>
-            <th>IAM Users</th>  
-          </tr>
-          {users}
+          <tbody>
+            <tr>                    
+              <th>#</th>
+              <th>IAM Users</th>  
+            </tr>
+            {users}
+          </tbody>
         </table>
       )
     }
