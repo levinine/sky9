@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
 import './Form.css';
@@ -58,20 +58,18 @@ const AccountForm = (props) => {
   const [IAMUserError, setIAMUserError] = useState(null);
   const [emailError, setEmailError] = useState(null);
   const [nameError, setNameError] = useState(null);
-
-  let initialAccount = null;
+  
   useEffect(() => {
-    initialAccount = selectedAccount
-  }, [])
-
-  useEffect(() => {
+    setIAMUsers(selectedAccount.IAMUsers);
     setName(selectedAccount.name);
     setEmail(selectedAccount.email);
     setStatus(selectedAccount.status);
-    setIAMUsers(selectedAccount.IAMUsers);
-    renderIAMUsers();
+    setUpdateError(null);
+    setIAMUserError(null);
+    setEmailError(null);
+    setNameError(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props]);
+  }, [selectedAccount]);
 
 
   const deleteIAMUser = index => {
@@ -107,7 +105,7 @@ const AccountForm = (props) => {
     else if(!validateEmail(email)) {
       setEmailError('This needs to be an email!');
       return false;
-    } else if(stage === "Update account") {  
+    } else if(stage === "Update account") {
       const currentAccount = {
         name: name,
         email: email,
@@ -115,7 +113,7 @@ const AccountForm = (props) => {
         IAMUsers: IAMUsers,
         id: selectedAccount.id
       }
-      if(JSON.stringify(currentAccount) === JSON.stringify(initialAccount)){ 
+      if(JSON.stringify(currentAccount) === JSON.stringify(selectedAccount)){ 
         setUpdateError('User has no changes to update!');
         return false;
       }
@@ -137,9 +135,7 @@ const AccountForm = (props) => {
         IAMUsers: IAMUsers,
         id:selectedAccount.id
       }
-      if(stage === "Create new account") {
-        setIAMUsers([]);
-      }
+      if(stage === "Create new account") setIAMUsers([]);
       setName('');
       setEmail('');
       setStatus('');
