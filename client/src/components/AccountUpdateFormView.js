@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import AccountForm from './AccountForm';
 import { updateAccount, getAccount } from '../service/accountService';
 
-const UpdateAccountView = props => {
+const AccountUpdateFormView = props => {
   return <AccountForm
     stage={"Update account"} 
     selectedAccount={props.selectedAccount} 
@@ -15,11 +15,11 @@ const UpdateAccountView = props => {
   />  
 }
 
-UpdateAccountView.propTypes = {
+AccountUpdateFormView.propTypes = {
   selectedAccount: PropTypes.object.isRequired,
   validateEmail: PropTypes.func.isRequired,
   refreshList: PropTypes.func.isRequired,
   handleViewChange: PropTypes.func.isRequired 
 }
 
-export default UpdateAccountView;
+export default AccountUpdateFormView;

@@ -37,7 +37,8 @@ const AccountForm = (props) => {
       };
       fetch();
     }
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAccount.id])
 
   useEffect(() => {
     setIAMUsers(selectedAccount.IAMUsers);
@@ -58,9 +59,10 @@ const AccountForm = (props) => {
     setIAMUsers([...newIAMUsersArray]);
   }
 
+  
   const handleArrayChange = () => {
     const newUser = IAMUser;
-    if(IAMUser.email.length > 0 && !validateEmail(IAMUser.email)) {
+    if(!validateEmail(IAMUser.email)) {
       setIAMUserError('IAM User has  to be an email!');
       return;
     } 
@@ -105,10 +107,7 @@ const AccountForm = (props) => {
 
   const handleSubmit = async event => {
     event.preventDefault();
-    if(await !validateForm()){
-      console.log("pao sam");
-      return;
-    }
+    if(await !validateForm()) return;
     try {
       const account = {
         name: name,
@@ -117,27 +116,34 @@ const AccountForm = (props) => {
         IAMUsers: IAMUsers,
         id:selectedAccount.id
       }
-      if(stage === "Create new account") setIAMUsers([]);
-      setName('');
-      setEmail('');
-      setStatus('');
-      setIAMUser({'email':''});
-      setEmailError('');
-      setNameError('');
-      setIAMUserError('');
       const returnedAccount = await apiFunction(account);
       if(!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
-        refreshList(returnedAccount, stage);
+        refreshList();
+        refreshForm();
       }
     } catch(error) {
       console.log(error);
     }
   }
 
+  const refreshForm = () => {
+    if(stage === "Create new account") {
+      setIAMUsers([]);
+      setName('');
+      setEmail('');
+      setStatus('');
+      setIAMUser({'email':''});
+    }
+    setEmailError('');
+    setNameError('');
+    setIAMUserError('');
+    setUpdateError('');
+  }
+
+
   const renderIAMUsers = () => {    
-    let users = null;
     if(IAMUsers.length > 0) {
-      users = IAMUsers.map((IAMUser,index) => (
+      const users = IAMUsers.map((IAMUser,index) => (
         <tr key={IAMUser.email}>
           <td>{index+1}</td>
           <td>{IAMUser.email}</td>
@@ -223,7 +229,9 @@ AccountForm.propTypes = {
   selectedAccount: PropTypes.object.isRequired,
   validateEmail: PropTypes.func.isRequired,
   refreshList: PropTypes.func.isRequired,
-  apiFunction: PropTypes.func.isRequired
+  apiFunction: PropTypes.func.isRequired,
+  handleViewChange: PropTypes.func,
+  getAccount: PropTypes.func
 }
 
 export default AccountForm;
