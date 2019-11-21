@@ -94,8 +94,6 @@ const AccountForm = (props) => {
         IAMUsers: IAMUsers,
         id: selectedAccount.id
       }
-      console.log(JSON.stringify(originalAccount));
-      console.log(JSON.stringify(currentAccount));
       if(lodash.isEqual(originalAccount, currentAccount)){ 
         setUpdateError('User has no changes to update!');
         return false;

@@ -4,7 +4,7 @@ import AccountsView from './containers/AccountsView';
 import ErrorNotFound from './components/ErrorNotFound'
 import AuthenticatedRoute from './components/Routes/AuthenticatedRoute';
 export default function Routes() {
-  
+
     const token = localStorage.getItem('token');
     return (
       <Switch>
