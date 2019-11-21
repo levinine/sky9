@@ -3,6 +3,7 @@ import {Modal, Button} from 'react-bootstrap'
 
 const DeleteModalDialog = props => {
     const showModal = props.show != null
+    
     const {
         handleClose,
         handleDelete,
@@ -10,6 +11,7 @@ const DeleteModalDialog = props => {
         message,
         buttonMessage
     } = props;
+
     return (
         <Modal show={showModal} onHide={handleClose}>
                 <Modal.Header closeButton>
