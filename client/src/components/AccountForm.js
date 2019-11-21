@@ -22,7 +22,8 @@ const AccountForm = (props) => {
   const [status, setStatus] = useState(selectedAccount.status);
   const [IAMUser, setIAMUser] = useState({'email':''});
   const [IAMUsers, setIAMUsers] = useState(selectedAccount.IAMUsers);
-
+  
+  const [successMessage, setSuccessMessage] = useState(null);
   const [updateError, setUpdateError] = useState(null);
   const [IAMUserError, setIAMUserError] = useState(null);
   const [emailError, setEmailError] = useState(null);
@@ -48,6 +49,7 @@ const AccountForm = (props) => {
     setIAMUserError(null);
     setEmailError(null);
     setNameError(null);
+    setSuccessMessage(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccount]);
 
@@ -216,6 +218,7 @@ const AccountForm = (props) => {
           </Button>
         }
         {updateError}
+        {successMessage}
       </Form>
     </div>
   );
