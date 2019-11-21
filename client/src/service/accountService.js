@@ -10,10 +10,10 @@ const getAccounts = async () => {
   return [];
 }
 
-const getAccount =  id => {
+const getAccount = async id => {
   try{
-      const get =  API.get("accounts",  "/accounts/" + id)
-      return get;
+      const get =  await API.get("accounts",  "/accounts/" + id)
+      return get.Item;
   }catch(error){
       console.log(error);
   }

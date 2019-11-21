@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import AccountsListView from '../components/AccountsListView';
 import AccountCreateFormView from '../components/AccountCreateFormView';
 import AccountUpdateFormView from '../components/AccountUpdateFormView';
-import { getAccounts, deleteAccount } from '../service/accountService';
+import { getAccounts, deleteAccount, getAccount } from '../service/accountService';
 
 export default class AccountsView extends Component {
   constructor() {
@@ -30,8 +30,8 @@ export default class AccountsView extends Component {
    })
   }
 
-  handleViewChange = (showStage, selectedAccount) => {  
-    if(selectedAccount === null) {
+  handleViewChange = async (showStage, accountID) => {  
+    if(accountID === null) {
       this.setState({
         show:showStage,
         account:{
@@ -43,7 +43,8 @@ export default class AccountsView extends Component {
         }
       })
       return;
-    }
+    } 
+    const selectedAccount  = await getAccount(accountID);
     this.setState({
       show: showStage,
       account: {

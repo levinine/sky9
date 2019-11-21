@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
+import lodash from 'lodash';
 import './Form.css';
+
 
 const AccountForm = (props) => {
 
@@ -11,43 +13,11 @@ const AccountForm = (props) => {
     validateEmail,
     refreshList,
     apiFunction,
-    handleViewChange
+    handleViewChange,
+    getAccount
   } = props;
 
-  //needed here for initializing IAMUsers in update form
-  const renderIAMUsers = () => {    
-    let users = null;
-    if(IAMUsers.length > 0) {
-      console.log('probo sam sa' + IAMUsers.map(a => a.email));
-      users = IAMUsers.map((IAMUser,index) => (
-        <tr key={IAMUser.email}>
-          <td>{index+1}</td>
-          <td>{IAMUser.email}</td>
-          <td>
-            <Button 
-              size="sm" 
-              variant="danger" 
-              onClick={() => deleteIAMUser(index)}
-            >Delete</Button>
-          </td>
-        </tr> )
-      )
-      return(
-        <table id= "myTable" width="100%">
-          <tbody>
-            <tr>                    
-              <th>#</th>
-              <th>IAM Users</th>
-              <th></th>  
-            </tr>
-            {users}
-          </tbody>
-        </table>
-      )
-    }
-    return null;
-  }
-
+  const [originalAccount, setOriginalAccount] = useState(null);
   const [name, setName] = useState(selectedAccount.name);
   const [email, setEmail] = useState(selectedAccount.email);
   const [status, setStatus] = useState(selectedAccount.status);
@@ -59,6 +29,16 @@ const AccountForm = (props) => {
   const [emailError, setEmailError] = useState(null);
   const [nameError, setNameError] = useState(null);
   
+  
+  useEffect(() => {
+    if(stage === "Update account") {
+      async function fetch(){ 
+        setOriginalAccount(await getAccount(selectedAccount.id));
+      };
+      fetch();
+    }
+  }, [])
+
   useEffect(() => {
     setIAMUsers(selectedAccount.IAMUsers);
     setName(selectedAccount.name);
@@ -105,7 +85,7 @@ const AccountForm = (props) => {
     else if(!validateEmail(email)) {
       setEmailError('This needs to be an email!');
       return false;
-    } else if(stage === "Update account") {
+    } else if(stage === "Update account") {    
       const currentAccount = {
         name: name,
         email: email,
@@ -113,7 +93,9 @@ const AccountForm = (props) => {
         IAMUsers: IAMUsers,
         id: selectedAccount.id
       }
-      if(JSON.stringify(currentAccount) === JSON.stringify(selectedAccount)){ 
+      console.log(JSON.stringify(originalAccount));
+      console.log(JSON.stringify(currentAccount));
+      if(lodash.isEqual(originalAccount, currentAccount)){ 
         setUpdateError('User has no changes to update!');
         return false;
       }
@@ -123,8 +105,8 @@ const AccountForm = (props) => {
 
   const handleSubmit = async event => {
     event.preventDefault();
-    if(!validateForm()){
-      console.log("pao sa");
+    if(await !validateForm()){
+      console.log("pao sam");
       return;
     }
     try {
@@ -150,6 +132,38 @@ const AccountForm = (props) => {
     } catch(error) {
       console.log(error);
     }
+  }
+
+  const renderIAMUsers = () => {    
+    let users = null;
+    if(IAMUsers.length > 0) {
+      users = IAMUsers.map((IAMUser,index) => (
+        <tr key={IAMUser.email}>
+          <td>{index+1}</td>
+          <td>{IAMUser.email}</td>
+          <td>
+            <Button 
+              size="sm" 
+              variant="danger" 
+              onClick={() => deleteIAMUser(index)}
+            >Delete</Button>
+          </td>
+        </tr> )
+      )
+      return(
+        <table id= "myTable" width="100%">
+          <tbody>
+            <tr>                    
+              <th>#</th>
+              <th>IAM Users</th>
+              <th></th>  
+            </tr>
+            {users}
+          </tbody>
+        </table>
+      )
+    }
+    return null;
   }
   
   return (

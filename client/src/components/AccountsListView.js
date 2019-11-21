@@ -32,7 +32,7 @@ const AccountsListView = (props) => {
       <div  style={{ textAlign: "center" }}>
          <Button 
           variant="primary" 
-          onClick={ e => handleViewChange("Update account", row.original)}>
+          onClick={ e => handleViewChange("Update account", row.original.id)}>
             Edit
         </Button>
         <Button 

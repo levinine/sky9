@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import AccountForm from './AccountForm';
-import { updateAccount } from '../service/accountService';
+import { updateAccount, getAccount } from '../service/accountService';
 
 const UpdateAccountView = props => {
   return <AccountForm
@@ -10,6 +10,7 @@ const UpdateAccountView = props => {
     validateEmail={props.validateEmail}
     refreshList={props.refreshList}
     apiFunction={updateAccount}
+    getAccount={getAccount}
     handleViewChange={props.handleViewChange}
   />  
 }
