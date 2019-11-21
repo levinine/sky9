@@ -2,6 +2,20 @@ service: sky9
 
 provider:
   name: aws
+  iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DescribeTable
+          - dynamodb:Query
+          - dynamodb:Scan
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
+        Resource:
+          Fn::GetAtt
+        - Account
+        - Arn
   runtime: nodejs10.x
   stage: ${opt:stage, "default"}
   region: eu-west-2
