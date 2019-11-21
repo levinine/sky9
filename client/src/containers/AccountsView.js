@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import AccountsListView from '../components/AccountsListView';
 import AccountCreateFormView from '../components/AccountCreateFormView';
 import AccountUpdateFormView from '../components/AccountUpdateFormView';
-import { getAccounts, deleteAccount } from '../service/accountService';
+import { getAccounts, deleteAccount, getAccount } from '../service/accountService';
 
 export default class AccountsView extends Component {
   constructor() {
@@ -21,7 +21,15 @@ export default class AccountsView extends Component {
   }
 
   async componentDidMount() {
-   const accounts = await getAccounts();
+   this.fetchAccounts();
+  }
+
+  refreshList = () => {
+    this.fetchAccounts();
+  }
+
+  fetchAccounts = async () => {
+  const accounts = await getAccounts();
    if(accounts === null) {
     return;
    }
@@ -30,8 +38,8 @@ export default class AccountsView extends Component {
    })
   }
 
-  handleViewChange = (showStage, selectedAccount) => {  
-    if(selectedAccount === null) {
+  handleViewChange = async (showStage, accountID) => {  
+    if(accountID === null) {
       this.setState({
         show:showStage,
         account:{
@@ -43,7 +51,8 @@ export default class AccountsView extends Component {
         }
       })
       return;
-    }
+    } 
+    const selectedAccount  = await getAccount(accountID);
     this.setState({
       show: showStage,
       account: {
@@ -66,27 +75,7 @@ export default class AccountsView extends Component {
     return re.test(email);
   }
 
-  refreshList = (account, action) => {
-    if(action === "Create new account"){
-      this.setState({
-        accounts: this.state.accounts.concat(account)
-      })
-    } else if (action === "delete") {
-      this.setState({
-        accounts: this.state.accounts.filter(a => a.id !== account)
-      })
-    } else if (action === "Update account") {
-      const accountIndex = this.state.accounts.findIndex(acc => acc.id === account.id);
-      this.setState((oldState) => {
-          const newAccountList = [...oldState.accounts];
-          newAccountList[accountIndex] = account;
-          return { 
-            accounts: newAccountList,
-            account: newAccountList[accountIndex]
-          };
-      })
-    }
-  }
+ 
 
   render() {     
     return (

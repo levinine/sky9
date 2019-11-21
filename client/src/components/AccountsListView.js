@@ -15,44 +15,10 @@ const AccountsListView = (props) => {
     refreshList
   } = props;
 
-  const columns = [{
-    Header: 'Name',
-    accessor: 'name',
-    Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
-  }, {
-    Header: 'Email',
-    accessor: 'email',
-    Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
-  }, {
-    Header: 'Status',
-    accessor: 'status',
-    Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
-  }, {
-    Cell: row => (
-      <div  style={{ textAlign: "center" }}>
-         <Button 
-          variant="primary" 
-          onClick={ e => handleViewChange("Update account", row.original)}>
-            Edit
-        </Button>
-        <Button 
-          variant ="danger" 
-          onClick={() => setDeleteAccountID(row.original.id) }>
-            Delete
-        </Button> 
-       
-      </div>
-  )
-  }]
-
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredList, setFilteredList] = useState(accounts);
   const [deleteAccountID, setDeleteAccountID] = useState(null);
   
-  const handleChange = event => {
-    setSearchTerm(event.target.value);
-  }
-
   useEffect(() => {
     const results = accounts.filter(account =>{
       const lowerCaseSearchTerm = (searchTerm).toLowerCase();
@@ -64,6 +30,42 @@ const AccountsListView = (props) => {
     setFilteredList(results);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, accounts])
+
+  const handleChange = event => {
+    setSearchTerm(event.target.value);
+  }
+
+  const columns = [{
+    Header: 'Name',
+    accessor: 'name',
+    Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
+    }, {
+      Header: 'Email',
+      accessor: 'email',
+      Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
+    }, {
+      Header: 'Status',
+      accessor: 'status',
+      Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
+    }, 
+    {
+      Cell: row => (
+        <div  style={{ textAlign: "center" }}>
+          <Button 
+            variant="primary" 
+            onClick={ e => handleViewChange("Update account", row.original.id)}>
+              Edit
+          </Button>
+          <Button 
+            variant ="danger" 
+            onClick={() => setDeleteAccountID(row.original.id) }>
+              Delete
+          </Button> 
+        
+        </div>
+      )
+    }
+  ]
 
   return (
     <div>

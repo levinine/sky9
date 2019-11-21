@@ -1,25 +1,146 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
-import './Form.css';
+import lodash from 'lodash';
+import './AccountForm.css';
+
 
 const AccountForm = (props) => {
-
   const {
     stage,
     selectedAccount,
     validateEmail,
     refreshList,
     apiFunction,
-    handleViewChange
+    handleViewChange,
+    getAccount
   } = props;
 
-  //needed here for initializing IAMUsers in update form
+  const [originalAccount, setOriginalAccount] = useState(null);
+  const [name, setName] = useState(selectedAccount.name);
+  const [email, setEmail] = useState(selectedAccount.email);
+  const [status, setStatus] = useState(selectedAccount.status);
+  const [IAMUser, setIAMUser] = useState({'email':''});
+  const [IAMUsers, setIAMUsers] = useState(selectedAccount.IAMUsers);
+
+  const [updateError, setUpdateError] = useState(null);
+  const [IAMUserError, setIAMUserError] = useState(null);
+  const [emailError, setEmailError] = useState(null);
+  const [nameError, setNameError] = useState(null);
+  
+  
+  useEffect(() => {
+    if(stage === "Update account") {
+      async function fetch(){ 
+        setOriginalAccount(await getAccount(selectedAccount.id));
+      };
+      fetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAccount.id])
+
+  useEffect(() => {
+    setIAMUsers(selectedAccount.IAMUsers);
+    setName(selectedAccount.name);
+    setEmail(selectedAccount.email);
+    setStatus(selectedAccount.status);
+    setUpdateError(null);
+    setIAMUserError(null);
+    setEmailError(null);
+    setNameError(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAccount]);
+
+
+  const deleteIAMUser = index => {
+    const newIAMUsersArray = IAMUsers;
+    newIAMUsersArray.splice(index,1);
+    setIAMUsers([...newIAMUsersArray]);
+  }
+
+  
+  const handleArrayChange = () => {
+    const newUser = IAMUser;
+    if(!validateEmail(IAMUser.email)) {
+      setIAMUserError('IAM User has  to be an email!');
+      return;
+    } 
+    if (IAMUsers.filter(i => i.email === IAMUser.email).length > 0) {
+      setIAMUserError('IAM User already exists!');
+      return;
+    }
+    if(newUser.email.length > 0) {
+      setIAMUsers(IAMUsers.concat([newUser]));
+      setIAMUser({"email": ''});
+      setIAMUserError('');
+    } else {
+      setIAMUserError('IAM User can\'t be empty');
+    }
+  }
+
+  const validateForm = () => {
+    if(!name.length > 0) {
+      setNameError('Name is required!')  
+      return false;
+    } 
+    else if(!validateEmail(email)) {
+      setEmailError('This needs to be an email!');
+      return false;
+    } else if(stage === "Update account") {    
+      const currentAccount = {
+        name: name,
+        email: email,
+        status: status,
+        IAMUsers: IAMUsers,
+        id: selectedAccount.id
+      }
+      if(lodash.isEqual(originalAccount, currentAccount)){ 
+        setUpdateError('User has no changes to update!');
+        return false;
+      }
+    }
+    return true;
+  }
+
+  const handleSubmit = async event => {
+    event.preventDefault();
+    if(await !validateForm()) return;
+    try {
+      const account = {
+        name: name,
+        email: email,
+        status: status,
+        IAMUsers: IAMUsers,
+        id:selectedAccount.id
+      }
+      const returnedAccount = await apiFunction(account);
+      if(!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
+        refreshList();
+        refreshForm();
+      }
+    } catch(error) {
+      console.log(error);
+    }
+  }
+
+  const refreshForm = () => {
+    if(stage === "Create new account") {
+      setIAMUsers([]);
+      setName('');
+      setEmail('');
+      setStatus('');
+      setIAMUser({'email':''});
+    }
+    setEmailError('');
+    setNameError('');
+    setIAMUserError('');
+    setUpdateError('');
+  }
+
+
   const renderIAMUsers = () => {    
-    let users = null;
     if(IAMUsers.length > 0) {
-      console.log('probo sam sa' + IAMUsers.map(a => a.email));
-      users = IAMUsers.map((IAMUser,index) => (
+      const users = IAMUsers.map((IAMUser,index) => (
         <tr key={IAMUser.email}>
           <td>{index+1}</td>
           <td>{IAMUser.email}</td>
@@ -46,110 +167,6 @@ const AccountForm = (props) => {
       )
     }
     return null;
-  }
-
-  const [name, setName] = useState(selectedAccount.name);
-  const [email, setEmail] = useState(selectedAccount.email);
-  const [status, setStatus] = useState(selectedAccount.status);
-  const [IAMUser, setIAMUser] = useState({'email':''});
-  const [IAMUsers, setIAMUsers] = useState(selectedAccount.IAMUsers);
-
-  const [updateError, setUpdateError] = useState(null);
-  const [IAMUserError, setIAMUserError] = useState(null);
-  const [emailError, setEmailError] = useState(null);
-  const [nameError, setNameError] = useState(null);
-  
-  useEffect(() => {
-    setIAMUsers(selectedAccount.IAMUsers);
-    setName(selectedAccount.name);
-    setEmail(selectedAccount.email);
-    setStatus(selectedAccount.status);
-    setUpdateError(null);
-    setIAMUserError(null);
-    setEmailError(null);
-    setNameError(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAccount]);
-
-
-  const deleteIAMUser = index => {
-    const newIAMUsersArray = IAMUsers;
-    newIAMUsersArray.splice(index,1);
-    setIAMUsers([...newIAMUsersArray]);
-  }
-
-  const handleArrayChange = () => {
-    const newUser = IAMUser;
-    if(IAMUser.email.length > 0 && !validateEmail(IAMUser.email)) {
-      setIAMUserError('IAM User has  to be an email!');
-      return;
-    } 
-    if (IAMUsers.filter(i => i.email === IAMUser.email).length > 0) {
-      setIAMUserError('IAM User already exists!');
-      return;
-    }
-    if(newUser.email.length > 0) {
-      setIAMUsers(IAMUsers.concat([newUser]));
-      setIAMUser({"email": ''});
-      setIAMUserError('');
-    } else {
-      setIAMUserError('IAM User can\'t be empty');
-    }
-  }
-
-  const validateForm = () => {
-    if(!name.length > 0) {
-      setNameError('Name is required!')  
-      return false;
-    } 
-    else if(!validateEmail(email)) {
-      setEmailError('This needs to be an email!');
-      return false;
-    } else if(stage === "Update account") {
-      const currentAccount = {
-        name: name,
-        email: email,
-        status: status,
-        IAMUsers: IAMUsers,
-        id: selectedAccount.id
-      }
-      if(JSON.stringify(currentAccount) === JSON.stringify(selectedAccount)){ 
-        setUpdateError('User has no changes to update!');
-        return false;
-      }
-    }
-    return true;
-  }
-
-  const handleSubmit = async event => {
-    event.preventDefault();
-    if(!validateForm()){
-      console.log("pao sa");
-      return;
-    }
-    try {
-      const account = {
-        name: name,
-        email: email,
-        status: status,
-        IAMUsers: IAMUsers,
-        id:selectedAccount.id
-      }
-      if(stage === "Create new account") setIAMUsers([]);
-      setName('');
-      setEmail('');
-      setStatus('');
-      setIAMUser({'email':''});
-      setEmailError('');
-      setNameError('');
-      setIAMUserError('');
-      const returnedAccount = await apiFunction(account);
-      if(!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
-        refreshList(returnedAccount, stage);
-      }
-    } catch(error) {
-      console.log(error);
-    }
   }
   
   return (
@@ -209,7 +226,9 @@ AccountForm.propTypes = {
   selectedAccount: PropTypes.object.isRequired,
   validateEmail: PropTypes.func.isRequired,
   refreshList: PropTypes.func.isRequired,
-  apiFunction: PropTypes.func.isRequired
+  apiFunction: PropTypes.func.isRequired,
+  handleViewChange: PropTypes.func,
+  getAccount: PropTypes.func
 }
 
 export default AccountForm;
