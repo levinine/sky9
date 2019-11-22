@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
+import { Form, FormGroup, FormLabel, FormControl, Button, Alert } from 'react-bootstrap';
 import lodash from 'lodash';
 import './AccountForm.css';
 
@@ -75,8 +75,6 @@ const AccountForm = (props) => {
       setIAMUsers(IAMUsers.concat([newUser]));
       setIAMUser({"email": ''});
       setIAMUserError('');
-    } else {
-      setIAMUserError('IAM User can\'t be empty');
     }
   }
 
@@ -119,6 +117,11 @@ const AccountForm = (props) => {
       if(!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
         refreshList();
         refreshForm();
+        if(stage === "Update account") {
+          setSuccessMessage("You have successfully updated account " + account.name);
+        } else {
+          setSuccessMessage("You have successfully added account " + account.name);
+        }
       }
     } catch(error) {
       console.log(error);
@@ -214,11 +217,17 @@ const AccountForm = (props) => {
           <Button 
               variant="primary" 
               onClick={() => handleViewChange("Create new account", null )}>
-                Cancel
+                Create new account
           </Button>
         }
         {updateError}
-        {successMessage}
+        <Alert 
+          variant="success" 
+          show={successMessage} 
+          onClose={() => setSuccessMessage(null)} 
+          dismissible> 
+          {successMessage}
+        </Alert>
       </Form>
     </div>
   );
