@@ -12,7 +12,6 @@ const redirect = () => {
 };
 
 const AuthenticatedRoute = ({ component: C, token, ...rest }) => {
-  console.log(token);
   return (
     <Route
       {...rest}
