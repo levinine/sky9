@@ -22,6 +22,7 @@ const getAccounts = async () => {
     const accounts = await accountService.getAccounts();
     return responseHandler(accounts);
   } catch(error) {
+    console.log(error)
     return errorHandler(error);
   }
 };

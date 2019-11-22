@@ -35,7 +35,7 @@
       "/node_modules/"
     ],
     "globals": {
-      "API_ENDPOINT": "http://localhost:3000"
+      "API_ENDPOINT": "https://dludyym8kf.execute-api.eu-west-2.amazonaws.com/dev"
     }
   }
 }

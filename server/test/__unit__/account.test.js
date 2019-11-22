@@ -23,6 +23,7 @@ let testAccount = {
 
 describe('Create Account API Test', () => {
     it('should return the created account', async () => {
+        console.log(API_ENDPOINT)
         const res = await request(API_ENDPOINT)
         .post('/accounts')
         .send(createAccount)
