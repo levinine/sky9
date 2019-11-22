@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Form, FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
+import { Form, FormGroup, FormLabel, FormControl, Button, Alert } from 'react-bootstrap';
 import lodash from 'lodash';
 import './AccountForm.css';
 
@@ -22,7 +22,8 @@ const AccountForm = (props) => {
   const [status, setStatus] = useState(selectedAccount.status);
   const [IAMUser, setIAMUser] = useState({'email':''});
   const [IAMUsers, setIAMUsers] = useState(selectedAccount.IAMUsers);
-
+  
+  const [successMessage, setSuccessMessage] = useState(null);
   const [updateError, setUpdateError] = useState(null);
   const [IAMUserError, setIAMUserError] = useState(null);
   const [emailError, setEmailError] = useState(null);
@@ -48,6 +49,7 @@ const AccountForm = (props) => {
     setIAMUserError(null);
     setEmailError(null);
     setNameError(null);
+    setSuccessMessage(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccount]);
 
@@ -57,34 +59,38 @@ const AccountForm = (props) => {
     newIAMUsersArray.splice(index,1);
     setIAMUsers([...newIAMUsersArray]);
   }
-
   
+  const onShowAlert = (setFunction, value) =>{
+    setFunction(value)
+    window.setTimeout(()=>{
+      setFunction(null)
+    },5000)  
+  }
+
   const handleArrayChange = () => {
     const newUser = IAMUser;
     if(!validateEmail(IAMUser.email)) {
-      setIAMUserError('IAM User has  to be an email!');
+      onShowAlert(setIAMUserError, 'IAM User has  to be an email!');
       return;
     } 
     if (IAMUsers.filter(i => i.email === IAMUser.email).length > 0) {
-      setIAMUserError('IAM User already exists!');
+      onShowAlert(setIAMUserError, 'IAM User already exists!');
       return;
     }
     if(newUser.email.length > 0) {
       setIAMUsers(IAMUsers.concat([newUser]));
       setIAMUser({"email": ''});
-      setIAMUserError('');
-    } else {
-      setIAMUserError('IAM User can\'t be empty');
+      setIAMUserError(null);
     }
   }
-
+  
   const validateForm = () => {
     if(!name.length > 0) {
-      setNameError('Name is required!')  
+      onShowAlert(setNameError, 'Name is required!')  
       return false;
     } 
     else if(!validateEmail(email)) {
-      setEmailError('This needs to be an email!');
+      onShowAlert(setEmailError, 'This needs to be an email!');
       return false;
     } else if(stage === "Update account") {    
       const currentAccount = {
@@ -95,7 +101,7 @@ const AccountForm = (props) => {
         id: selectedAccount.id
       }
       if(lodash.isEqual(originalAccount, currentAccount)){ 
-        setUpdateError('User has no changes to update!');
+        onShowAlert(setUpdateError, 'User has no changes to update!');
         return false;
       }
     }
@@ -117,6 +123,13 @@ const AccountForm = (props) => {
       if(!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
         refreshList();
         refreshForm();
+        if(stage === "Update account") {
+          const message = "You have successfully updated account " + account.name;
+          onShowAlert(setSuccessMessage, message);
+        } else {
+          const message = "You have successfully added account " + account.name
+          onShowAlert(setSuccessMessage, message);
+        }
       }
     } catch(error) {
       console.log(error);
@@ -131,10 +144,10 @@ const AccountForm = (props) => {
       setStatus('');
       setIAMUser({'email':''});
     }
-    setEmailError('');
-    setNameError('');
-    setIAMUserError('');
-    setUpdateError('');
+    setEmailError(null);
+    setNameError(null);
+    setIAMUserError(null);
+    setUpdateError(null);
   }
 
 
@@ -168,6 +181,8 @@ const AccountForm = (props) => {
     }
     return null;
   }
+
+ 
   
   return (
     <div>
@@ -181,12 +196,26 @@ const AccountForm = (props) => {
         <FormGroup controlId="name">
           <FormLabel>Name:</FormLabel>
           <FormControl type="text" value={name} onChange={event => setName(event.target.value)} placeholder="Enter name" />
-          {nameError}
+          <Alert 
+            variant="danger" 
+            show={nameError !== null} 
+            onClose={() => setNameError(null)} 
+            dismissible
+          > 
+            {nameError}  
+          </Alert>
         </FormGroup>
         <FormGroup controlId="email">
           <FormLabel>Email:</FormLabel>
-          <FormControl type="text" value={email} onChange={event => setEmail(event.target.value)} placeholder="Enter email" />
-          {emailError}
+          <FormControl type="text" value={email} onChange={event => (event.target.value)} placeholder="Enter email" />
+          <Alert 
+            variant="danger" 
+            show={emailError !== null} 
+            onClose={() => setEmailError(null)} 
+            dismissible
+          > 
+            {emailError}  
+          </Alert>
         </FormGroup>
         <Form.Group controlId="status">
           <Form.Label>Status</Form.Label>
@@ -198,10 +227,17 @@ const AccountForm = (props) => {
         <Form.Group controlId="IAMUser">
           <Form.Label>IAM Users</Form.Label>
           <Form.Control type="text" value={IAMUser.email} onChange={event => setIAMUser({"email": event.target.value})} placeholder="Add IAM User"/>
-          {IAMUserError}
           <Button onClick={handleArrayChange} variant="primary">
             Add user
           </Button>
+          <Alert 
+            variant="danger" 
+            show={IAMUserError !== null}
+            onClose={() => setIAMUserError(null)} 
+            dismissible
+          > 
+            {IAMUserError}  
+          </Alert>
           {renderIAMUsers()}
         </Form.Group>
         <Button  type="submit" variant="primary" >
@@ -212,10 +248,18 @@ const AccountForm = (props) => {
           <Button 
               variant="primary" 
               onClick={() => handleViewChange("Create new account", null )}>
-                Cancel
+                Create new account
           </Button>
         }
         {updateError}
+        <Alert 
+          variant="success" 
+          show={successMessage !== null} 
+          onClose={() => setSuccessMessage(null)} 
+          dismissible
+        > 
+          {successMessage}
+        </Alert>
       </Form>
     </div>
   );

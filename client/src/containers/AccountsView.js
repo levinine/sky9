@@ -75,8 +75,6 @@ export default class AccountsView extends Component {
     return re.test(email);
   }
 
- 
-
   render() {     
     return (
         <div className='container-fluid'>

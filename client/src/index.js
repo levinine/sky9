@@ -17,7 +17,7 @@ Amplify.configure({
       ]
     }
 });
-
+localStorage.setItem('baseUrl', config.stage.baseUrl);
 const checkTokenInURL = function () {
   const hashParameters = window.location.hash.replace('#', '').split('&');
   for (const hashParameter of hashParameters) {

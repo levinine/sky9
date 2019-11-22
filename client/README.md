@@ -24,3 +24,14 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+### `aws s3 sync build s3://sky9.levi9.com --delete`
+
+Deploy build output to S3 bucket for hosting.
+
+### `aws cloudfront create-invalidation --distribution-id E2E4T7WEJHVVQA --paths "/*"`
+
+Invalidate caches.
+
+### npm run deploy
+
+Runs all commands needed for deployment of client. If one of the commands fails the script will stop and will not execute later commands.

@@ -80,10 +80,11 @@ const AccountsListView = (props) => {
       <DeleteModalDialog 
         show={deleteAccountID} 
         handleClose={() => setDeleteAccountID(null)} 
-        handleDelete={() => {
-          deleteAccount(deleteAccountID);
-          refreshList(deleteAccountID, "delete");
+        handleDelete={async () => {
+          await deleteAccount(deleteAccountID);
+          refreshList();
           setDeleteAccountID(null);
+          handleViewChange('Create new account', null);
         }}
         message="Are you sure you want to delete?"
         title="Delete account"
