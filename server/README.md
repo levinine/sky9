@@ -25,10 +25,10 @@ Download local DynamoDB:
 ```sls dynamodb install```
 
 Run local DyanmoDB:  
-```sls dynamodb start```
+```sls dynamodb start --stage local```
 
 Run serverless offline:  
-```sls offline```
+```sls offline --stage local```
 
 Install ESlint globally:  
 ```npm install eslint -g```  

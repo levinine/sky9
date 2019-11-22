@@ -12,12 +12,9 @@ provider:
           - dynamodb:PutItem
           - dynamodb:UpdateItem
           - dynamodb:DeleteItem
-        Resource:
-          Fn::GetAtt
-        - Account
-        - Arn
+        Resource: "*"
   runtime: nodejs10.x
-  stage: ${opt:stage, "default"}
+  stage: ${opt:stage, "dev"}
   region: eu-west-2
   environment: ${file(./sls-env.yml):${self:provider.stage}}
 
@@ -39,6 +36,8 @@ custom:
     start:
       migrate: true
       port: 8000
+  serverless-offline:
+      port: 4000
 
 resources:
   - ${file(./resources/dynamoDB.yml)}

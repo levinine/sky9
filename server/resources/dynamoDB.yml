@@ -2,7 +2,7 @@ Resources:
   Account:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: Account
+      TableName: Account-${self:provider.stage}
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
