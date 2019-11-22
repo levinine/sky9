@@ -84,6 +84,7 @@ const AccountsListView = (props) => {
           await deleteAccount(deleteAccountID);
           refreshList();
           setDeleteAccountID(null);
+          handleViewChange('Create new account', null);
         }}
         message="Are you sure you want to delete?"
         title="Delete account"
