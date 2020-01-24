@@ -20,7 +20,6 @@
     "aws-sdk": "2.563.0",
     "eslint": "^6.6.0",
     "jest": "^24.9.0",
-    "serverless-dotenv-plugin": "^2.1.1",
     "serverless-dynamodb-local": "^0.2.30",
     "serverless-offline": "^5.12.0",
     "supertest": "^4.0.2"
