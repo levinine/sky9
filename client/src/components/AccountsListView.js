@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
 import SearchField from '../components/SearchField';
 import DeleteModalDialog from './DeleteModalDialog';
-import {  Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import AccountsListView from '../components/AccountsListView';
-import AccountCreateFormView from '../components/AccountCreateFormView';
-import AccountUpdateFormView from '../components/AccountUpdateFormView';
+// import AccountCreateFormView from '../components/AccountCreateFormView';
+// import AccountUpdateFormView from '../components/AccountUpdateFormView';
 import { getAccounts, deleteAccount, getAccount } from '../service/accountService';
 
 export default class AccountsView extends Component {
@@ -13,7 +13,6 @@ export default class AccountsView extends Component {
         email: "",
         name: "",
         status: "Active",
-        IAMUsers:[],
         id: ""
       },
       show:'Create new account'
@@ -30,7 +29,7 @@ export default class AccountsView extends Component {
 
   fetchAccounts = async () => {
   const accounts = await getAccounts();
-   if(accounts === null) {
+   if (accounts === null) {
     return;
    }
    this.setState({
@@ -39,14 +38,13 @@ export default class AccountsView extends Component {
   }
 
   handleViewChange = async (showStage, accountID) => {  
-    if(accountID === null) {
+    if (accountID === null) {
       this.setState({
         show:showStage,
         account:{
           email: "",
           name: "",
           status: "Active",
-          IAMUsers:[],
           id: ""
         }
       })
@@ -59,7 +57,6 @@ export default class AccountsView extends Component {
         name: selectedAccount.name,
         email: selectedAccount.email,
         status: selectedAccount.status,
-        IAMUsers: selectedAccount.IAMUsers,
         id: selectedAccount.id
       }
     })
@@ -87,7 +84,7 @@ export default class AccountsView extends Component {
                refreshList={this.refreshList}
                />
             </div>
-            <div className="col">
+            {/* <div className="col">
               { this.state.show === 'Create new account' && 
                 <AccountCreateFormView 
                 refreshList={this.refreshList} 
@@ -100,7 +97,7 @@ export default class AccountsView extends Component {
                 validateEmail={this.validateEmail}
                 refreshList={this.refreshList}
                 handleViewChange={this.handleViewChange} /> }
-            </div>
+            </div> */}
           </div>
         </div>
     )

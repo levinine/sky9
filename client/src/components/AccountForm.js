@@ -20,12 +20,9 @@ const AccountForm = (props) => {
   const [name, setName] = useState(selectedAccount.name);
   const [email, setEmail] = useState(selectedAccount.email);
   const [status, setStatus] = useState(selectedAccount.status);
-  const [IAMUser, setIAMUser] = useState({'email':''});
-  const [IAMUsers, setIAMUsers] = useState(selectedAccount.IAMUsers);
   
   const [successMessage, setSuccessMessage] = useState(null);
   const [updateError, setUpdateError] = useState(null);
-  const [IAMUserError, setIAMUserError] = useState(null);
   const [emailError, setEmailError] = useState(null);
   const [nameError, setNameError] = useState(null);
   
@@ -41,12 +38,10 @@ const AccountForm = (props) => {
   }, [selectedAccount.id])
 
   useEffect(() => {
-    setIAMUsers(selectedAccount.IAMUsers);
     setName(selectedAccount.name);
     setEmail(selectedAccount.email);
     setStatus(selectedAccount.status);
     setUpdateError(null);
-    setIAMUserError(null);
     setEmailError(null);
     setNameError(null);
     setSuccessMessage(null);
@@ -54,12 +49,6 @@ const AccountForm = (props) => {
   }, [selectedAccount]);
 
 
-  const deleteIAMUser = index => {
-    const newIAMUsersArray = IAMUsers;
-    newIAMUsersArray.splice(index,1);
-    setIAMUsers([...newIAMUsersArray]);
-  }
-  
   const onShowAlert = (setFunction, value) =>{
     setFunction(value)
     window.setTimeout(()=>{
@@ -67,40 +56,22 @@ const AccountForm = (props) => {
     },5000)  
   }
 
-  const handleArrayChange = () => {
-    const newUser = IAMUser;
-    if(!validateEmail(IAMUser.email)) {
-      onShowAlert(setIAMUserError, 'IAM User has  to be an email!');
-      return;
-    } 
-    if (IAMUsers.filter(i => i.email === IAMUser.email).length > 0) {
-      onShowAlert(setIAMUserError, 'IAM User already exists!');
-      return;
-    }
-    if(newUser.email.length > 0) {
-      setIAMUsers(IAMUsers.concat([newUser]));
-      setIAMUser({"email": ''});
-      setIAMUserError(null);
-    }
-  }
-  
   const validateForm = () => {
-    if(!name.length > 0) {
-      onShowAlert(setNameError, 'Name is required!')  
+    if (!name.length > 0) {
+      onShowAlert(setNameError, 'Name is required!');  
       return false;
     } 
-    else if(!validateEmail(email)) {
+    else if (!validateEmail(email)) {
       onShowAlert(setEmailError, 'This needs to be an email!');
       return false;
-    } else if(stage === "Update account") {    
+    } else if (stage === "Update account") {    
       const currentAccount = {
         name: name,
         email: email,
         status: status,
-        IAMUsers: IAMUsers,
         id: selectedAccount.id
       }
-      if(lodash.isEqual(originalAccount, currentAccount)){ 
+      if (lodash.isEqual(originalAccount, currentAccount)) { 
         onShowAlert(setUpdateError, 'User has no changes to update!');
         return false;
       }
@@ -110,20 +81,19 @@ const AccountForm = (props) => {
 
   const handleSubmit = async event => {
     event.preventDefault();
-    if(await !validateForm()) return;
+    if (await !validateForm()) return;
     try {
       const account = {
         name: name,
         email: email,
         status: status,
-        IAMUsers: IAMUsers,
         id:selectedAccount.id
-      }
+      };
       const returnedAccount = await apiFunction(account);
-      if(!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
+      if (!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
         refreshList();
         refreshForm();
-        if(stage === "Update account") {
+        if (stage === "Update account") {
           const message = "You have successfully updated account " + account.name;
           onShowAlert(setSuccessMessage, message);
         } else {
@@ -138,52 +108,16 @@ const AccountForm = (props) => {
 
   const refreshForm = () => {
     if(stage === "Create new account") {
-      setIAMUsers([]);
       setName('');
       setEmail('');
       setStatus('');
-      setIAMUser({'email':''});
     }
     setEmailError(null);
     setNameError(null);
-    setIAMUserError(null);
     setUpdateError(null);
   }
 
 
-  const renderIAMUsers = () => {    
-    if(IAMUsers.length > 0) {
-      const users = IAMUsers.map((IAMUser,index) => (
-        <tr key={IAMUser.email}>
-          <td>{index+1}</td>
-          <td>{IAMUser.email}</td>
-          <td>
-            <Button 
-              size="sm" 
-              variant="danger" 
-              onClick={() => deleteIAMUser(index)}
-            >Delete</Button>
-          </td>
-        </tr> )
-      )
-      return(
-        <table id= "myTable" width="100%">
-          <tbody>
-            <tr>                    
-              <th>#</th>
-              <th>IAM Users</th>
-              <th></th>  
-            </tr>
-            {users}
-          </tbody>
-        </table>
-      )
-    }
-    return null;
-  }
-
- 
-  
   return (
     <div>
       <h2>{stage}</h2>
@@ -223,22 +157,6 @@ const AccountForm = (props) => {
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </Form.Control>
-        </Form.Group>
-        <Form.Group controlId="IAMUser">
-          <Form.Label>IAM Users</Form.Label>
-          <Form.Control type="text" value={IAMUser.email} onChange={event => setIAMUser({"email": event.target.value})} placeholder="Add IAM User"/>
-          <Button onClick={handleArrayChange} variant="primary">
-            Add user
-          </Button>
-          <Alert 
-            variant="danger" 
-            show={IAMUserError !== null}
-            onClose={() => setIAMUserError(null)} 
-            dismissible
-          > 
-            {IAMUserError}  
-          </Alert>
-          {renderIAMUsers()}
         </Form.Group>
         <Button  type="submit" variant="primary" >
           Submit
