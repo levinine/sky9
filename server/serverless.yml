@@ -3,25 +3,24 @@ service: sky9
 provider:
   name: aws
   iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:DescribeTable
-          - dynamodb:Query
-          - dynamodb:Scan
-          - dynamodb:GetItem
-          - dynamodb:PutItem
-          - dynamodb:UpdateItem
-          - dynamodb:DeleteItem
-        Resource: "*"
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "*"
   runtime: nodejs10.x
   stage: ${opt:stage, "dev"}
-  region: eu-west-2
+  region: ${opt:region, "eu-west-2"}
   environment: ${file(./sls-env.yml):${self:provider.stage}}
 
 plugins:
   - serverless-dynamodb-local
   - serverless-offline
-  # - serverless-dotenv-plugin
 
 functions:
   GetAccount: ${file(./functions/account.yml):getAccount}
