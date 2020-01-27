@@ -8,18 +8,9 @@ const accountSchema = {
   properties: {
     name: { type: 'string' },
     email: { type: 'string', format: 'email' },
-    status: { type: 'string' },
-    IAMUsers: {
-      type: 'array',
-      items: [{
-        type: 'object',
-        properties: {
-          email: { type: 'string', format: 'email' }
-        }
-      }]
-    }
+    status: { type: 'string' }
   },
-  required: ['name', 'email', 'status', 'IAMUsers'],
+  required: ['name', 'email', 'status'],
   additionalProperties: true
 }
 
@@ -51,8 +42,7 @@ const createAccount = async data => {
       id: uuid.v1(),
       name: data.name,
       email: data.email,
-      status: data.status,
-      IAMUsers: data.IAMUsers
+      status: data.status
     }
   }
   await dynamoDB.put(params).promise();
@@ -66,13 +56,12 @@ const updateAccount = async accountData => {
     Key: {
       'id': accountData.id
     },
-    UpdateExpression: 'SET #name = :name, email = :email, #status= :status, IAMUsers = :IAMUsers',
+    UpdateExpression: 'SET #name = :name, email = :email, #status= :status',
     ExpressionAttributeNames: { '#name': 'name', '#status': 'status' },
     ExpressionAttributeValues: {
       ':name': accountData.name,
       ':email': accountData.email,
-      ':status': accountData.status,
-      ':IAMUsers': accountData.IAMUsers
+      ':status': accountData.status
     },
     ReturnValues: 'ALL_NEW'
   }
