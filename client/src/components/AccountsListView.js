@@ -20,7 +20,7 @@ const AccountsListView = (props) => {
   const [deleteAccountID, setDeleteAccountID] = useState(null);
   
   useEffect(() => {
-    const results = accounts.filter(account =>{
+    const results = (accounts || []).filter(account => {
       const lowerCaseSearchTerm = (searchTerm).toLowerCase();
       return ( 
         account.name.toLowerCase().includes(lowerCaseSearchTerm) ||

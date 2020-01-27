@@ -207,7 +207,7 @@ const AccountForm = (props) => {
         </FormGroup>
         <FormGroup controlId="email">
           <FormLabel>Email:</FormLabel>
-          <FormControl type="text" value={email} onChange={event => (event.target.value)} placeholder="Enter email" />
+          <FormControl type="text" value={email} onChange={event => setEmail(event.target.value)} placeholder="Enter email" />
           <Alert 
             variant="danger" 
             show={emailError !== null} 
