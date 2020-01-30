@@ -158,7 +158,7 @@ const AccountForm = (props) => {
             <option value="Inactive">Inactive</option>
           </Form.Control>
         </Form.Group>
-        <Button  type="submit" variant="primary" >
+        <Button type="submit" variant="primary">
           Submit
         </Button>
         {
