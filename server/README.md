@@ -13,7 +13,9 @@ AWS accounts and users management
 
 ## Deploy  
 
-```sls deploy```
+```sls deploy --stage [test|prod]```
+
+This will build and deploy application to AWS. You must have AWS account configured for this.
 
 ## Services used
   - Lambda
@@ -28,7 +30,7 @@ Download local DynamoDB:
 ```sls dynamodb install```
 
 Run local DyanmoDB:  
-```sls dynamodb start --stage local```
+```sls dynamodb start --migrate --stage local```
 
 Run serverless offline:  
 ```sls offline --stage local```

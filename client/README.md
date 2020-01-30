@@ -1,37 +1,57 @@
 # Sky9
-UI React application
+
+Frontend for Sky9. React application.
+
 ## Prerequisites
     - NodeJS
-## Available Scripts
+    - AWS CLI
 
-In the project directory, you can run:
+## Local development
 
-### `npm start`
+```
+npm start
+```
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Deploying
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+To deploy this application one must first prepare needed infrastructure. This is done only once per environment. Next the app needs to be built and finally deployment can be done.
 
-### `npm run build`
+### Infrastructure
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Infrastructure for hosting UI is created with CloudFront:
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+```
+aws cloudformation deploy --stack-name website-test --template-file website.yml --parameter-overrides Environment=test
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Build for deployment
 
-### `aws s3 sync build s3://sky9.levi9.com --delete`
+```
+npm run build
+```
 
-Deploy build output to S3 bucket for hosting.
 
-### `aws cloudfront create-invalidation --distribution-id E2E4T7WEJHVVQA --paths "/*"`
+Builds the app for production to the `build` folder.
 
-Invalidate caches.
+### Deploy
 
-### npm run deploy
+S3 bucket name and CloudFront distribution ID can be obtained with following commands:
 
-Runs all commands needed for deployment of client. If one of the commands fails the script will stop and will not execute later commands.
+```
+export bucket=$(aws cloudformation describe-stacks \
+  --query "Stacks[?StackName=='website-test'] | [0] | Outputs[?OutputKey=='BucketName'].OutputValue" \
+  --output text \
+  | cut -d'/' -f2)
+
+export distribution=$(aws cloudformation describe-stacks \
+  --query "Stacks[?StackName=='website-test'] | [0] | Outputs[?OutputKey=='CloudfrontDistributionId'].OutputValue" \
+  --output text \
+  | cut -d'/' -f2)
+```
+
+After that you can deploy new version of UI app and invalidate cache:
+
+```
+aws s3 sync build s3://$bucket --delete
+aws cloudfront create-invalidation --distribution-id $distribution --paths "/*"
+```

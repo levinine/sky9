@@ -1,4 +1,3 @@
-const uuid = require('uuid');
 const { dynamoDB } = require('../infrastructure/dynamoDbLib');
 const Ajv = require('ajv');
 const ajv = new Ajv();
@@ -6,20 +5,13 @@ const ajv = new Ajv();
 const accountSchema = {
   type: 'object',
   properties: {
+    id: { type: 'string' },
     name: { type: 'string' },
-    email: { type: 'string', format: 'email' },
-    status: { type: 'string' },
-    IAMUsers: {
-      type: 'array',
-      items: [{
-        type: 'object',
-        properties: {
-          email: { type: 'string', format: 'email' }
-        }
-      }]
-    }
+    email: { type: 'string' },
+    owner: { type: 'string' },
+    budget: { type: 'string' }
   },
-  required: ['name', 'email', 'status', 'IAMUsers'],
+  required: ['id', 'name'],
   additionalProperties: true
 }
 
@@ -44,19 +36,23 @@ const getAccount = id => {
 };
 
 const createAccount = async data => {
-  if (!validate(data)) return validate.errors;
-  const params = {
-    TableName: process.env.ACCOUNT_TABLE,
-    Item: {
-      id: uuid.v1(),
-      name: data.name,
-      email: data.email,
-      status: data.status,
-      IAMUsers: data.IAMUsers
+  if (!validate(data)) {
+    console.log(`Can't store account ${JSON.stringify(data)}, validation failed: ${JSON.stringify(validate.errors)}`);
+    return validate.errors;
+  } else {
+    const params = {
+      TableName: process.env.ACCOUNT_TABLE,
+      Item: {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        owner: data.owner,
+        budget: data.budget
+      }
     }
+    await dynamoDB.put(params).promise();
+    return params.Item;
   }
-  await dynamoDB.put(params).promise();
-  return params.Item;
 };
 
 const updateAccount = async accountData => {
@@ -66,13 +62,13 @@ const updateAccount = async accountData => {
     Key: {
       'id': accountData.id
     },
-    UpdateExpression: 'SET #name = :name, email = :email, #status= :status, IAMUsers = :IAMUsers',
-    ExpressionAttributeNames: { '#name': 'name', '#status': 'status' },
+    UpdateExpression: 'SET #name = :name, #email = :email, #owner = :owner, budget = :budget',
+    ExpressionAttributeNames: { '#name': 'name', '#email': 'email', '#owner': 'owner' },
     ExpressionAttributeValues: {
       ':name': accountData.name,
       ':email': accountData.email,
-      ':status': accountData.status,
-      ':IAMUsers': accountData.IAMUsers
+      ':owner': accountData.owner,
+      ':budget': accountData.budget
     },
     ReturnValues: 'ALL_NEW'
   }
@@ -82,9 +78,7 @@ const updateAccount = async accountData => {
 const deleteAccount = id => {
   const params = {
     TableName: process.env.ACCOUNT_TABLE,
-    Key: {
-      'id': id
-    },
+    Key: { 'id': id },
     ReturnValues: 'ALL_OLD'
   }
   return dynamoDB.delete(params).promise();

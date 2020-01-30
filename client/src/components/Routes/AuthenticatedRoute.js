@@ -1,9 +1,10 @@
-import React from "react";
-import { Route } from "react-router-dom";
-// import config from '../../config';
+import React from 'react';
+import { Route } from 'react-router-dom';
 
-const cognitoUrl = 'https://sky9.auth.eu-west-2.amazoncognito.com';
-const clientId = '7g6mk1iukh6cl2h1mosgo0ucie';
+import config from '../../config';
+
+const cognitoUrl = config.cognitoUrl;
+const clientId = config.cognitoClientId;
 const appUrl = localStorage.getItem('baseUrl');
 
 const redirect = () => {
