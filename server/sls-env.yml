@@ -1,14 +1,13 @@
 default: &default
-  REGION: eu-west-2
+  DYNAMO_DB_REGION: eu-west-1
+  DYNAMO_DB_ENDPOINT: dynamodb.eu-west-1.amazonaws.com
   ACCOUNT_TABLE: Account-${self:provider.stage}
 local:
   <<: *default
-  DB_ENDPOINT: http://localhost:8000
-  API_ENDPOINT: http://localhost:4000
-dev:
-  <<: *default
-  DB_ENDPOINT: dynamodb.eu-west-2.amazonaws.com
+  DYNAMO_DB_ENDPOINT: http://localhost:8000
 test:
+  <<: *default
+prod:
   <<: *default
   
   

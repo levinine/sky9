@@ -13,9 +13,16 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "*"
+    - Effect: Allow
+      Action:
+        - cloudtrail:LookupEvents
+        - organizations:ListAccounts
+        - budgets:*
+        - sts:GetCallerIdentity
+      Resource: "*"
   runtime: nodejs10.x
-  stage: ${opt:stage, "dev"}
-  region: ${opt:region, "eu-west-2"}
+  stage: ${opt:stage, "test"}
+  region: ${opt:region, "eu-west-1"}
   environment: ${file(./sls-env.yml):${self:provider.stage}}
 
 plugins:
@@ -28,10 +35,11 @@ functions:
   CreateAccount: ${file(./functions/account.yml):createAccount}
   UpdateAccount: ${file(./functions/account.yml):updateAccount}
   DeleteAccount: ${file(./functions/account.yml):deleteAccount}
+  SyncAccounts: ${file(./functions/account.yml):syncAccounts}
 custom:
   dynamodb:
     stages:
-      - dev
+      - local
     start:
       migrate: true
       port: 8000

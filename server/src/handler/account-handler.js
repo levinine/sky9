@@ -1,12 +1,13 @@
 'use strict';
 const accountService = require('../service/account-service');
+const accountSyncService = require('../service/account-sync-service');
 const errorHandler = require('../infrastructure/error-handler');
 const responseHandler = require('../infrastructure/response-handler');
 
-const getAccount = async event => {
+const getAccount = async (event) => {
   try {
     const id = event.pathParameters.id;
-    const account = await accountService.getAccount(id)
+    const account = await accountService.getAccount(id);
     return responseHandler(account);
   } catch (error) {
     return errorHandler(error);
@@ -18,22 +19,23 @@ const getAccounts = async () => {
     const accounts = await accountService.getAccounts();
     return responseHandler(accounts);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return errorHandler(error);
   }
 };
 
-const createAccount = async event => {
+const createAccount = async (event) => {
   try {
     const data = JSON.parse(event.body);
     const account = await accountService.createAccount(data);
     return responseHandler(account);
   } catch (error) {
+    console.log('Account creation failed', error);
     return errorHandler(error);
   }
 };
 
-const updateAccount = async event => {
+const updateAccount = async (event) => {
   try {
     const id = event.pathParameters.id;
     const data = JSON.parse(event.body);
@@ -44,24 +46,33 @@ const updateAccount = async event => {
       return errorHandler('Id doesnt match');
     }
   } catch (error) {
+    console.log('Account update failed', error);
     return errorHandler(error);
   }
 };
 
 const deleteAccount = async event => {
+  // sls invoke local -s local -f DeleteAccount -e accountId=[accountId]
+  const id = process.env.accountId;
+  const account = await accountService.deleteAccount(id);
+  return account;
+};
+
+const syncAccounts = async () => {
   try {
-    const id = event.pathParameters.id;
-    const account = await accountService.deleteAccount(id);
-    return responseHandler(account);
+    await accountSyncService.syncAccounts();
+    return responseHandler({ 'status': 'OK' });
   } catch (error) {
+    console.log('Account sync failed', error);
     return errorHandler(error);
   }
-};
+}
 
 module.exports = {
   getAccount,
   getAccounts,
   createAccount,
   updateAccount,
-  deleteAccount
+  deleteAccount,
+  syncAccounts
 };

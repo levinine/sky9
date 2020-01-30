@@ -4,32 +4,34 @@ createAccount:
     - http:
         path: accounts
         method: post
-        cors: true 
+        cors: true
 getAccounts:
   handler: src/handler/account-handler.getAccounts
   events:
     - http:
         path: accounts
         method: get
-        cors: true 
+        cors: true
 getAccount:
   handler: src/handler/account-handler.getAccount
   events:
     - http:
         path: accounts/{id}
         method: get
-        cors: true 
+        cors: true
 updateAccount:
   handler: src/handler/account-handler.updateAccount
   events:
     - http:
         path: accounts/{id}
         method: put
-        cors: true 
+        cors: true
 deleteAccount:
   handler: src/handler/account-handler.deleteAccount
+syncAccounts:
+  handler: src/handler/account-handler.syncAccounts
   events:
     - http:
-        path: accounts/{id}
-        method: delete    
-        cors: true    
+        path: sync
+        method: post
+        cors: true
