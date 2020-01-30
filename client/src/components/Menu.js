@@ -2,8 +2,10 @@ import React from 'react';
 import { Button, Navbar } from 'react-bootstrap';
 import jwt_decode from 'jwt-decode';
 
-const cognitoUrl = 'https://sky9.auth.eu-west-2.amazoncognito.com';
-const clientId = '7g6mk1iukh6cl2h1mosgo0ucie';
+import config from '../config';
+
+const cognitoUrl = config.cognitoUrl;
+const clientId = config.cognitoClientId;
 
 
 const appUrl = localStorage.getItem('baseUrl')
