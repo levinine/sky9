@@ -36,6 +36,7 @@ functions:
   UpdateAccount: ${file(./functions/account.yml):updateAccount}
   DeleteAccount: ${file(./functions/account.yml):deleteAccount}
   SyncAccounts: ${file(./functions/account.yml):syncAccounts}
+  CreateBudget: ${file(./functions/account.yml):createBudget}
 custom:
   dynamodb:
     stages:

@@ -35,3 +35,5 @@ syncAccounts:
         path: sync
         method: post
         cors: true
+createBudget:
+  handler: src/handler/account-handler.createBudget

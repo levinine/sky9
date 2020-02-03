@@ -68,11 +68,20 @@ const syncAccounts = async () => {
   }
 }
 
+const createBudget = async () => {
+  // sls invoke local -s local -f CreateBudget -e accountId=[accountId] -e budget=[budget] -e owner=[owner]
+  const accountId = process.env.accountId;
+  const budget = process.env.budget;
+  const owner = process.env.owner;
+  accountSyncService.createBudget(accountId, accountId, owner, budget);
+}
+
 module.exports = {
   getAccount,
   getAccounts,
   createAccount,
   updateAccount,
   deleteAccount,
-  syncAccounts
+  syncAccounts,
+  createBudget
 };

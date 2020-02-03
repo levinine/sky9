@@ -36,9 +36,7 @@ const syncAccounts = async () => {
         budget: provisionedAccount.budget
       });
       if (provisionedAccount.budget) {
-        console.log(`Account ${provisionedAccount.accountName} -> Creating budget with limit USD${provisionedAccount.budget}`);
-        const b = await budgetRequest(organizationAccount.Id, provisionedAccount.accountName, provisionedAccount.owner, provisionedAccount.budget);
-        await budgets.createBudget(b).promise();
+        await createBudget(organizationAccount.Id, provisionedAccount.accountName, provisionedAccount.owner, provisionedAccount.budget);
       }
     } else {
       console.log(`Account ${provisionedAccount.accountName} already processed`);
@@ -72,6 +70,12 @@ const getOrganizationAccounts = async () => {
   console.log('Finding linked accounts in AWS Organizations');
   const listAccountsResponse = await organizations.listAccounts().promise();
   return listAccountsResponse.Accounts;
+}
+
+const createBudget = async (accountId, accountName, owner, budget) => {
+  console.log(`Account ${accountName} -> Creating budget with limit USD${budget}`);
+  const b = await budgetRequest(accountId, accountName, owner, budget);
+  await budgets.createBudget(b).promise();
 }
 
 const budgetRequest = async (accountId, accountName, owner, budgetUsd) => {
@@ -128,16 +132,21 @@ const notificationsWithSubscribersRequest = (alerts) => {
     };
   });
 }
+
 const alerts = (owner) => {
   return owner ? [
-    { type: 'ACTUAL', threshold: '50', recipients: [`${owner}@levi9.com`] },
-    { type: 'ACTUAL', threshold: '80', recipients: [`${owner}@levi9.com`] },
-    { type: 'ACTUAL', threshold: '100', recipients: [`${owner}@levi9.com`] },
-    { type: 'FORECASTED', threshold: '120', recipients: [`${owner}@levi9.com`] }
+    { type: 'ACTUAL', threshold: '50', recipients: [getOwnerEmail(owner)] },
+    { type: 'ACTUAL', threshold: '80', recipients: [getOwnerEmail(owner)] },
+    { type: 'ACTUAL', threshold: '100', recipients: [getOwnerEmail(owner)] },
+    { type: 'FORECASTED', threshold: '120', recipients: [getOwnerEmail(owner)] }
   ] : [];
 }
 
+const getOwnerEmail = (owner) => {
+  return owner.indexOf('@levi9.com') === -1 ? `${owner}@levi9.com` : owner;
+}
 
 module.exports = {
-  syncAccounts
+  syncAccounts,
+  createBudget
 };
