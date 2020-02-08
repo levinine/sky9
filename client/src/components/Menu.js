@@ -23,11 +23,11 @@ class Menu extends React.Component {
 
   render() {
     return (
-      <Navbar bg="dark" variant="dark" className="justify-content-between">
-        <Navbar.Brand href="/">Sky9</Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        { this.getUser() === null && <Button variant="primary" className="pull-right" onClick={this.login}>Login</Button> }
-        { this.getUser() !== null && <Button variant="primary" className="pull-right" onClick={this.logout}>Logout ({this.getUser()})</Button> }
+      <Navbar bg='dark' variant='dark' className='justify-content-between'>
+        <Navbar.Brand href='/'>Sky9</Navbar.Brand>
+        <Navbar.Toggle aria-controls='responsive-navbar-nav' />
+        { this.getUser() === null && <Button variant='primary' className='pull-right' onClick={this.login}>Login</Button> }
+        { this.getUser() !== null && <Button variant='primary' className='pull-right' onClick={this.logout}>Logout ({this.getUser()})</Button> }
       </Navbar>
     );
   }

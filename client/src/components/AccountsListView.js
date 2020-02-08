@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
-// import SearchField from '../components/SearchField';
 import { Form, FormGroup, Button } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
+import SearchField from '../components/SearchField';
 import { syncAccounts } from '../service/accountService';
 import './AccountsListView.css';
 
@@ -27,7 +27,6 @@ const AccountsListView = (props) => {
       );
     });
     setFilteredList(results);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, accounts]);
 
   const handleChange = event => {
@@ -37,23 +36,23 @@ const AccountsListView = (props) => {
   const columns = [{
       Header: 'Id',
       accessor: 'id',
-      Cell: row => <div style={{ textAlign: "left" }}>{row.value}</div>
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
       Header: 'Name',
       accessor: 'name',
-      Cell: row => <div style={{ textAlign: "left" }}>{row.value}</div>
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
       Header: 'Email',
       accessor: 'email',
-      Cell: row => <div style={{ textAlign: "left" }}>{row.value}</div>
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
       Header: 'Owner',
       accessor: 'owner',
-      Cell: row => <div style={{ textAlign: "left" }}>{row.value}</div>
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
       Header: 'Budget',
       accessor: 'budget',
-      Cell: row => <div style={{ textAlign: "left" }}>{row.value}</div>
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }
   ];
 
@@ -62,21 +61,34 @@ const AccountsListView = (props) => {
     refreshList();
   }
 
+  const newAccount = () => {
+    handleViewChange('Create new account', null);
+  }
+
   return (
     <div>
-      {/* <SearchField onChange={handleChange} searchTerm={searchTerm} /> */}
+      <SearchField onChange={handleChange} searchTerm={searchTerm} />
       <Form>
         <FormGroup>
-          <Button variant="primary" onClick={() => sync()}>Sync</Button>
+          <Button variant='primary' onClick={() => sync()}>Sync</Button>
+          <Button className='ml-2' variant='primary' onClick={() => newAccount()}>New Account</Button>
         </FormGroup>
       </Form>
 
       <ReactTable 
         data={filteredList}
         columns={columns}
-        className="-highlight"
+        className='-highlight'
         showPageSizeOptions={false}
         defaultPageSize={15}
+        getTrProps={(state, rowInfo, column) => {
+          return {
+            onClick: (e) => {
+              console.log(e, state, rowInfo, column);
+              handleViewChange('Update account', rowInfo.original.id);
+            }
+          }
+        }}
       />
     </div>
   )

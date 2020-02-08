@@ -8,174 +8,215 @@ import './AccountForm.css';
 const AccountForm = (props) => {
   const {
     stage,
-    selectedAccount,
-    validateEmail,
+    account,
     refreshList,
     apiFunction,
-    handleViewChange,
-    getAccount
+    handleViewChange
   } = props;
 
   const [originalAccount, setOriginalAccount] = useState(null);
-  const [name, setName] = useState(selectedAccount.name);
-  const [email, setEmail] = useState(selectedAccount.email);
-  const [status, setStatus] = useState(selectedAccount.status);
-  
+  const [name, setName] = useState(account.name);
+  const [email, setEmail] = useState(account.email);
+  const [owner, setOwner] = useState(account.owner);
+  const [budget, setBudget] = useState(account.budget);
+
   const [successMessage, setSuccessMessage] = useState(null);
   const [updateError, setUpdateError] = useState(null);
-  const [emailError, setEmailError] = useState(null);
   const [nameError, setNameError] = useState(null);
-  
-  
+  const [emailError, setEmailError] = useState(null);
+  const [ownerError, setOwnerError] = useState(null);
+  const [budgetError, setBudgetError] = useState(null);
+
+
   useEffect(() => {
-    if(stage === "Update account") {
-      async function fetch(){ 
-        setOriginalAccount(await getAccount(selectedAccount.id));
-      };
-      fetch();
+    if (stage === "Update account") {
+      setOriginalAccount({ ...account });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAccount.id])
+  }, [account, stage]);
 
   useEffect(() => {
-    setName(selectedAccount.name);
-    setEmail(selectedAccount.email);
-    setStatus(selectedAccount.status);
-    setUpdateError(null);
-    setEmailError(null);
-    setNameError(null);
+    setName(account.name);
+    setEmail(account.email);
+    setOwner(account.owner);
+    setBudget(account.budget);
     setSuccessMessage(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAccount]);
+    setUpdateError(null);
+    setNameError(null);
+    setEmailError(null);
+    setOwnerError(null);
+    setBudgetError(null);
+  }, [account]);
 
 
-  const onShowAlert = (setFunction, value) =>{
-    setFunction(value)
-    window.setTimeout(()=>{
-      setFunction(null)
-    },5000)  
+  const displayMessage = (setFunction, value) => {
+    setFunction(value);
+    window.setTimeout(() => {
+      setFunction(null);
+    }, 5000);
   }
 
   const validateForm = () => {
+    let valid = true;
     if (!name.length > 0) {
-      onShowAlert(setNameError, 'Name is required!');  
-      return false;
-    } 
-    else if (!validateEmail(email)) {
-      onShowAlert(setEmailError, 'This needs to be an email!');
-      return false;
-    } else if (stage === "Update account") {    
-      const currentAccount = {
+      displayMessage(setNameError, 'Name is required!');
+      valid = false;
+    }
+    if (!validateEmail(email)) {
+      displayMessage(setEmailError, 'This needs to be an email!');
+      valid = false;
+    }
+    if (!validateEmail(owner)) {
+      displayMessage(setOwnerError, 'This needs to be an email!');
+      valid = false;
+    }
+    if (budget && !/^\d+(\.\d+)?$/.test(budget)) {
+      displayMessage(setBudgetError, 'Must be money value!');
+      valid = false;
+    }
+    if (stage === "Update account") {
+      const currentAccount = Object.assign({ ...originalAccount }, {
         name: name,
         email: email,
-        status: status,
-        id: selectedAccount.id
-      }
-      if (lodash.isEqual(originalAccount, currentAccount)) { 
-        onShowAlert(setUpdateError, 'User has no changes to update!');
-        return false;
+        owner: owner,
+        budget: budget,
+        id: account.id
+      });
+      console.log('original updated', originalAccount, currentAccount);
+      if (lodash.isEqual(originalAccount, currentAccount)) {
+        displayMessage(setUpdateError, 'User has no changes to update!');
+        valid = false;
       }
     }
-    return true;
+    return valid;
   }
 
   const handleSubmit = async event => {
     event.preventDefault();
-    if (await !validateForm()) return;
+    if (!validateForm()) return;
     try {
-      const account = {
+      const a = {
         name: name,
         email: email,
-        status: status,
-        id:selectedAccount.id
+        owner: owner,
+        budget: budget,
+        id: account.id
       };
-      const returnedAccount = await apiFunction(account);
+      const returnedAccount = await apiFunction(a);
       if (!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
         refreshList();
         refreshForm();
         if (stage === "Update account") {
           const message = "You have successfully updated account " + account.name;
-          onShowAlert(setSuccessMessage, message);
+          displayMessage(setSuccessMessage, message);
         } else {
-          const message = "You have successfully added account " + account.name
-          onShowAlert(setSuccessMessage, message);
+          const message = "You have successfully added account " + account.name;
+          displayMessage(setSuccessMessage, message);
         }
       }
-    } catch(error) {
+    } catch (error) {
       console.log(error);
     }
   }
 
+  const handleCancel = () => {
+    handleViewChange('Hide', null);
+  }
+
   const refreshForm = () => {
-    if(stage === "Create new account") {
+    if (stage === "Create new account") {
       setName('');
       setEmail('');
-      setStatus('');
     }
     setEmailError(null);
     setNameError(null);
     setUpdateError(null);
   }
 
+  const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  }
 
   return (
     <div>
       <h2>{stage}</h2>
-      <Form 
-        onSubmit={handleSubmit} 
+      <Form
+        onSubmit={handleSubmit}
         onKeyPress={e => {
-          if (e.key === 'Enter') 
+          if (e.key === 'Enter')
             e.preventDefault();
         }}>
         <FormGroup controlId="name">
           <FormLabel>Name:</FormLabel>
           <FormControl type="text" value={name} onChange={event => setName(event.target.value)} placeholder="Enter name" />
-          <Alert 
-            variant="danger" 
-            show={nameError !== null} 
-            onClose={() => setNameError(null)} 
+          <Alert
+            variant="danger"
+            show={nameError !== null}
+            onClose={() => setNameError(null)}
             dismissible
-          > 
-            {nameError}  
+          >
+            {nameError}
           </Alert>
         </FormGroup>
         <FormGroup controlId="email">
           <FormLabel>Email:</FormLabel>
           <FormControl type="text" value={email} onChange={event => setEmail(event.target.value)} placeholder="Enter email" />
-          <Alert 
-            variant="danger" 
-            show={emailError !== null} 
-            onClose={() => setEmailError(null)} 
+          <Alert
+            variant="danger"
+            show={emailError !== null}
+            onClose={() => setEmailError(null)}
             dismissible
-          > 
-            {emailError}  
+          >
+            {emailError}
           </Alert>
         </FormGroup>
-        <Form.Group controlId="status">
-          <Form.Label>Status</Form.Label>
-          <Form.Control as="select" onChange={event => setStatus(event.target.value)} value={status}>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </Form.Control>
-        </Form.Group>
-        <Button type="submit" variant="primary">
-          Submit
-        </Button>
-        {
-          stage === "Update account" &&
-          <Button 
-              variant="primary" 
-              onClick={() => handleViewChange("Create new account", null )}>
-                Create new account
+        <FormGroup controlId="owner">
+          <FormLabel>Owner:</FormLabel>
+          <FormControl type="text" value={owner} onChange={event => setOwner(event.target.value)} placeholder="Enter owner email" />
+          <Alert
+            variant="danger"
+            show={ownerError !== null}
+            onClose={() => setOwnerError(null)}
+            dismissible
+          >
+            {ownerError}
+          </Alert>
+        </FormGroup>
+        <FormGroup controlId="budget">
+          <FormLabel>Budget:</FormLabel>
+          <FormControl type="text" value={budget} onChange={event => setBudget(event.target.value)} placeholder="Enter budget" />
+          <Alert
+            variant="danger"
+            show={budgetError !== null}
+            onClose={() => setBudgetError(null)}
+            dismissible
+          >
+            {budgetError}
+          </Alert>
+        </FormGroup>
+        <Form.Group controlId="buttons">
+          <Button type="submit" variant="primary">
+            Submit
           </Button>
-        }
-        {updateError}
-        <Alert 
-          variant="success" 
-          show={successMessage !== null} 
-          onClose={() => setSuccessMessage(null)} 
+          <Button className="ml-2" variant="primary" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </Form.Group>
+
+        <Alert
+          variant="danger"
+          show={updateError !== null}
+          onClose={() => setUpdateError(null)}
           dismissible
-        > 
+        >
+          {updateError}
+        </Alert>
+        <Alert
+          variant="success"
+          show={successMessage !== null}
+          onClose={() => setSuccessMessage(null)}
+          dismissible
+        >
           {successMessage}
         </Alert>
       </Form>
@@ -185,12 +226,10 @@ const AccountForm = (props) => {
 
 AccountForm.propTypes = {
   stage: PropTypes.string.isRequired,
-  selectedAccount: PropTypes.object.isRequired,
-  validateEmail: PropTypes.func.isRequired,
+  account: PropTypes.object.isRequired,
   refreshList: PropTypes.func.isRequired,
   apiFunction: PropTypes.func.isRequired,
-  handleViewChange: PropTypes.func,
-  getAccount: PropTypes.func
+  handleViewChange: PropTypes.func
 }
 
 export default AccountForm;

@@ -62,13 +62,13 @@ const updateAccount = async accountData => {
     Key: {
       'id': accountData.id
     },
-    UpdateExpression: 'SET #name = :name, #email = :email, #owner = :owner, budget = :budget',
-    ExpressionAttributeNames: { '#name': 'name', '#email': 'email', '#owner': 'owner' },
+    UpdateExpression: 'SET #name = :name, #email = :email, #owner = :owner, #budget = :budget',
+    ExpressionAttributeNames: { '#name': 'name', '#email': 'email', '#owner': 'owner', '#budget': 'budget' },
     ExpressionAttributeValues: {
       ':name': accountData.name,
       ':email': accountData.email,
       ':owner': accountData.owner,
-      ':budget': accountData.budget
+      ':budget': accountData.budget || null
     },
     ReturnValues: 'ALL_NEW'
   }

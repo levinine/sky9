@@ -1,10 +1,10 @@
-import {API} from 'aws-amplify';
+import { API } from 'aws-amplify';
 
 const getAccounts = async () => {
   try {
-    const accounts = await API.get("accounts", "/accounts");
+    const accounts = await API.get('accounts', '/accounts');
     return accounts.Items;
-  } catch(error) {
+  } catch (error) {
     console.log(error);
   }
   return [];
@@ -12,9 +12,9 @@ const getAccounts = async () => {
 
 const getAccount = async id => {
   try {
-    const get = await API.get("accounts",  "/accounts/" + id);
+    const get = await API.get('accounts', '/accounts/' + id);
     return get.Item;
-  } catch(error) {
+  } catch (error) {
     console.log(error);
   }
 }
@@ -25,16 +25,16 @@ const createAccount = account => {
       body: account
     });
     return createdAccount;
-  } catch(error) {
+  } catch (error) {
     console.log(error);
   }
 }
 
 const updateAccount = async account => {
   try {
-    const updatedAccount = await API.put('accounts', '/accounts/' + account.id, {body:account});
+    const updatedAccount = await API.put('accounts', '/accounts/' + account.id, { body: account });
     return updatedAccount.Attributes;
-  } catch(error){
+  } catch (error) {
     console.log(error);
   }
 }
@@ -42,7 +42,7 @@ const updateAccount = async account => {
 const syncAccounts = async () => {
   try {
     await API.post('accounts', '/sync');
-  } catch(error) {
+  } catch (error) {
     console.log(error);
   }
 }

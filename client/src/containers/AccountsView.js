@@ -1,26 +1,30 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import AccountsListView from '../components/AccountsListView';
-// import AccountCreateFormView from '../components/AccountCreateFormView';
-// import AccountUpdateFormView from '../components/AccountUpdateFormView';
-import { getAccounts, getAccount } from '../service/accountService';
+import AccountForm from '../components/AccountForm';
+import { createAccount, getAccounts, getAccount, updateAccount } from '../service/accountService';
 
 export default class AccountsView extends Component {
   constructor() {
     super();
-    this.state = { 
+    this.state = {
       accounts: [],
-      account:{
-        email: "",
-        name: "",
-        status: "Active",
-        id: ""
-      },
-      show:'Create new account'
+      account: this.emptyAccount(),
+      show: 'Hide'
     };
   }
 
-  async componentDidMount() {
-   this.fetchAccounts();
+  emptyAccount = () => {
+    return {
+      id: '',
+      name: '',
+      email: '',
+      owner: '',
+      budget: ''
+    }
+  }
+
+  componentDidMount() {
+    this.fetchAccounts();
   }
 
   refreshList = () => {
@@ -28,56 +32,46 @@ export default class AccountsView extends Component {
   }
 
   fetchAccounts = async () => {
-  const accounts = await getAccounts();
-   if (accounts === null) {
-    return;
-   }
-   this.setState({
-     accounts
-   })
-  }
-
-  handleViewChange = async (showStage, accountID) => {  
-    if (accountID === null) {
+    const accounts = await getAccounts();
+    if (accounts !== null) {
       this.setState({
-        show:showStage,
-        account:{
-          email: "",
-          name: "",
-          status: "Active",
-          id: ""
-        }
-      })
-      return;
-    } 
-    const selectedAccount  = await getAccount(accountID);
-    this.setState({
-      show: showStage,
-      account: {
-        name: selectedAccount.name,
-        email: selectedAccount.email,
-        status: selectedAccount.status,
-        id: selectedAccount.id
-      }
-    })
+        accounts
+      });
+    }
   }
 
-  validateEmail = (email) => {
-    // eslint-disable-next-line
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
+  handleViewChange = async (showStage, accountId) => {
+    if (accountId === null) {
+      this.setState({
+        show: showStage,
+        account: this.emptyAccount()
+      });
+    } else {
+      const account = await getAccount(accountId);
+      this.setState({
+        show: showStage,
+        account: Object.assign(this.emptyAccount(), account)
+      });
+    }
   }
 
-  render() {     
+  render() {
     return (
         <div className='container-fluid'>
-          <div className="row">
-            <div className="col">
+          <div className='row'>
+            <div className='col'>
               <AccountsListView
-               accounts={this.state.accounts} 
-               handleViewChange={this.handleViewChange}
-               refreshList={this.refreshList}
-               />
+                accounts={this.state.accounts}
+                handleViewChange={this.handleViewChange}
+                refreshList={this.refreshList} />
+            </div>
+            <div className='col-3' hidden={this.state.show === 'Hide'}>
+              <AccountForm
+                stage={this.state.show}
+                account={this.state.account}
+                refreshList={this.refreshList}
+                apiFunction={this.state.show === 'Create new account' ? createAccount : updateAccount}
+                handleViewChange={this.handleViewChange} />
             </div>
           </div>
         </div>

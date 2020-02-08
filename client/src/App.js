@@ -6,7 +6,7 @@ function App(props) {
   return (
    <div>
       <Menu/>
-      <div className="space">
+      <div className='space'>
       <Routes/>
       </div>
    </div>
