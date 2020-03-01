@@ -35,7 +35,7 @@ const AccountsListView = (props) => {
 
   const columns = [{
       Header: 'Id',
-      accessor: 'id',
+      accessor: 'awsAccountId',
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
       Header: 'Name',

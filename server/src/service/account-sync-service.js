@@ -1,152 +1,88 @@
-const AWS = require('aws-sdk');
+const { merge, omit } = require('lodash');
 const accountService = require('./account-service');
-
-const sts = new AWS.STS();
-const organizations = new AWS.Organizations({ region: 'us-east-1' });
-const cloudtrail = new AWS.CloudTrail();
-const budgets = new AWS.Budgets();
-
-let masterAccountId;
-const getMasterAccountId = async () => {
-  if (!masterAccountId) {
-    const callerIdentity = await sts.getCallerIdentity().promise();
-    masterAccountId = callerIdentity.Account;
-  }
-  return masterAccountId;    
-}
+const awsCloudtrailService = require('./aws-cloudtrail-service');
+const awsOrganizationService = require('./aws-organization-service');
+const awsServiceCatalogService = require('./aws-service-catalog-service');
 
 const syncAccounts = async () => {
 
-  const provisionedAccounts = await findProvisionedAccounts();
-  const organizationAccounts = await getOrganizationAccounts();
-  const storedAccounts = (await accountService.getAccounts()).Items;
+  const cloudtrailAccounts = await awsCloudtrailService.findProvisionedAccounts();
+  const serviceCatalogAccounts = await awsServiceCatalogService.listProvisionedAccounts();
+  const organizationAccounts = await awsOrganizationService.getOrganizationAccounts();
+  const dynamoDbAccounts = await accountService.getAccounts();
 
-  for (const provisionedAccount of provisionedAccounts) {
-    const organizationAccount = organizationAccounts.find(a => a.Name === provisionedAccount.accountName);
-    const storedAccount = storedAccounts.find(a => a.name === provisionedAccount.accountName);
-    if (!organizationAccount) {
-      console.log(`Account ${provisionedAccount.accountName} is provisioned in Control Tower but not present in Organization`);
-    } else if (!storedAccount) {
-      console.log(`Account ${provisionedAccount.accountName} -> DynamoDB`);
-      await accountService.createAccount({
-        id: organizationAccount.Id,
-        name: provisionedAccount.accountName,
-        email: provisionedAccount.accountEmail,
-        owner: provisionedAccount.owner,
-        budget: provisionedAccount.budget
-      });
-      if (provisionedAccount.budget) {
-        await createBudget(organizationAccount.Id, provisionedAccount.accountName, provisionedAccount.owner, provisionedAccount.budget);
-      }
+  // console.log(`sync accounts ${JSON.stringify({ cloudtrailAccounts, serviceCatalogAccounts, organizationAccounts, dynamoDbAccounts }, null, 2)}`);
+
+  let syncedAccounts = [];
+  for (const scAccount of serviceCatalogAccounts) {
+    let account = {
+      productName: scAccount.Name,
+      createdTime: scAccount.CreatedTime,
+      history: [{ timestamp: new Date().getTime(), type: 'Sync ServiceCatalog', record: scAccount }]
+    }
+
+    const ctAccount = cloudtrailAccounts.find(cta => cta.provisionToken === scAccount.IdempotencyToken);
+    if (!ctAccount) {
+      console.log(`Account ${JSON.stringify(omit(account,'history'))} not found in CloudTrail logs\n`);
+      account.name = scAccount.Name;
     } else {
-      console.log(`Account ${provisionedAccount.accountName} already processed`);
+      // this happens when the account is provisioned by Sky9
+      // shouldn't be an issue because the name should be in Dynamo and product name should be the same as account name
+      if (ctAccount.name !== 'UNAVAILABLE') {
+        account.name = ctAccount.name;
+        account.owner = ctAccount.owner;
+        account.ownerFirstName = ctAccount.ownerFirstName;
+        account.ownerLastName = ctAccount.ownerLastName;
+        account.email = ctAccount.email;
+        account.budget = ctAccount.budget;
+      } else {
+        account.name = account.productName;
+      }
+      account.createdBy = ctAccount.createdBy;
+      account.history.push({ timestamp: new Date().getTime(), type: 'Sync CloudTrail', record: ctAccount });
+    }
+
+    const orgAccount = organizationAccounts.find(oa => oa.Name === account.name);
+    if (!orgAccount) {
+      console.log(`Account ${JSON.stringify(omit(account,'history'))} not found in Organization\n`);
+    } else {
+      account.awsAccountId = orgAccount.Id;
+      account.history.push({ timestamp: new Date().getTime(), type: 'Sync Organization', record: orgAccount });
+    }
+
+    const dbAccount = dynamoDbAccounts.find(dba => dba.name === account.name);
+    if (!dbAccount) {
+      console.log(`Account ${JSON.stringify(omit(account,'history'))} not found in DynamoDB\n`);
+      account.id = `${new Date().getTime()}`;
+    } else {
+      account.id = dbAccount.id;
+      if (dbAccount.history) {
+        dbAccount.history.push(...account.history);
+        account.history = dbAccount.history;
+      }
+    }
+    account = merge(dbAccount, account);
+    console.log(`Updating account ${JSON.stringify(omit(account,'history'))}`);
+    await accountService.updateAccount(account);
+    syncedAccounts.push(account);
+  }
+  console.log(`Accounts to be put in DynamoDB`, JSON.stringify(syncedAccounts, null, 2), `\n\n`);
+
+  for (orgAccount of organizationAccounts) {
+    // console.log(`Checking Organization account ${orgAccount.Name} [${orgAccount.Id}]`);
+    if (!syncedAccounts.find(a => orgAccount.Id === a.awsAccountId)) {
+      console.log(`Organization account ${orgAccount.Name} [${orgAccount.Id}] not matched with any account`);
+    }
+  }
+  for (dbAccount of dynamoDbAccounts) {
+    // console.log(`Checking DynamoDB account ${dbAccount.name} [${dbAccount.awsAccountId}]`);
+    if (!syncedAccounts.find(a => dbAccount.awsAccountId === a.awsAccountId)) {
+      console.log(`DynamoDB account ${dbAccount.name} [${dbAccount.awsAccountId}] not matched with any account -> deleting`);
+      await accountService.deleteAccount(dbAccount.id);
     }
   }
 }
 
-const findProvisionedAccounts = async () => {
-  console.log('Finding provisioned accounts in CloudTrail');
-
-  const params = {
-    LookupAttributes: [{
-      AttributeKey: 'EventName',
-      AttributeValue: 'ProvisionProduct'
-    }],
-    MaxResults: 50, // max 50
-    // NextToken: 'STRING_VALUE',
-  };
-  const eventsResponse = await cloudtrail.lookupEvents(params).promise();
-  return eventsResponse.Events.map(event => {
-    const eventRequest = JSON.parse(event.CloudTrailEvent);
-    const accountName = eventRequest.requestParameters.provisioningParameters.find(p => p.key === 'AccountName').value;
-    const accountEmail = eventRequest.requestParameters.provisioningParameters.find(p => p.key === 'AccountEmail').value;
-    const owner = eventRequest.requestParameters.tags.find(t => t.key === 'owner');
-    const budget = eventRequest.requestParameters.tags.find(t => t.key === 'budget');
-    return { accountName, accountEmail, owner: owner && owner.value || undefined, budget: budget && budget.value || undefined };
-  });
-}
-
-const getOrganizationAccounts = async () => {
-  console.log('Finding linked accounts in AWS Organizations');
-  const listAccountsResponse = await organizations.listAccounts().promise();
-  return listAccountsResponse.Accounts;
-}
-
-const createBudget = async (accountId, accountName, owner, budget) => {
-  console.log(`Account ${accountName} -> Creating budget with limit USD${budget}`);
-  const b = await budgetRequest(accountId, accountName, owner, budget);
-  await budgets.createBudget(b).promise();
-}
-
-const budgetRequest = async (accountId, accountName, owner, budgetUsd) => {
-  return {
-    AccountId: await getMasterAccountId(),
-    Budget: {
-      BudgetName: `${accountName}-budgets`,
-      BudgetType: 'COST',
-      TimeUnit: 'MONTHLY',
-      BudgetLimit: {
-        Amount: budgetUsd,
-        Unit: 'USD'
-      },
-      CostFilters: { 
-        LinkedAccount: [ accountId ]
-      },
-      CostTypes: {
-        IncludeCredit: false,
-        IncludeDiscount: true,
-        IncludeOtherSubscription: true,
-        IncludeRecurring: true,
-        IncludeRefund: false,
-        IncludeSubscription: true,
-        IncludeSupport: true,
-        IncludeTax: true,
-        IncludeUpfront: true,
-        UseAmortized: false,
-        UseBlended: false
-      },
-      TimePeriod: {
-        End: '2087-06-15T00:00:00.000Z',
-        Start: '2020-01-01T00:00:00.000Z'
-      }
-    },
-    NotificationsWithSubscribers: notificationsWithSubscribersRequest(alerts(owner))
-  };
-}
-
-const notificationsWithSubscribersRequest = (alerts) => {
-  return alerts.map(alert => {
-    return {
-      Notification: {
-        ComparisonOperator: 'GREATER_THAN',
-        NotificationType: alert.type,
-        Threshold: alert.threshold,
-        ThresholdType: 'PERCENTAGE'
-      },
-      Subscribers: alert.recipients.map(recipient => {
-        return {
-          Address: recipient,
-          SubscriptionType: 'EMAIL'
-        };
-      })
-    };
-  });
-}
-
-const alerts = (owner) => {
-  return owner ? [
-    { type: 'ACTUAL', threshold: '50', recipients: [getOwnerEmail(owner)] },
-    { type: 'ACTUAL', threshold: '80', recipients: [getOwnerEmail(owner)] },
-    { type: 'ACTUAL', threshold: '100', recipients: [getOwnerEmail(owner)] },
-    { type: 'FORECASTED', threshold: '120', recipients: [getOwnerEmail(owner)] }
-  ] : [];
-}
-
-const getOwnerEmail = (owner) => {
-  return owner.indexOf('@levi9.com') === -1 ? `${owner}@levi9.com` : owner;
-}
-
 module.exports = {
-  syncAccounts,
-  createBudget
+  syncAccounts
 };

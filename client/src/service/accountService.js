@@ -3,7 +3,7 @@ import { API } from 'aws-amplify';
 const getAccounts = async () => {
   try {
     const accounts = await API.get('accounts', '/accounts');
-    return accounts.Items;
+    return accounts;
   } catch (error) {
     console.log(error);
   }
@@ -12,8 +12,8 @@ const getAccounts = async () => {
 
 const getAccount = async id => {
   try {
-    const get = await API.get('accounts', '/accounts/' + id);
-    return get.Item;
+    const account = await API.get('accounts', '/accounts/' + id);
+    return account;
   } catch (error) {
     console.log(error);
   }
@@ -33,7 +33,7 @@ const createAccount = account => {
 const updateAccount = async account => {
   try {
     const updatedAccount = await API.put('accounts', '/accounts/' + account.id, { body: account });
-    return updatedAccount.Attributes;
+    return updatedAccount;
   } catch (error) {
     console.log(error);
   }

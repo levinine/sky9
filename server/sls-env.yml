@@ -2,6 +2,14 @@ default: &default
   DYNAMO_DB_REGION: eu-west-1
   DYNAMO_DB_ENDPOINT: dynamodb.eu-west-1.amazonaws.com
   ACCOUNT_TABLE: Account-${self:provider.stage}
+  ORGANIZATION: ${file(./config.json):organization}
+  ORGANIZATION_DOMAIN: ${file(./config.json):organizationDomain}
+  AD_TENANT_ID: ${file(./config.json):adTenantId}
+  AD_CLIENT_ID: ${file(./config.json):clientId}
+  AD_CLIENT_SECRET: ${file(./config.json):clientSecret}
+  AD_RUNBOOK_URL: ${file(./config.json):adRunbookUrl}
+  AD_RUNBOOK_KEY: ${file(./config.json):adRunbookKey}
+  LAMBDA_ROLE: arn:aws:iam::#{AWS::AccountId}:role/${self:service}-${self:provider.stage}-${self:provider.region}-lambdaRole
 local:
   <<: *default
   DYNAMO_DB_ENDPOINT: http://localhost:8000
@@ -9,5 +17,3 @@ test:
   <<: *default
 prod:
   <<: *default
-  
-  

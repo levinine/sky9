@@ -16,15 +16,17 @@ const AccountForm = (props) => {
 
   const [originalAccount, setOriginalAccount] = useState(null);
   const [name, setName] = useState(account.name);
-  const [email, setEmail] = useState(account.email);
   const [owner, setOwner] = useState(account.owner);
+  const [ownerFirstName, setOwnerFirstName] = useState(account.ownerFirstName);
+  const [ownerLastName, setOwnerLastName] = useState(account.ownerLastName);
   const [budget, setBudget] = useState(account.budget);
 
   const [successMessage, setSuccessMessage] = useState(null);
   const [updateError, setUpdateError] = useState(null);
   const [nameError, setNameError] = useState(null);
-  const [emailError, setEmailError] = useState(null);
   const [ownerError, setOwnerError] = useState(null);
+  const [ownerFirstNameError, setOwnerFirstNameError] = useState(null);
+  const [ownerLastNameError, setOwnerLastNameError] = useState(null);
   const [budgetError, setBudgetError] = useState(null);
 
 
@@ -36,14 +38,16 @@ const AccountForm = (props) => {
 
   useEffect(() => {
     setName(account.name);
-    setEmail(account.email);
     setOwner(account.owner);
+    setOwnerFirstName(account.ownerFirstName);
+    setOwnerLastName(account.ownerLastName);
     setBudget(account.budget);
     setSuccessMessage(null);
     setUpdateError(null);
     setNameError(null);
-    setEmailError(null);
     setOwnerError(null);
+    setOwnerFirstNameError(null);
+    setOwnerLastNameError(null);
     setBudgetError(null);
   }, [account]);
 
@@ -61,12 +65,16 @@ const AccountForm = (props) => {
       displayMessage(setNameError, 'Name is required!');
       valid = false;
     }
-    if (!validateEmail(email)) {
-      displayMessage(setEmailError, 'This needs to be an email!');
-      valid = false;
-    }
     if (!validateEmail(owner)) {
       displayMessage(setOwnerError, 'This needs to be an email!');
+      valid = false;
+    }
+    if (!ownerFirstName.length > 0) {
+      displayMessage(setOwnerFirstNameError, 'Owner first name is required!');
+      valid = false;
+    }
+    if (!ownerLastName.length > 0) {
+      displayMessage(setOwnerLastNameError, 'Owner last name is required!');
       valid = false;
     }
     if (budget && !/^\d+(\.\d+)?$/.test(budget)) {
@@ -76,7 +84,6 @@ const AccountForm = (props) => {
     if (stage === "Update account") {
       const currentAccount = Object.assign({ ...originalAccount }, {
         name: name,
-        email: email,
         owner: owner,
         budget: budget,
         id: account.id
@@ -96,22 +103,21 @@ const AccountForm = (props) => {
     try {
       const a = {
         name: name,
-        email: email,
         owner: owner,
+        ownerFirstName: ownerFirstName,
+        ownerLastName: ownerLastName,
         budget: budget,
         id: account.id
       };
-      const returnedAccount = await apiFunction(a);
-      if (!(Object.entries(returnedAccount).length === 0 && returnedAccount.constructor === Object)) {
-        refreshList();
-        refreshForm();
-        if (stage === "Update account") {
-          const message = "You have successfully updated account " + account.name;
-          displayMessage(setSuccessMessage, message);
-        } else {
-          const message = "You have successfully added account " + account.name;
-          displayMessage(setSuccessMessage, message);
-        }
+      const executionId = await apiFunction(a);
+      console.log('submit account executionId', executionId);
+      refreshList();
+      if (stage === "Update account") {
+        const message = "You have successfully updated account " + account.name;
+        displayMessage(setSuccessMessage, message);
+      } else {
+        const message = "You have successfully added account " + account.name;
+        displayMessage(setSuccessMessage, message);
       }
     } catch (error) {
       console.log(error);
@@ -120,16 +126,6 @@ const AccountForm = (props) => {
 
   const handleCancel = () => {
     handleViewChange('Hide', null);
-  }
-
-  const refreshForm = () => {
-    if (stage === "Create new account") {
-      setName('');
-      setEmail('');
-    }
-    setEmailError(null);
-    setNameError(null);
-    setUpdateError(null);
   }
 
   const validateEmail = (email) => {
@@ -158,20 +154,8 @@ const AccountForm = (props) => {
             {nameError}
           </Alert>
         </FormGroup>
-        <FormGroup controlId="email">
-          <FormLabel>Email:</FormLabel>
-          <FormControl type="text" value={email} onChange={event => setEmail(event.target.value)} placeholder="Enter email" />
-          <Alert
-            variant="danger"
-            show={emailError !== null}
-            onClose={() => setEmailError(null)}
-            dismissible
-          >
-            {emailError}
-          </Alert>
-        </FormGroup>
         <FormGroup controlId="owner">
-          <FormLabel>Owner:</FormLabel>
+          <FormLabel>Owner email:</FormLabel>
           <FormControl type="text" value={owner} onChange={event => setOwner(event.target.value)} placeholder="Enter owner email" />
           <Alert
             variant="danger"
@@ -180,6 +164,30 @@ const AccountForm = (props) => {
             dismissible
           >
             {ownerError}
+          </Alert>
+        </FormGroup>
+        <FormGroup controlId="ownerFirstName">
+          <FormLabel>Owner first name:</FormLabel>
+          <FormControl type="text" value={ownerFirstName} onChange={event => setOwnerFirstName(event.target.value)} placeholder="Enter owner first name" />
+          <Alert
+            variant="danger"
+            show={ownerFirstNameError !== null}
+            onClose={() => setOwnerFirstNameError(null)}
+            dismissible
+          >
+            {ownerFirstNameError}
+          </Alert>
+        </FormGroup>
+        <FormGroup controlId="ownerLastName">
+          <FormLabel>Owner last name:</FormLabel>
+          <FormControl type="text" value={ownerLastName} onChange={event => setOwnerLastName(event.target.value)} placeholder="Enter owner last name" />
+          <Alert
+            variant="danger"
+            show={ownerLastNameError !== null}
+            onClose={() => setOwnerLastNameError(null)}
+            dismissible
+          >
+            {ownerLastNameError}
           </Alert>
         </FormGroup>
         <FormGroup controlId="budget">

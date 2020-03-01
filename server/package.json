@@ -4,7 +4,8 @@
   "description": "AWS accounts and users management",
   "main": "handler.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -17,15 +18,19 @@
   },
   "homepage": "https://github.com/levinine/sky9#readme",
   "devDependencies": {
-    "aws-sdk": "2.563.0",
+    "aws-sdk": "2.585.0",
     "eslint": "^6.6.0",
     "jest": "^24.9.0",
+    "serverless": "^1.63.0",
     "serverless-dynamodb-local": "^0.2.30",
     "serverless-offline": "^5.12.0",
+    "serverless-pseudo-parameters": "^2.5.0",
+    "serverless-step-functions": "^2.17.1",
     "supertest": "^4.0.2"
   },
   "dependencies": {
-    "ajv": "^6.10.2"
+    "axios": "^0.19.2",
+    "lodash": "^4.17.15"
   },
   "jest": {
     "testEnvironment": "node",

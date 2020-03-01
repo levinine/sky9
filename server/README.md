@@ -1,44 +1,37 @@
-# sky9  
+# Sky9
 
-AWS accounts and users management  
+AWS accounts and users management
 
 ## Prerequisites
   - NodeJS
   - Serverless
-  - Configured AWS account  
+  - Configured AWS account
 
-## Unit Testing  
-
-``` npm test ```
-
-## Deploy  
-
-```sls deploy --stage [test|prod]```
-
-This will build and deploy application to AWS. You must have AWS account configured for this.
-
-## Services used
+## AWS Services used
   - Lambda
   - DynamoDB
   - CloudWatch
   - CloudFormation
-  - API Gateway  
+  - API Gateway
 
-## Run locally  
+## Development
 
-Download local DynamoDB:  
-```sls dynamodb install```
+Run unit tests `npm test`
+Run linter `npm run lint`
 
-Run local DyanmoDB:  
-```sls dynamodb start --migrate --stage local```
+### Run server locally
 
-Run serverless offline:  
-```sls offline --stage local```
+Download local DynamoDB: `sls dynamodb install`
+Run local DyanmoDB: `sls dynamodb start --migrate --stage local`
+Run serverless offline: `sls offline --stage local`
 
-## Linting
+### Useful commands
 
-Install ESlint globally:  
-```npm install eslint -g```  
+Delete account from DynamoDB:
+`sls invoke local -s test -f DeleteAccount -e accountId=[accountId]`
 
-Run ESLint:  
-```eslint .```
+## Deploy
+
+This will build and deploy application to AWS. You must have AWS account configured for this.
+
+```sls deploy --stage [test|prod]```

@@ -1,0 +1,98 @@
+functions:
+  stepCreateAccount:
+    handler: src/handler/account-flow-handler.createAccount
+  stepCreateAdGroup:
+    handler: src/handler/account-flow-handler.createAdGroup
+  stepValidateAdGroup:
+    handler: src/handler/account-flow-handler.validateAdGroup
+  stepCreateAwsAccount:
+    handler: src/handler/account-flow-handler.createAwsAccount
+  stepValidateAwsAccount:
+    handler: src/handler/account-flow-handler.validateAwsAccount
+  stepCreateBudget:
+    handler: src/handler/account-flow-handler.createBudget
+  stepValidateSsoGroup:
+    handler: src/handler/account-flow-handler.validateSsoGroup
+  stepAssignSsoGroup:
+    handler: src/handler/account-flow-handler.assignSsoGroup
+
+stepFunctions:
+  stateMachines:
+    createAccount:
+      events:
+        - http:
+            path: accounts
+            method: post
+            cors: true
+            authorizer:
+              arn: arn:aws:cognito-idp:eu-west-1:#{AWS::AccountId}:userpool/eu-west-1_Yo1oAQUEc
+      name: createAccount-${self:provider.stage}
+      definition:
+        StartAt: Store account in DB
+        States:
+          Store account in DB:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateAccount, Arn]
+            TimeoutSeconds: 60
+            Next: Create AD group
+          Create AD group:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateAdGroup, Arn]
+            TimeoutSeconds: 60
+            Next: Validate AD group created
+          Validate AD group created:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepValidateAdGroup, Arn]
+            TimeoutSeconds: 60
+            Retry:
+              - ErrorEquals:
+                  - NOT_READY
+                IntervalSeconds: 10
+                MaxAttempts: 10
+                BackoffRate: 1
+            Next: Create account in AWS
+          Create account in AWS:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateAwsAccount, Arn]
+            TimeoutSeconds: 60
+            Next: Validate AWS account created
+          Validate AWS account created:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepValidateAwsAccount, Arn]
+            TimeoutSeconds: 60
+            Retry:
+              - ErrorEquals:
+                  - NOT_READY
+                IntervalSeconds: 180
+                MaxAttempts: 10
+                BackoffRate: 1
+            Next: Create AWS Budget
+          Create AWS Budget:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateBudget, Arn]
+            TimeoutSeconds: 60
+            Next: Validate AD group is propagated to AWS SSO
+          Validate AD group is propagated to AWS SSO:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepValidateSsoGroup, Arn]
+            TimeoutSeconds: 60
+            Retry:
+              - ErrorEquals:
+                  - NOT_READY
+                IntervalSeconds: 600
+                MaxAttempts: 10
+                BackoffRate: 1
+            Next: AWS SSO assign group
+          AWS SSO assign group:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepAssignSsoGroup, Arn]
+            TimeoutSeconds: 60
+            End: true

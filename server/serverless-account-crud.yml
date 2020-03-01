@@ -1,0 +1,43 @@
+functions:
+  CreateAccount:
+    handler: src/handler/account-handler.createAccount
+  GetAccounts:
+    handler: src/handler/account-handler.getAccounts
+    events:
+      - http:
+          path: accounts
+          method: get
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:eu-west-1:#{AWS::AccountId}:userpool/eu-west-1_Yo1oAQUEc
+  GetAccount:
+    handler: src/handler/account-handler.getAccount
+    events:
+      - http:
+          path: accounts/{id}
+          method: get
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:eu-west-1:#{AWS::AccountId}:userpool/eu-west-1_Yo1oAQUEc
+  UpdateAccount:
+    handler: src/handler/account-handler.updateAccount
+    events:
+      - http:
+          path: accounts/{id}
+          method: put
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:eu-west-1:#{AWS::AccountId}:userpool/eu-west-1_Yo1oAQUEc
+  DeleteAccount:
+    handler: src/handler/account-handler.deleteAccount
+  SyncAccounts:
+    handler: src/handler/account-handler.syncAccounts
+    events:
+      - http:
+          path: sync
+          method: post
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:eu-west-1:#{AWS::AccountId}:userpool/eu-west-1_Yo1oAQUEc
+  CreateBudget:
+    handler: src/handler/account-handler.createBudget
