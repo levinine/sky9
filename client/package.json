@@ -5,12 +5,7 @@
   "dependencies": {
     "aws-amplify": "^1.2.4",
     "bootstrap": "^4.3.1",
-    "cors": "^2.8.5",
-    "express-fileupload": "^1.1.6-alpha.6",
-    "jwt-decode": "^2.2.0",
     "lodash": "^4.17.15",
-    "md-data-table": "^2.2.0",
-    "mdbreact": "^4.22.1",
     "react": "^16.11.0",
     "react-bootstrap": "^1.0.0-beta.14",
     "react-dom": "^16.11.0",
