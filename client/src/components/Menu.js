@@ -1,24 +1,18 @@
 import React from 'react';
 import { Button, Navbar } from 'react-bootstrap';
-import jwt_decode from 'jwt-decode';
-
-import config from '../config';
-
-const cognitoUrl = config.cognitoUrl;
-const clientId = config.cognitoClientId;
-
-
-const appUrl = localStorage.getItem('baseUrl')
+import { getUser, login, logout } from '../service/authenticationService';
 
 class Menu extends React.Component {
-  logout = () => {
-    localStorage.removeItem('token');
-    window.location.href = `${cognitoUrl}/logout?logout_uri=${appUrl}&client_id=${clientId}`;
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: null
+    }
   }
-
-  getUser = () => {
-    const token = localStorage.getItem('token');
-    return token ? jwt_decode(token).email : null;
+  componentDidMount() {
+    getUser().then(user => {
+      this.setState({ user: user ? user.signInUserSession.idToken.payload.email : null });
+    });
   }
 
   render() {
@@ -26,8 +20,8 @@ class Menu extends React.Component {
       <Navbar bg='dark' variant='dark' className='justify-content-between'>
         <Navbar.Brand href='/'>Sky9</Navbar.Brand>
         <Navbar.Toggle aria-controls='responsive-navbar-nav' />
-        { this.getUser() === null && <Button variant='primary' className='pull-right' onClick={this.login}>Login</Button> }
-        { this.getUser() !== null && <Button variant='primary' className='pull-right' onClick={this.logout}>Logout ({this.getUser()})</Button> }
+        { this.state.user === null && <Button variant='primary' className='pull-right' onClick={login}>Login</Button> }
+        { this.state.user !== null && <Button variant='primary' className='pull-right' onClick={logout}>Logout ({this.state.user})</Button> }
       </Navbar>
     );
   }

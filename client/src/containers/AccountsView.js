@@ -19,6 +19,8 @@ export default class AccountsView extends Component {
       name: '',
       email: '',
       owner: '',
+      ownerFirstName: '',
+      ownerLastName: '',
       budget: ''
     }
   }

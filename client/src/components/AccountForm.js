@@ -31,7 +31,7 @@ const AccountForm = (props) => {
 
 
   useEffect(() => {
-    if (stage === "Update account") {
+    if (stage === 'Update account') {
       setOriginalAccount({ ...account });
     }
   }, [account, stage]);
@@ -81,17 +81,18 @@ const AccountForm = (props) => {
       displayMessage(setBudgetError, 'Must be money value!');
       valid = false;
     }
-    if (stage === "Update account") {
+    if (stage === 'Update account') {
       const currentAccount = Object.assign({ ...originalAccount }, {
         name: name,
         owner: owner,
         budget: budget,
         id: account.id
       });
-      console.log('original updated', originalAccount, currentAccount);
       if (lodash.isEqual(originalAccount, currentAccount)) {
         displayMessage(setUpdateError, 'User has no changes to update!');
         valid = false;
+      } else {
+        console.log('original updated', originalAccount, currentAccount);
       }
     }
     return valid;
@@ -112,11 +113,11 @@ const AccountForm = (props) => {
       const executionId = await apiFunction(a);
       console.log('submit account executionId', executionId);
       refreshList();
-      if (stage === "Update account") {
-        const message = "You have successfully updated account " + account.name;
+      if (stage === 'Update account') {
+        const message = 'You have successfully updated account ' + account.name;
         displayMessage(setSuccessMessage, message);
       } else {
-        const message = "You have successfully added account " + account.name;
+        const message = 'You have successfully added account ' + account.name;
         displayMessage(setSuccessMessage, message);
       }
     } catch (error) {
@@ -142,11 +143,11 @@ const AccountForm = (props) => {
           if (e.key === 'Enter')
             e.preventDefault();
         }}>
-        <FormGroup controlId="name">
+        <FormGroup controlId='name'>
           <FormLabel>Name:</FormLabel>
-          <FormControl type="text" value={name} onChange={event => setName(event.target.value)} placeholder="Enter name" />
+          <FormControl type='text' value={name} onChange={event => setName(event.target.value)} placeholder='Enter name' />
           <Alert
-            variant="danger"
+            variant='danger'
             show={nameError !== null}
             onClose={() => setNameError(null)}
             dismissible
@@ -154,11 +155,11 @@ const AccountForm = (props) => {
             {nameError}
           </Alert>
         </FormGroup>
-        <FormGroup controlId="owner">
+        <FormGroup controlId='owner'>
           <FormLabel>Owner email:</FormLabel>
-          <FormControl type="text" value={owner} onChange={event => setOwner(event.target.value)} placeholder="Enter owner email" />
+          <FormControl type='text' value={owner} onChange={event => setOwner(event.target.value)} placeholder='Enter owner email' />
           <Alert
-            variant="danger"
+            variant='danger'
             show={ownerError !== null}
             onClose={() => setOwnerError(null)}
             dismissible
@@ -166,11 +167,11 @@ const AccountForm = (props) => {
             {ownerError}
           </Alert>
         </FormGroup>
-        <FormGroup controlId="ownerFirstName">
+        <FormGroup controlId='ownerFirstName'>
           <FormLabel>Owner first name:</FormLabel>
-          <FormControl type="text" value={ownerFirstName} onChange={event => setOwnerFirstName(event.target.value)} placeholder="Enter owner first name" />
+          <FormControl type='text' value={ownerFirstName} onChange={event => setOwnerFirstName(event.target.value)} placeholder='Enter owner first name' />
           <Alert
-            variant="danger"
+            variant='danger'
             show={ownerFirstNameError !== null}
             onClose={() => setOwnerFirstNameError(null)}
             dismissible
@@ -178,11 +179,11 @@ const AccountForm = (props) => {
             {ownerFirstNameError}
           </Alert>
         </FormGroup>
-        <FormGroup controlId="ownerLastName">
+        <FormGroup controlId='ownerLastName'>
           <FormLabel>Owner last name:</FormLabel>
-          <FormControl type="text" value={ownerLastName} onChange={event => setOwnerLastName(event.target.value)} placeholder="Enter owner last name" />
+          <FormControl type='text' value={ownerLastName} onChange={event => setOwnerLastName(event.target.value)} placeholder='Enter owner last name' />
           <Alert
-            variant="danger"
+            variant='danger'
             show={ownerLastNameError !== null}
             onClose={() => setOwnerLastNameError(null)}
             dismissible
@@ -190,11 +191,11 @@ const AccountForm = (props) => {
             {ownerLastNameError}
           </Alert>
         </FormGroup>
-        <FormGroup controlId="budget">
+        <FormGroup controlId='budget'>
           <FormLabel>Budget:</FormLabel>
-          <FormControl type="text" value={budget} onChange={event => setBudget(event.target.value)} placeholder="Enter budget" />
+          <FormControl type='text' value={budget} onChange={event => setBudget(event.target.value)} placeholder='Enter budget' />
           <Alert
-            variant="danger"
+            variant='danger'
             show={budgetError !== null}
             onClose={() => setBudgetError(null)}
             dismissible
@@ -202,17 +203,17 @@ const AccountForm = (props) => {
             {budgetError}
           </Alert>
         </FormGroup>
-        <Form.Group controlId="buttons">
-          <Button type="submit" variant="primary">
+        <Form.Group controlId='buttons'>
+          <Button type='submit' variant='primary'>
             Submit
           </Button>
-          <Button className="ml-2" variant="primary" onClick={handleCancel}>
+          <Button className='ml-2' variant='primary' onClick={handleCancel}>
             Cancel
           </Button>
         </Form.Group>
 
         <Alert
-          variant="danger"
+          variant='danger'
           show={updateError !== null}
           onClose={() => setUpdateError(null)}
           dismissible
@@ -220,7 +221,7 @@ const AccountForm = (props) => {
           {updateError}
         </Alert>
         <Alert
-          variant="success"
+          variant='success'
           show={successMessage !== null}
           onClose={() => setSuccessMessage(null)}
           dismissible

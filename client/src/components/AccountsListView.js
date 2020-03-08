@@ -53,6 +53,14 @@ const AccountsListView = (props) => {
       Header: 'Budget',
       accessor: 'budget',
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
+    }, {
+      Header: 'Created time',
+      accessor: 'createdTime',
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
+    }, {
+      Header: 'Created by',
+      accessor: 'createdBy',
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }
   ];
 
