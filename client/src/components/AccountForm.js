@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, FormGroup, FormLabel, FormControl, Button, Alert } from 'react-bootstrap';
 import lodash from 'lodash';
-import './AccountForm.css';
 
 
 const AccountForm = (props) => {

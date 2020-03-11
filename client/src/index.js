@@ -6,7 +6,7 @@ import App from './App';
 import { init as initAuthentication } from './service/authenticationService';
 
 import './index.css';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 initAuthentication();
 

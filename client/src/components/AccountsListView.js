@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
-import { Form, FormGroup, Button } from 'react-bootstrap';
+import { Form, FormGroup, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import SearchField from '../components/SearchField';
 import { syncAccounts } from '../service/accountService';
-import './AccountsListView.css';
 
 const AccountsListView = (props) => {
 
@@ -32,34 +31,58 @@ const AccountsListView = (props) => {
   const handleChange = event => {
     setSearchTerm(event.target.value);
   }
+  const getColumnWidth = (rows, accessor, headerText) => {
+    const maxWidth = 400
+    const magicSpacing = 10
+    const cellLength = Math.max(
+      ...rows.map(row => (`${row[accessor]}` || '').length),
+      headerText.length,
+    )
+    return Math.min(maxWidth, cellLength * magicSpacing)
+  }
 
+  const header = (header) => {
+    return <div style={{ textAlign: 'left' }}>{header}</div>
+  }
   const columns = [{
-      Header: 'Id',
+      Header: header('Id'),
       accessor: 'awsAccountId',
+      width: getColumnWidth(filteredList, 'awsAccountId', 'Id'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
-      Header: 'Name',
+      Header: header('Name'),
       accessor: 'name',
+      width: getColumnWidth(filteredList, 'name', 'Name'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
-      Header: 'Email',
+      Header: header('Email'),
       accessor: 'email',
+      width: getColumnWidth(filteredList, 'email', 'Email'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
-      Header: 'Owner',
+      Header: header('Owner'),
       accessor: 'owner',
+      width: getColumnWidth(filteredList, 'owner', 'Owner'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
-      Header: 'Budget',
+      Header: header('Members'),
+      accessor: 'members',
+      width: getColumnWidth(filteredList, null, 'Members'),
+      Cell: row => <div style={{ textAlign: 'left' }}><OverlayTrigger placement='right' delay={row.value && row.value.length > 0 ? 250 : 100000} overlay={(props) => <Tooltip {...props}>{row.value ? row.value.join(',\n') : ''}</Tooltip>}><span>{row.value ? row.value.length : 0}</span></OverlayTrigger></div>
+    }, {
+      Header: header('Budget'),
       accessor: 'budget',
+      width: getColumnWidth(filteredList, 'budget', 'Budget'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
-      Header: 'Created time',
+      Header: header('Created time'),
       accessor: 'createdTime',
+      width: getColumnWidth(filteredList, 'createdTime', 'Created time'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
-      Header: 'Created by',
+      Header: header('Created by'),
       accessor: 'createdBy',
+      width: getColumnWidth(filteredList, 'createdBy', 'Created by'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }
   ];
@@ -86,7 +109,6 @@ const AccountsListView = (props) => {
       <ReactTable 
         data={filteredList}
         columns={columns}
-        className='-highlight'
         showPageSizeOptions={false}
         defaultPageSize={15}
         getTrProps={(state, rowInfo, column) => {
