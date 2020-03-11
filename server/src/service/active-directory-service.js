@@ -42,6 +42,23 @@ const findGroupByName = async (name) => {
   return group;
 }
 
+const findGroupMemberEmails = async (name) => {
+  const group = await findGroupByName(name);
+  if (group) {
+    const token = await getToken();
+    const members = await axios.get(`${groupsUrl}/${group.id}/members`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }).then(membersResponse => {
+      return membersResponse.data.value;
+    });
+    // console.log('findGroupMembers', JSON.stringify(members, null, 2));
+    return members.filter(member => member['@odata.type'] === '#microsoft.graph.user').map(member => member.mail);
+  }
+  return [];
+}
+
 const execAdRunbook = async (accountName, owner) => {
   const data = {
     'GroupName': `${accountName}-Administrators`,
@@ -68,5 +85,6 @@ const execAdRunbook = async (accountName, owner) => {
 
 module.exports = {
   findGroupByName,
+  findGroupMemberEmails,
   execAdRunbook
 }

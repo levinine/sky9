@@ -3,8 +3,9 @@ const accountService = require('./account-service');
 const awsCloudtrailService = require('./aws-cloudtrail-service');
 const awsOrganizationService = require('./aws-organization-service');
 const awsServiceCatalogService = require('./aws-service-catalog-service');
+const activeDirectoryService = require('./active-directory-service');
 
-const syncAccounts = async () => {
+const syncAccountsInitial = async () => {
 
   const cloudtrailAccounts = await awsCloudtrailService.findProvisionedAccounts();
   const serviceCatalogAccounts = await awsServiceCatalogService.listProvisionedAccounts();
@@ -83,6 +84,42 @@ const syncAccounts = async () => {
   }
 }
 
+const syncAccountsCreatedTime = async () => {
+  const accounts = await accountService.getAccounts();
+  const serviceCatalogAccounts = await awsServiceCatalogService.listProvisionedAccounts();
+  accounts.forEach(async account => {
+    console.log(`\nAccount: ${account.awsAccountId}, createdTime: ${JSON.stringify(account.createdTime)}`);
+    if (account.history) {
+      const oldSync = account.history.find(item => item.type === 'Sync ServiceCatalog');
+      if (oldSync) {
+        const newSync = serviceCatalogAccounts.find(scAccount => scAccount.Id === oldSync.record.Id);
+        console.log(`Found this in ServiceCatalog: ${JSON.stringify(newSync.CreatedTime)}, updating`);
+        await accountService.updateAccount({ id: account.id, createdTime: JSON.stringify(newSync.CreatedTime).replace(/"/g, '') });
+      } else {
+        console.log('Couldn\'t find old sync record');
+      }
+    } else {
+      console.log(`Empty account history.`)
+    }
+  });
+}
+
+const syncAccountsMembers = async () => {
+  const accounts = await accountService.getAccounts();
+  for (account of accounts) {
+    const members = await activeDirectoryService.findGroupMemberEmails(account.name);
+    console.log('syncAccountsMembers: ', account.name, members);
+    await accountService.updateAccount({ id: account.id, members });
+  }
+}
+
+const syncAccounts = async () => {
+  await syncAccountsMembers();
+}
+
 module.exports = {
-  syncAccounts
+  syncAccounts,
+  syncAccountsInitial,
+  syncAccountsCreatedTime,
+  syncAccountsMembers
 };
