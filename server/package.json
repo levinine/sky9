@@ -22,6 +22,7 @@
     "eslint": "^6.6.0",
     "jest": "^24.9.0",
     "serverless": "^1.63.0",
+    "serverless-dashboard": "^1.0.0",
     "serverless-dynamodb-local": "^0.2.30",
     "serverless-offline": "^5.12.0",
     "serverless-pseudo-parameters": "^2.5.0",

@@ -35,6 +35,7 @@ plugins:
   - serverless-dynamodb-local
   - serverless-offline
   - serverless-step-functions
+  - serverless-dashboard
 
 functions:
   - ${file(./serverless-account-create.yml):functions}
