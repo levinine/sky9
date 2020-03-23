@@ -1,0 +1,71 @@
+# AWSTemplateFormatVersion: '2010-09-09'
+# Description: Creates Cognito User pool with configured federation with Active Directory
+Resources:
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: sky9-${self:provider.stage}-${file(./config.json):organization}
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      AccountRecoverySetting:
+          RecoveryMechanisms:
+            - Name: admin_only
+              Priority: 1
+      MfaConfiguration: 'OFF'
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub sky9-${self:provider.stage}-${file(./config.json):organization}-client
+      UserPoolId: !Ref UserPool
+      GenerateSecret: false
+      PreventUserExistenceErrors: ENABLED
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows:
+        - code
+        - implicit
+      AllowedOAuthScopes:
+        - openid
+      CallbackURLs:
+        - http://localhost:3000
+        - https://${cf:website-${self:provider.stage}.CloudfrontEndpoint, ''}
+      LogoutURLs:
+        - https://myapps.microsoft.com/
+      SupportedIdentityProviders:
+        - levi9
+    DependsOn:
+      - UserPoolIdentityProvider
+
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties: 
+      Domain: ${file(./config.json):cognitoDomain}-${self:provider.stage}
+      UserPoolId: !Ref UserPool
+
+  UserPoolIdentityProvider:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Properties: 
+      ProviderName: levi9
+      ProviderType: OIDC
+      UserPoolId: !Ref UserPool
+      AttributeMapping:
+        email: email
+        username: sub
+      ProviderDetails:
+        client_id: ${file(./config.json):adAppClientId}
+        client_secret: ${file(./config.json):adAppClientSecretSso}
+        attributes_request_method: GET
+        oidc_issuer: https://login.microsoftonline.com/${file(./config.json):adTenantId}/v2.0
+        authorize_scopes: openid email
+
+  ApiGatewayAuthorizer: 
+    Type: AWS::ApiGateway::Authorizer
+    Properties: 
+      AuthorizerResultTtlInSeconds: 10
+      IdentitySource: method.request.header.Authorization
+      Name: CognitoAuthorizer
+      RestApiId: 
+        Ref: ApiGatewayRestApi
+      Type: COGNITO_USER_POOLS
+      ProviderARNs: 
+        - {"Fn::Join": ["", ["arn:aws:cognito-idp:", {Ref: "AWS::Region"}, ":", {Ref: "AWS::AccountId"}, ":userpool/", Ref: UserPool]]}

@@ -24,8 +24,7 @@ stepFunctions:
             path: accounts
             method: post
             cors: true
-            authorizer:
-              arn: arn:aws:cognito-idp:eu-west-1:#{AWS::AccountId}:userpool/eu-west-1_Yo1oAQUEc
+            authorizer: ${self:custom.authorizer}
       name: createAccount-${self:provider.stage}
       definition:
         StartAt: Store account in DB

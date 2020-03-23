@@ -8,8 +8,7 @@ functions:
           path: accounts
           method: get
           cors: true
-          authorizer:
-            arn: arn:aws:cognito-idp:eu-west-1:#{AWS::AccountId}:userpool/eu-west-1_Yo1oAQUEc
+          authorizer: ${self:custom.authorizer}
   GetAccount:
     handler: src/handler/account-handler.getAccount
     events:
@@ -17,8 +16,7 @@ functions:
           path: accounts/{id}
           method: get
           cors: true
-          authorizer:
-            arn: arn:aws:cognito-idp:eu-west-1:#{AWS::AccountId}:userpool/eu-west-1_Yo1oAQUEc
+          authorizer: ${self:custom.authorizer}
   UpdateAccount:
     handler: src/handler/account-handler.updateAccount
     events:
@@ -26,8 +24,7 @@ functions:
           path: accounts/{id}
           method: put
           cors: true
-          authorizer:
-            arn: arn:aws:cognito-idp:eu-west-1:#{AWS::AccountId}:userpool/eu-west-1_Yo1oAQUEc
+          authorizer: ${self:custom.authorizer}
   DeleteAccount:
     handler: src/handler/account-handler.deleteAccount
   SyncAccounts:
@@ -37,7 +34,6 @@ functions:
           path: sync
           method: post
           cors: true
-          authorizer:
-            arn: arn:aws:cognito-idp:eu-west-1:#{AWS::AccountId}:userpool/eu-west-1_Yo1oAQUEc
+          authorizer: ${self:custom.authorizer}
   CreateBudget:
     handler: src/handler/account-handler.createBudget

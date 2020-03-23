@@ -45,6 +45,9 @@ stepFunctions:
   ${file(./serverless-account-create.yml):stepFunctions}
 
 custom:
+  authorizer:
+    type: COGNITO_USER_POOLS
+    authorizerId: { Ref: ApiGatewayAuthorizer }
   dynamodb:
     stages:
       - local
@@ -56,3 +59,4 @@ custom:
 
 resources:
   - ${file(./resources/dynamoDB.yml)}
+  - ${file(./resources/cognito.yml)}

@@ -1,0 +1,11 @@
+{
+  "organization": "Sky9 organization name, e.g. AWS-Test-SRB. Used to prefix AWS account names and AD group names",
+  "organizationDomain": "Domain used for email addresses",
+  "cognitoDomain": "Prefix of Cognito subdomain. This value is appended with Serverless stage, must be lower case, globally unique, can't contain word aws e.g. sky9-test-srb",
+  "adTenantId": "Id of AD tenant",
+  "adAppClientSecretGraph": "AD registered application: secret for using this application to interact with GraphAPI",
+  "adAppClientSecretSso": "AD registered application: secret for using this application for SSO",
+  "adAppClientId": "AD registered application: clientId",
+  "adRunbookUrl": "URL of Runbook which creates AD group and assigns owner. This group gets propagated to AWS SSO",
+  "adRunbookKey": "API key for Runbook"
+}
