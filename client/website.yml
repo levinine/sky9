@@ -37,7 +37,7 @@ Resources:
     Properties:
       DistributionConfig:
         Origins:
-          - DomainName: !Join ['', [!Ref WebsiteBucket, '.s3.amazonaws.com']]
+          - DomainName: !Join ['', [!Ref WebsiteBucket, '.s3-eu-west-1.amazonaws.com']]
             Id: S3Origin
             S3OriginConfig:
               OriginAccessIdentity:

@@ -6,5 +6,5 @@ jspm_packages
 .serverless
 .dynamodb
 
-server/config.json
+server/config.*json
 server/temp
