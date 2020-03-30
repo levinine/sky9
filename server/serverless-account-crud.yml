@@ -35,5 +35,13 @@ functions:
           method: post
           cors: true
           authorizer: ${self:custom.authorizer}
+  SyncBudgets:
+    handler: src/handler/account-handler.syncBudgets
+    events:
+      - http:
+          path: sync-budgets
+          method: post
+          cors: true
+          authorizer: ${self:custom.authorizer}
   CreateBudget:
     handler: src/handler/account-handler.createBudget

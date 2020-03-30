@@ -63,6 +63,17 @@ const syncAccounts = async () => {
   }
 }
 
+const syncBudgets = async () => {
+  try {
+    const result = await accountSyncService.syncBudgets();
+    return okResponse(result);
+  } catch (error) {
+    console.log('Budget sync failed', error);
+    return errorResponse(error);
+  }
+}
+
+
 const createBudget = async () => {
   const accountId = process.env.accountId;
   const budget = process.env.budget;
@@ -77,5 +88,6 @@ module.exports = {
   updateAccount,
   deleteAccount,
   syncAccounts,
+  syncBudgets,
   createBudget
 };

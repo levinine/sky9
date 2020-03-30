@@ -4,6 +4,7 @@ const awsCloudtrailService = require('./aws-cloudtrail-service');
 const awsOrganizationService = require('./aws-organization-service');
 const awsServiceCatalogService = require('./aws-service-catalog-service');
 const activeDirectoryService = require('./active-directory-service');
+const awsBudgetService = require('./aws-budget-service');
 
 const syncAccountsInitial = async () => {
 
@@ -117,9 +118,44 @@ const syncAccounts = async () => {
   await syncAccountsMembers();
 }
 
+const syncBudgets = async () => {
+  const budgets = await awsBudgetService.getAllBudgets();
+  // console.log('all budgets', JSON.stringify(budgets, null, 2));
+  const accounts = await accountService.getAccounts();
+  for (const account of accounts) {
+    const budget = budgets.find(budget => budget.CostFilters && budget.CostFilters.LinkedAccount && budget.CostFilters.LinkedAccount.includes(account.awsAccountId));
+    if (budget) {
+      if (+account.budget == +budget.BudgetLimit.Amount) {
+        console.log(`Budget in sync for account ${account.name} [${account.awsAccountId}]`);
+      } else {
+        console.log(`Budget not in sync for account ${account.name} [${account.awsAccountId}] $${account.budget}`, JSON.stringify(budget, null, 2));
+        await awsBudgetService.deleteBudgetsByAccountId(account.awsAccountId);
+        if (account.budget) {
+          console.log(`Creating budget for account ${account.name} [${account.awsAccountId}] $${account.budget}`);
+          await awsBudgetService.createBudget(account.awsAccountId, account.name, account.owner, account.budget);
+          console.log(`Created`);
+        }
+      }
+      const budgetUpdate = { id: account.id };
+      budgetUpdate.actualSpend = budget.CalculatedSpend && budget.CalculatedSpend.ActualSpend && budget.CalculatedSpend.ActualSpend.Amount || "0";
+      budgetUpdate.forecastedSpend = budget.CalculatedSpend && budget.CalculatedSpend.ForecastedSpend && budget.CalculatedSpend.ForecastedSpend.Amount || "0";
+      await accountService.updateAccount(budgetUpdate);
+    } else {
+      if (account.budget) {
+        console.log(`No budget created for account ${account.name} [${account.awsAccountId}] $${account.budget}. Creating...`);
+        await awsBudgetService.createBudget(account.awsAccountId, account.name, account.owner, account.budget);
+        console.log(`Created`);
+      } else {
+        console.log(`No budget defined for account ${account.name} [${account.awsAccountId}] and none created`);
+      }
+    }
+  }
+}
+
 module.exports = {
   syncAccounts,
   syncAccountsInitial,
   syncAccountsCreatedTime,
-  syncAccountsMembers
+  syncAccountsMembers,
+  syncBudgets
 };

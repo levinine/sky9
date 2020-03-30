@@ -47,10 +47,19 @@ const syncAccounts = async () => {
   }
 }
 
+const syncBudgets = async () => {
+  try {
+    await API.post('accounts', '/sync-budgets');
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export {
   getAccounts,
   getAccount,
   createAccount,
   updateAccount,
-  syncAccounts
+  syncAccounts,
+  syncBudgets
 }

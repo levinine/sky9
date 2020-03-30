@@ -4,7 +4,7 @@ import { Form, FormGroup, Button, Tooltip, OverlayTrigger } from 'react-bootstra
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import SearchField from '../components/SearchField';
-import { syncAccounts } from '../service/accountService';
+import * as accountService from '../service/accountService';
 
 const AccountsListView = (props) => {
 
@@ -18,8 +18,8 @@ const AccountsListView = (props) => {
   const [filteredList, setFilteredList] = useState(accounts);
   
   useEffect(() => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
     const results = (accounts || []).filter(account => {
-      const lowerCaseSearchTerm = (searchTerm).toLowerCase();
       return ( 
         account.name.toLowerCase().includes(lowerCaseSearchTerm) ||
         account.email.toLowerCase().includes(lowerCaseSearchTerm) 
@@ -55,11 +55,6 @@ const AccountsListView = (props) => {
       width: getColumnWidth(filteredList, 'name', 'Name'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
-      Header: header('Email'),
-      accessor: 'email',
-      width: getColumnWidth(filteredList, 'email', 'Email'),
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
-    }, {
       Header: header('Owner'),
       accessor: 'owner',
       width: getColumnWidth(filteredList, 'owner', 'Owner'),
@@ -70,10 +65,10 @@ const AccountsListView = (props) => {
       width: getColumnWidth(filteredList, null, 'Members'),
       Cell: row => <div style={{ textAlign: 'left' }}><OverlayTrigger placement='right' delay={row.value && row.value.length > 0 ? 250 : 100000} overlay={(props) => <Tooltip {...props}>{row.value ? row.value.join(',\n') : ''}</Tooltip>}><span>{row.value ? row.value.length : 0}</span></OverlayTrigger></div>
     }, {
-      Header: header('Budget'),
+      Header: header('Budget $'),
       accessor: 'budget',
-      width: getColumnWidth(filteredList, 'budget', 'Budget'),
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
+      width: 90,
+      Cell: row => <div style={{ textAlign: 'left' }}><span style={{ width: '40px', display: 'inline-block'}}>{row.original.actualSpend === undefined ? '?' : row.original.actualSpend}</span><span> / {row.value}</span></div>
     }, {
       Header: header('Created time'),
       accessor: 'createdTime',
@@ -87,8 +82,12 @@ const AccountsListView = (props) => {
     }
   ];
 
-  const sync = async () => {
-    await syncAccounts();
+  const syncAccounts = async () => {
+    await accountService.syncAccounts();
+    refreshList();
+  }
+  const syncBudgets = async () => {
+    await accountService.syncBudgets();
     refreshList();
   }
 
@@ -101,8 +100,9 @@ const AccountsListView = (props) => {
       <SearchField onChange={handleChange} searchTerm={searchTerm} />
       <Form>
         <FormGroup>
-          <Button variant='primary' onClick={() => sync()}>Sync</Button>
-          <Button className='ml-2' variant='primary' onClick={() => newAccount()}>New Account</Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncAccounts()}>Sync Accounts</Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncBudgets()}>Sync Budgets</Button>
+          <Button className='mr-2' variant='primary' onClick={() => newAccount()}>New Account</Button>
         </FormGroup>
       </Form>
 

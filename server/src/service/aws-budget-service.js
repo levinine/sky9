@@ -14,12 +14,12 @@ const getMasterAccountId = async () => {
 
 const createBudget = async (accountId, accountName, owner, budget) => {
   console.log(`Account ${accountName} -> Creating budget with limit USD${budget}`);
-  const b = await budgetRequest(accountId, accountName, owner, budget);
-  const createBudgetRequest = await budgets.createBudget(b).promise();
-  return createBudgetRequest;
+  const budgetRequest = await createBudgetRequest(accountId, accountName, owner, budget);
+  const createdBudgetRequest = await budgets.createBudget(budgetRequest).promise();
+  return createdBudgetRequest;
 }
 
-const budgetRequest = async (accountId, accountName, owner, budgetUsd) => {
+const createBudgetRequest = async (accountId, accountName, owner, budgetUsd) => {
   return {
     AccountId: await getMasterAccountId(),
     Budget: {
@@ -87,6 +87,24 @@ const getOwnerEmail = (owner) => {
   return owner.indexOf(`@${process.env.ORGANIZATION_DOMAIN}`) === -1 ? `${owner}@${process.env.ORGANIZATION_DOMAIN}` : owner;
 }
 
+const getBudgetsByAccountId = (accountId) => {
+  return getAllBudgets().then(budgets => budgets.filter(budget => budget.CostFilters && budget.CostFilters.LinkedAccount && budget.CostFilters.LinkedAccount.includes(accountId)));
+}
+const deleteBudgetsByAccountId = async (accountId) => {
+  const existingBudgets = await getBudgetsByAccountId(accountId);
+  for (budget of existingBudgets) {
+    await budgets.deleteBudget({ AccountId: await getMasterAccountId(), BudgetName: budget.BudgetName }).promise();
+  }
+  console.log(`Deleted ${existingBudgets.length} budgets for account ${accountId}`);
+}
+
+const getAllBudgets = async () => {
+  return budgets.describeBudgets({AccountId: await getMasterAccountId()}).promise().then(budgetResponse => budgetResponse.Budgets);
+}
+
 module.exports = {
-  createBudget
+  createBudget,
+  deleteBudgetsByAccountId,
+  getBudgetsByAccountId,
+  getAllBudgets
 };
