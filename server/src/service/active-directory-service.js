@@ -13,6 +13,7 @@ const scope = 'https://graph.microsoft.com/.default';
 const grantType = 'client_credentials';
 const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
 const groupsUrl = 'https://graph.microsoft.com/v1.0/groups';
+const usersUrl = 'https://graph.microsoft.com/v1.0/users';
 
 const getToken = async () => {
   const params = `client_id=${clientId}&scope=${scope}&client_secret=${clientSecret}&grant_type=${grantType}`
@@ -33,13 +34,45 @@ const findGroupByName = async (name) => {
       Authorization: `Bearer ${token}`
     }
   }).then(response => {
-    console.log(`Find AD group '${name}': ${JSON.stringify(response.data.value[0])}`);
+    // console.log(`Find AD group '${name}': ${JSON.stringify(response.data.value[0])}`);
     return response.data.value[0] || null;
   }).catch(error => {
     console.log(`Error finding AD group ${name}`, error);
     return null;
   });
   return group;
+}
+
+const findGroupOwners = async (id) => {
+  const token = await getToken();
+  const owners = await axios.get(`${groupsUrl}/${id}/owners`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }).then(response => {
+    // console.log(`Find AD group owners '${id}': ${JSON.stringify(response.data)}`);
+    return response.data.value.map(user => user.mail);
+  }).catch(error => {
+    console.log(`Error finding AD group owners ${id}`, error);
+    return null;
+  });
+  return owners;
+}
+
+const findUserByEmail = async (email) => {
+  const token = await getToken();
+  const user = await axios.get(`${usersUrl}?$filter=mail eq '${email}'`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }).then(response => {
+    // console.log(`Find AD user '${email}': ${JSON.stringify(response.data.value[0])}`);
+    return response.data.value[0] || null;
+  }).catch(error => {
+    console.log(`Error finding AD user ${email}`, error);
+    return null;
+  });
+  return user;
 }
 
 const findGroupMemberEmails = async (name) => {
@@ -85,6 +118,8 @@ const execAdRunbook = async (accountName, owner) => {
 
 module.exports = {
   findGroupByName,
+  findUserByEmail,
   findGroupMemberEmails,
+  findGroupOwners,
   execAdRunbook
 }

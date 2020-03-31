@@ -90,6 +90,10 @@ const AccountsListView = (props) => {
     await accountService.syncBudgets();
     refreshList();
   }
+  const syncOwners = async () => {
+    await accountService.syncOwners();
+    refreshList();
+  }
 
   const newAccount = () => {
     handleViewChange('Create new account', null);
@@ -102,6 +106,7 @@ const AccountsListView = (props) => {
         <FormGroup>
           <Button className='mr-2' variant='primary' onClick={() => syncAccounts()}>Sync Accounts</Button>
           <Button className='mr-2' variant='primary' onClick={() => syncBudgets()}>Sync Budgets</Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncOwners()}>Sync Owners</Button>
           <Button className='mr-2' variant='primary' onClick={() => newAccount()}>New Account</Button>
         </FormGroup>
       </Form>

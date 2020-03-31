@@ -41,7 +41,7 @@ const updateAccount = async account => {
 
 const syncAccounts = async () => {
   try {
-    await API.post('accounts', '/sync');
+    await API.post('accounts', '/sync-accounts');
   } catch (error) {
     console.log(error);
   }
@@ -55,11 +55,20 @@ const syncBudgets = async () => {
   }
 }
 
+const syncOwners = async () => {
+  try {
+    await API.post('accounts', '/sync-owners');
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export {
   getAccounts,
   getAccount,
   createAccount,
   updateAccount,
   syncAccounts,
-  syncBudgets
+  syncBudgets,
+  syncOwners
 }

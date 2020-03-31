@@ -30,3 +30,4 @@ Here are the steps to deploy everything for the first time and configure both SS
   * `cognitoUrl`, `cognitoClientId`, `cognitoUserPoolId` should be taken from Cognito user pool
   Data in this file is not sensitive and can be commited to Git.
   After preparing config file you can build and deploy the client application.
+6. One SNS topic for alerts is created as part of the backend, without any subscribers. Any interested parties should be manually added to listen for alerts Sky9 application emits.

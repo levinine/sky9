@@ -1,0 +1,6 @@
+Resources:
+  AlertsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: Alerts
+      TopicName: sky9-${self:provider.stage}-alerts-topic

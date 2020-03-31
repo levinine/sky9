@@ -24,6 +24,7 @@ provider:
         - iam:*
         - sso:*
         - sso-directory:*
+        - sns:*
       Resource: "*"
   runtime: nodejs10.x
   stage: ${opt:stage, "test"}
@@ -60,3 +61,4 @@ custom:
 resources:
   - ${file(./resources/dynamoDB.yml)}
   - ${file(./resources/cognito.yml)}
+  - ${file(./resources/sns.yml)}

@@ -73,6 +73,15 @@ const syncBudgets = async () => {
   }
 }
 
+const syncOwners = async () => {
+  try {
+    const result = await accountSyncService.syncOwners();
+    return okResponse(result);
+  } catch (error) {
+    console.log('Owners sync failed', error);
+    return errorResponse(error);
+  }
+}
 
 const createBudget = async () => {
   const accountId = process.env.accountId;
@@ -89,5 +98,6 @@ module.exports = {
   deleteAccount,
   syncAccounts,
   syncBudgets,
+  syncOwners,
   createBudget
 };

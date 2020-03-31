@@ -4,7 +4,7 @@ Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: sky9-${self:provider.stage}-${file(./config.json):organization}
+      UserPoolName: sky9-${self:provider.stage}-${file(./config.json):cognitoOrganization}
       AdminCreateUserConfig:
         AllowAdminCreateUserOnly: true
       AccountRecoverySetting:
@@ -16,7 +16,7 @@ Resources:
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
-      ClientName: !Sub sky9-${self:provider.stage}-${file(./config.json):organization}-client
+      ClientName: !Sub sky9-${self:provider.stage}-${file(./config.json):cognitoOrganization}-client
       UserPoolId: !Ref UserPool
       GenerateSecret: false
       PreventUserExistenceErrors: ENABLED

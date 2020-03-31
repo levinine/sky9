@@ -10,6 +10,7 @@ default: &default
   AD_RUNBOOK_URL: ${file(./config.json):adRunbookUrl}
   AD_RUNBOOK_KEY: ${file(./config.json):adRunbookKey}
   LAMBDA_ROLE: arn:aws:iam::#{AWS::AccountId}:role/${self:service}-${self:provider.stage}-${self:provider.region}-lambdaRole
+  SNS_ALERTS_TOPIC: arn:aws:sns:${self:provider.region}:#{AWS::AccountId}:sky9-${self:provider.stage}-alerts-topic
 local:
   <<: *default
   DYNAMO_DB_ENDPOINT: http://localhost:8000

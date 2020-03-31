@@ -31,10 +31,11 @@ functions:
     handler: src/handler/account-handler.syncAccounts
     events:
       - http:
-          path: sync
+          path: sync-accounts
           method: post
           cors: true
           authorizer: ${self:custom.authorizer}
+      - schedule: cron(0,30 8-18 * * ? *)
   SyncBudgets:
     handler: src/handler/account-handler.syncBudgets
     events:
@@ -43,5 +44,15 @@ functions:
           method: post
           cors: true
           authorizer: ${self:custom.authorizer}
+      - schedule: cron(1,31 8-18 * * ? *)
+  SyncOwners:
+    handler: src/handler/account-handler.syncOwners
+    events:
+      - http:
+          path: sync-owners
+          method: post
+          cors: true
+          authorizer: ${self:custom.authorizer}
+      - schedule: cron(2,32 8-18 * * ? *)
   CreateBudget:
     handler: src/handler/account-handler.createBudget
