@@ -61,13 +61,13 @@ export default class AccountsView extends Component {
     return (
         <div className='container-fluid'>
           <div className='row'>
-            <div className='col'>
+            <div className='col-10'>
               <AccountsListView
                 accounts={this.state.accounts}
                 handleViewChange={this.handleViewChange}
                 refreshList={this.refreshList} />
             </div>
-            <div className='col-3' hidden={this.state.show === 'Hide'}>
+            <div className='col-2' hidden={this.state.show === 'Hide'}>
               <AccountForm
                 stage={this.state.show}
                 account={this.state.account}

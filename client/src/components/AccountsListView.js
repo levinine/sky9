@@ -45,9 +45,9 @@ const AccountsListView = (props) => {
     return <div style={{ textAlign: 'left' }}>{header}</div>
   }
   const columns = [{
-      Header: header('Id'),
+      Header: header('AWS account'),
       accessor: 'awsAccountId',
-      width: getColumnWidth(filteredList, 'awsAccountId', 'Id'),
+      width: getColumnWidth(filteredList, 'awsAccountId', 'AWS account'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
       Header: header('Name'),
@@ -114,8 +114,8 @@ const AccountsListView = (props) => {
       <ReactTable 
         data={filteredList}
         columns={columns}
-        showPageSizeOptions={false}
-        defaultPageSize={15}
+        showPagination={false}
+        minRows={0}
         getTrProps={(state, rowInfo, column) => {
           return {
             onClick: (e) => {
