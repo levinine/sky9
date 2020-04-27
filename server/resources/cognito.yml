@@ -4,7 +4,7 @@ Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: sky9-${self:provider.stage}-${file(./config.json):cognitoOrganization}
+      UserPoolName: sky9-${self:provider.stage}-${ssm:/sky9/${self:provider.stage}/cognitoOrganization}
       AdminCreateUserConfig:
         AllowAdminCreateUserOnly: true
       AccountRecoverySetting:
@@ -16,7 +16,7 @@ Resources:
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
-      ClientName: !Sub sky9-${self:provider.stage}-${file(./config.json):cognitoOrganization}-client
+      ClientName: !Sub sky9-${self:provider.stage}-${ssm:/sky9/${self:provider.stage}/cognitoOrganization}-client
       UserPoolId: !Ref UserPool
       GenerateSecret: false
       PreventUserExistenceErrors: ENABLED
@@ -39,7 +39,7 @@ Resources:
   UserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties: 
-      Domain: ${file(./config.json):cognitoDomain}-${self:provider.stage}
+      Domain: ${ssm:/sky9/${self:provider.stage}/cognitoDomain}-${self:provider.stage}
       UserPoolId: !Ref UserPool
 
   UserPoolIdentityProvider:
@@ -52,10 +52,10 @@ Resources:
         email: email
         username: sub
       ProviderDetails:
-        client_id: ${file(./config.json):adAppClientId}
-        client_secret: ${file(./config.json):adAppClientSecretSso}
+        client_id: ${ssm:/sky9/${self:provider.stage}/adAppClientId}
+        client_secret: ${ssm:/sky9/${self:provider.stage}/adAppClientSecretSso}
         attributes_request_method: GET
-        oidc_issuer: https://login.microsoftonline.com/${file(./config.json):adTenantId}/v2.0
+        oidc_issuer: https://login.microsoftonline.com/${ssm:/sky9/${self:provider.stage}/adTenantId}/v2.0
         authorize_scopes: openid email
 
   ApiGatewayAuthorizer: 

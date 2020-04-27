@@ -29,7 +29,20 @@ provider:
   runtime: nodejs10.x
   stage: ${opt:stage, "test"}
   region: ${opt:region, "eu-west-1"}
-  environment: ${file(./sls-env.yml):${self:provider.stage}}
+  environment:
+    DYNAMO_DB_REGION: ${self:provider.region}
+    DYNAMO_DB_ENDPOINT: dynamodb.${self:provider.region}.amazonaws.com
+    ACCOUNT_TABLE: Account-${self:provider.stage}
+    ORGANIZATION: ${ssm:/sky9/${self:provider.stage}/organization}
+    ORGANIZATION_DOMAIN: ${ssm:/sky9/${self:provider.stage}/organizationDomain}
+    AD_TENANT_ID: ${ssm:/sky9/${self:provider.stage}/adTenantId}
+    AD_CLIENT_ID: ${ssm:/sky9/${self:provider.stage}/adAppClientId}
+    AD_CLIENT_SECRET: ${ssm:/sky9/${self:provider.stage}/adAppClientSecretGraph}
+    AD_RUNBOOK_URL: ${ssm:/sky9/${self:provider.stage}/adRunbookUrl}
+    AD_RUNBOOK_KEY: ${ssm:/sky9/${self:provider.stage}/adRunbookKey}
+    LAMBDA_ROLE: arn:aws:iam::#{AWS::AccountId}:role/${self:service}-${self:provider.stage}-${self:provider.region}-lambdaRole
+    SNS_ALERTS_TOPIC: arn:aws:sns:${self:provider.region}:#{AWS::AccountId}:sky9-${self:provider.stage}-alerts-topic
+
 
 plugins:
   - serverless-pseudo-parameters

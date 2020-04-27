@@ -13,7 +13,19 @@ Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Join ['', ['sky9-website-', !Ref 'Environment']]
+      BucketName: !Join
+      - '-'
+      - - 'sky9-website'
+        - !Ref 'Environment'
+        - !Select
+          - 0
+          - !Split
+            - '-'
+            - !Select
+              - 2
+              - !Split
+                - '/'
+                - !Ref 'AWS::StackId'
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: index.html
