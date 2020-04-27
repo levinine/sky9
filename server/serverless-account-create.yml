@@ -58,6 +58,12 @@ stepFunctions:
             Resource:
               Fn::GetAtt: [stepCreateAwsAccount, Arn]
             TimeoutSeconds: 60
+            Retry:
+              - ErrorEquals:
+                  - States.ALL
+                IntervalSeconds: 10
+                MaxAttempts: 1
+                BackoffRate: 1
             Next: Validate AWS account created
           Validate AWS account created:
             Type: Task
