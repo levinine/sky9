@@ -164,7 +164,7 @@ const syncOwners = async () => {
     const user = await activeDirectoryService.findUserByEmail(account.owner);
     if (!user) {
       console.log(`Account ${account.name} [${account.awsAccountId}] - owner not found in AD`);
-      await awsSnsService.publishAlert(`Account owner check - ${account.name} [${account.awsAccountId}] - owner not found in AD`);
+      await awsSnsService.publishAlert(`Account ${account.name} owner issue`, `Account owner check - ${account.name} [${account.awsAccountId}] - owner not found in AD`);
     } else {
       const group = await activeDirectoryService.findGroupByName(account.name);
       if (!group) {
@@ -175,9 +175,9 @@ const syncOwners = async () => {
           console.log(`Account ${account.name} [${account.awsAccountId}] - AWS account owner and AD group owner is the same - All Good!`);
         } else {
           console.log(`Account ${account.name} [${account.awsAccountId}] - AWS account owner is not configured as AD group owner - Updating AD`);
-          await activeDirectoryService.execAdRunbook(account.name, account.owner);
+          // await activeDirectoryService.execAdRunbook(account.name, account.owner);
           // account = await accountService.addAccountHistoryRecord(account.id, 'AD Group creation requested', {});
-          // await awsSnsService.publishAlert(`Account owner check - ${account.name} [${account.awsAccountId}] - AWS account owner is not configured as AD group owner`);
+          await awsSnsService.publishAlert(`Account ${account.name} owner issue`, `Account owner check - ${account.name} [${account.awsAccountId}] - AWS account owner is not configured as AD group owner`);
         }
       }
     }
