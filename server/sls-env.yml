@@ -1,14 +1,14 @@
 default: &default
-  DYNAMO_DB_REGION: eu-west-1
-  DYNAMO_DB_ENDPOINT: dynamodb.eu-west-1.amazonaws.com
+  DYNAMO_DB_REGION: ${self:provider.region}
+  DYNAMO_DB_ENDPOINT: dynamodb.${self:provider.region}.amazonaws.com
   ACCOUNT_TABLE: Account-${self:provider.stage}
-  ORGANIZATION: ${file(./config.json):organization}
-  ORGANIZATION_DOMAIN: ${file(./config.json):organizationDomain}
-  AD_TENANT_ID: ${file(./config.json):adTenantId}
-  AD_CLIENT_ID: ${file(./config.json):adAppClientId}
-  AD_CLIENT_SECRET: ${file(./config.json):adAppClientSecretGraph}
-  AD_RUNBOOK_URL: ${file(./config.json):adRunbookUrl}
-  AD_RUNBOOK_KEY: ${file(./config.json):adRunbookKey}
+  ORGANIZATION: ${ssm:/sky9/${self:provider.stage}/organization}
+  ORGANIZATION_DOMAIN: ${ssm:/sky9/${self:provider.stage}/organizationDomain}
+  AD_TENANT_ID: ${ssm:/sky9/${self:provider.stage}/adTenantId}
+  AD_CLIENT_ID: ${ssm:/sky9/${self:provider.stage}/adAppClientId}
+  AD_CLIENT_SECRET: ${ssm:/sky9/${self:provider.stage}/adAppClientSecretGraph}
+  AD_RUNBOOK_URL: ${ssm:/sky9/${self:provider.stage}/adRunbookUrl}
+  AD_RUNBOOK_KEY: ${ssm:/sky9/${self:provider.stage}/adRunbookKey}
   LAMBDA_ROLE: arn:aws:iam::#{AWS::AccountId}:role/${self:service}-${self:provider.stage}-${self:provider.region}-lambdaRole
   SNS_ALERTS_TOPIC: arn:aws:sns:${self:provider.region}:#{AWS::AccountId}:sky9-${self:provider.stage}-alerts-topic
 local:

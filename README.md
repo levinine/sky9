@@ -21,8 +21,9 @@ Here are the steps to deploy everything for the first time and configure both SS
   aws ssm put-parameter --type String --name "/sky9/$stage/cognitoDomain" --value "<cognitoDomain>"
   aws ssm put-parameter --type String --name "/sky9/$stage/cognitoOrganization" --value "<cognitoOrganization>"
   aws ssm put-parameter --type String --name "/sky9/$stage/adTenantId" --value "<adTenantId>"
-  aws ssm put-parameter --type String --name "/sky9/$stage/adRunbookUrl" --value "<adRunbookUrl>"
   aws ssm put-parameter --type String --name "/sky9/$stage/adRunbookKey" --value "<adRunbookKey>"
+  # longer format of command is required because the value is URL
+  aws ssm put-parameter --type String --name "/sky9/$stage/adRunbookUrl" --cli-input-json '{ "Name": "/sky9/$stage/adRunbookUrl", "Value": "<adRunbookUrl>", "Type": "String" }'
   ```
 
 2. Deploy infrastructure for the client. This will create S3 bucket and CloudFront distribution. Interesting values to pick-up here is CloudFront distribution public URL, which will be used to configure client build, Cognito's redirectURL config parameter, and AD application Home page URL.
@@ -32,7 +33,7 @@ Here are the steps to deploy everything for the first time and configure both SS
 
   # Get CloudFront public URL:
   aws cloudformation describe-stacks \
-    --query "Stacks[?StackName=='website-$stage'] | [0] | Outputs[?OutputKey=='CloudfrontDistributionId'].OutputValue" \
+    --query "Stacks[?StackName=='website-$stage'] | [0] | Outputs[?OutputKey=='CloudfrontEndpoint'].OutputValue" \
     --output text \
     | cut -d'/' -f2
   ```
@@ -44,7 +45,7 @@ Here are the steps to deploy everything for the first time and configure both SS
   This will limit who can login to Sky9 application to people who are part of the assigned group.
   * Under `Branding` -> Home page URL = CloudFront distribution public URL
   * Under `Authentication` add platform (Web): 
-    * Redirect URI = https://{cognitoDomain}.auth.eu-west-1.amazoncognito.com/oauth2/idpresponse
+    * Redirect URI = https://{cognitoDomain}-{stage}.auth.eu-west-1.amazoncognito.com/oauth2/idpresponse
     * Implicit Grant -> Access tokens = true
     * Implicit Grant -> ID tokens = true
   * Under `Certificates & secrets` create two client secrets: for Cognito integration and access to GraphAPI, and add them to AWS Parameter Store.
@@ -62,7 +63,7 @@ Here are the steps to deploy everything for the first time and configure both SS
   ```Bash
   cd server
   npm install
-  sls deploy --stage=$stage
+  sls deploy --stage $stage
   cd -
   ```
 
