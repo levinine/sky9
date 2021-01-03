@@ -20,13 +20,16 @@ const AccountsListView = (props) => {
   const [deleteAccountID, setDeleteAccountID] = useState(null);
   
   useEffect(() => {
-    const results = accounts.filter(account =>{
-      const lowerCaseSearchTerm = (searchTerm).toLowerCase();
-      return ( 
-        account.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        account.email.toLowerCase().includes(lowerCaseSearchTerm) 
-      )
-    })
+    let results = [];
+    if (accounts) {
+      results = accounts.filter(account =>{
+        const lowerCaseSearchTerm = (searchTerm).toLowerCase();
+        return ( 
+          account.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+          account.email.toLowerCase().includes(lowerCaseSearchTerm) 
+        )
+      })
+    }
     setFilteredList(results);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, accounts])

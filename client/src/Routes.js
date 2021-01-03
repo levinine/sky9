@@ -5,10 +5,9 @@ import ErrorNotFound from './components/ErrorNotFound'
 import AuthenticatedRoute from './components/Routes/AuthenticatedRoute';
 export default function Routes() {
 
-    const token = localStorage.getItem('token');
     return (
       <Switch>
-        <AuthenticatedRoute path="/" exact component={AccountsView} token={token} />
+        <AuthenticatedRoute path="/" exact component={AccountsView}/>
         <Route path="*" component={ErrorNotFound} />
       </Switch>
 
