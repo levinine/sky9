@@ -12,7 +12,7 @@ const getOrganizationAccounts = async () => {
   let accounts = [];
   let nextToken = null;
   do {
-    const listAccountsResponse = await organizations.listAccounts().promise();
+    const listAccountsResponse = await organizations.listAccounts({ MaxResults: 20, NextToken: nextToken }).promise();
     accounts.push(...listAccountsResponse.Accounts);
     nextToken = listAccountsResponse.NextToken;
   } while (nextToken);

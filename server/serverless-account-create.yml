@@ -74,7 +74,7 @@ stepFunctions:
               - ErrorEquals:
                   - NOT_READY
                 IntervalSeconds: 180
-                MaxAttempts: 10
+                MaxAttempts: 20
                 BackoffRate: 1
             Next: Create AWS Budget
           Create AWS Budget:
