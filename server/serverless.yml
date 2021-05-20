@@ -26,7 +26,7 @@ provider:
         - sso-directory:*
         - sns:*
       Resource: "*"
-  runtime: nodejs10.x
+  runtime: nodejs12.x
   stage: ${opt:stage, "test"}
   region: ${opt:region, "eu-west-1"}
   environment:
