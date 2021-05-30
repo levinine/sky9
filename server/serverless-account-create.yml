@@ -3,12 +3,14 @@ functions:
     handler: src/handler/account-flow-handler.createAccount
   stepCreateAdGroup:
     handler: src/handler/account-flow-handler.createAdGroup
+    timeout: 30
   stepValidateAdGroup:
     handler: src/handler/account-flow-handler.validateAdGroup
   stepCreateAwsAccount:
     handler: src/handler/account-flow-handler.createAwsAccount
   stepValidateAwsAccount:
     handler: src/handler/account-flow-handler.validateAwsAccount
+    timeout: 30
   stepCreateBudget:
     handler: src/handler/account-flow-handler.createBudget
   stepValidateSsoGroup:
@@ -50,7 +52,7 @@ stepFunctions:
               - ErrorEquals:
                   - NOT_READY
                 IntervalSeconds: 10
-                MaxAttempts: 10
+                MaxAttempts: 20
                 BackoffRate: 1
             Next: Create account in AWS
           Create account in AWS:
@@ -74,7 +76,7 @@ stepFunctions:
               - ErrorEquals:
                   - NOT_READY
                 IntervalSeconds: 180
-                MaxAttempts: 20
+                MaxAttempts: 30
                 BackoffRate: 1
             Next: Create AWS Budget
           Create AWS Budget:
