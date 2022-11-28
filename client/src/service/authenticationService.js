@@ -1,4 +1,7 @@
-import Amplify, { Auth, Hub } from 'aws-amplify';
+import { Amplify, Hub } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
+import { API } from '@aws-amplify/api';
+
 import { createBrowserHistory } from 'history';
 
 import config from '../config';
@@ -30,21 +33,21 @@ const configureAmplify = () => {
           redirectSignOut: config.cognitoSignOutUrl,
           responseType: 'token'
         }
-      },
-      API: {
-        endpoints: [{
-          name: 'accounts',
-          endpoint: config.apiUrl,
-          custom_header: async () => {
-            let user = await getUser();
-            if (user) {
-              return { Authorization : user.signInUserSession.idToken.jwtToken };
-            } else {
-              history.push('login');
-            }
-          }
-        }]
       }
+    });
+    API.configure({
+      endpoints: [{
+        name: 'accounts',
+        endpoint: config.apiUrl,
+        custom_header: async () => {
+          let user = await getUser();
+          if (user) {
+            return { Authorization : user.signInUserSession.idToken.jwtToken };
+          } else {
+            history.push('login');
+          }
+        }
+      }]
     });
   } catch (err) {
     console.log('Couldn\'t configure Amplify', err);

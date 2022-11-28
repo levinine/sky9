@@ -26,6 +26,7 @@ Resources:
         - implicit
       AllowedOAuthScopes:
         - openid
+        - email
       CallbackURLs:
         - http://localhost:3000
         - https://${cf:website-${self:provider.stage}.CloudfrontEndpoint, ''}
