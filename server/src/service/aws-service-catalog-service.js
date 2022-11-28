@@ -91,7 +91,7 @@ const provisionAccount = async (account) => {
       { 'Key': 'AccountEmail', 'Value': `${account.name}@${organizationDomain}` },
       { 'Key': 'SSOUserFirstName', 'Value': account.ownerFirstName },
       { 'Key': 'SSOUserLastName', 'Value': account.ownerLastName },
-      { 'Key': 'ManagedOrganizationalUnit', 'Value': 'Custom' },
+      { 'Key': 'ManagedOrganizationalUnit', 'Value': 'Sandbox' },
       { 'Key': 'AccountName', 'Value': account.name }
     ],
     PathId: launchPathId,
