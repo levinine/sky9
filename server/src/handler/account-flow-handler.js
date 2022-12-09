@@ -57,14 +57,21 @@ const createAwsAccount = async (account) => {
 const falseErrors = [
   'AWS Control Tower is not authorized to baseline the VPC in the managed account.'
 ];
+const emailAlreadyExistsError = 'AWS account with that email already exists';
 const validateAwsAccount = async (account) => {
   console.log(`Validate creation of AWS account ${JSON.stringify(account)}`);
   const provisionedAccounts = await awsServiceCatalogService.listProvisionedAccounts();
   const provisionedAccount = provisionedAccounts.find(provisionedAccount => provisionedAccount.Name === account.name);
   console.log(`Found AWS account:`, provisionedAccount);
+
+  if (provisionedAccount && provisionedAccount.Status === 'ERROR' && provisionedAccount.StatusMessage.includes(emailAlreadyExistsError)) {
+    throw new Error(provisionedAccount.StatusMessage);
+  }
+
   if (!provisionedAccount || !(provisionedAccount.Status === 'AVAILABLE' || (provisionedAccount.Status === 'ERROR' && falseErrors.includes(provisionedAccount.StatusMessage)))) {
     throw new NotReady();
   }
+
   const organizationAccount = await awsOrganizationService.getAccountByName(account.name);
   account = await accountService.updateAccount({ id: account.id, awsAccountId: organizationAccount.Id });
   account = await accountService.addAccountHistoryRecord(account.id, 'AWS account creation validated', { provisionedAccount, organizationAccount, account });
