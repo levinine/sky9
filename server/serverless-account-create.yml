@@ -36,24 +36,6 @@ stepFunctions:
             Resource:
               Fn::GetAtt: [stepCreateAccount, Arn]
             TimeoutSeconds: 60
-            Next: Create AD group
-          Create AD group:
-            Type: Task
-            Resource:
-              Fn::GetAtt: [stepCreateAdGroup, Arn]
-            TimeoutSeconds: 60
-            Next: Validate AD group created
-          Validate AD group created:
-            Type: Task
-            Resource:
-              Fn::GetAtt: [stepValidateAdGroup, Arn]
-            TimeoutSeconds: 60
-            Retry:
-              - ErrorEquals:
-                  - NOT_READY
-                IntervalSeconds: 10
-                MaxAttempts: 20
-                BackoffRate: 1
             Next: Create account in AWS
           Create account in AWS:
             Type: Task
@@ -84,6 +66,24 @@ stepFunctions:
             Resource:
               Fn::GetAtt: [stepCreateBudget, Arn]
             TimeoutSeconds: 60
+            Next: Create AD group
+          Create AD group:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateAdGroup, Arn]
+            TimeoutSeconds: 60
+            Next: Validate AD group created
+          Validate AD group created:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepValidateAdGroup, Arn]
+            TimeoutSeconds: 60
+            Retry:
+              - ErrorEquals:
+                  - NOT_READY
+                IntervalSeconds: 10
+                MaxAttempts: 20
+                BackoffRate: 1
             Next: Validate AD group is propagated to AWS SSO
           Validate AD group is propagated to AWS SSO:
             Type: Task
