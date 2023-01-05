@@ -79,7 +79,9 @@ const alerts = (owner) => {
     { type: 'ACTUAL', threshold: '50', recipients: [getOwnerEmail(owner)] },
     { type: 'ACTUAL', threshold: '80', recipients: [getOwnerEmail(owner)] },
     { type: 'ACTUAL', threshold: '100', recipients: [getOwnerEmail(owner)] },
-    { type: 'FORECASTED', threshold: '120', recipients: [getOwnerEmail(owner)] }
+    { type: 'ACTUAL', threshold: '120', recipients: [getOwnerEmail(owner)] },
+    { type: 'ACTUAL', threshold: '150', recipients: [getOwnerEmail(owner)] },
+    { type: 'FORECASTED', threshold: '200', recipients: [getOwnerEmail(owner)] }
   ] : [];
 }
 
