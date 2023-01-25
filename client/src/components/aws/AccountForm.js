@@ -4,7 +4,7 @@ import { Form, FormGroup, FormLabel, FormControl, Button, Alert } from 'react-bo
 import lodash from 'lodash';
 
 
-const AccountForm = (props) => {
+const AwsAccountForm = (props) => {
   const {
     stage,
     account,
@@ -232,7 +232,7 @@ const AccountForm = (props) => {
   );
 }
 
-AccountForm.propTypes = {
+AwsAccountForm.propTypes = {
   stage: PropTypes.string.isRequired,
   account: PropTypes.object.isRequired,
   refreshList: PropTypes.func.isRequired,
@@ -240,4 +240,4 @@ AccountForm.propTypes = {
   handleViewChange: PropTypes.func
 }
 
-export default AccountForm;
+export default AwsAccountForm;
