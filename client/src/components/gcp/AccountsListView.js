@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { Form, FormGroup, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import SearchField from '../components/SearchField';
-import * as accountService from '../service/accountService';
+import SearchField from '../common/SearchField';
+import * as accountService from '../../service/gcpAccountService';
+import * as utils from '../utils';
 
-const AccountsListView = (props) => {
+const GcpAccountsListView = (props) => {
 
   const {
     accounts,
@@ -19,6 +20,7 @@ const AccountsListView = (props) => {
   
   useEffect(() => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    console.log('type of accounts', typeof accounts, accounts);
     const results = (accounts || []).filter(account => {
       return ( 
         account.name.toLowerCase().includes(lowerCaseSearchTerm) ||
@@ -31,38 +33,29 @@ const AccountsListView = (props) => {
   const handleChange = event => {
     setSearchTerm(event.target.value);
   }
-  const getColumnWidth = (rows, accessor, headerText) => {
-    const maxWidth = 400
-    const magicSpacing = 10
-    const cellLength = Math.max(
-      ...rows.map(row => (`${row[accessor]}` || '').length),
-      headerText.length,
-    )
-    return Math.min(maxWidth, cellLength * magicSpacing)
-  }
 
   const header = (header) => {
     return <div style={{ textAlign: 'left' }}>{header}</div>
   }
   const columns = [{
-      Header: header('AWS account'),
-      accessor: 'awsAccountId',
-      width: getColumnWidth(filteredList, 'awsAccountId', 'AWS account'),
+      Header: header('GCP account'),
+      accessor: 'gcpAccountId',
+      width: utils.getColumnWidth(filteredList, 'gcpAccountId', 'GCP account'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
       Header: header('Name'),
       accessor: 'name',
-      width: getColumnWidth(filteredList, 'name', 'Name'),
+      width: utils.getColumnWidth(filteredList, 'name', 'Name'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
       Header: header('Owner'),
       accessor: 'owner',
-      width: getColumnWidth(filteredList, 'owner', 'Owner'),
+      width: utils.getColumnWidth(filteredList, 'owner', 'Owner'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
       Header: header('Members'),
       accessor: 'members',
-      width: getColumnWidth(filteredList, null, 'Members'),
+      width: utils.getColumnWidth(filteredList, null, 'Members'),
       Cell: row => <div style={{ textAlign: 'left' }}><OverlayTrigger placement='right' delay={row.value && row.value.length > 0 ? 250 : 100000} overlay={(props) => <Tooltip {...props}>{row.value ? row.value.join(',\n') : ''}</Tooltip>}><span>{row.value ? row.value.length : 0}</span></OverlayTrigger></div>
     }, {
       Header: header('Budget $'),
@@ -72,28 +65,28 @@ const AccountsListView = (props) => {
     }, {
       Header: header('Created time'),
       accessor: 'createdTime',
-      width: getColumnWidth(filteredList, 'createdTime', 'Created time'),
+      width: utils.getColumnWidth(filteredList, 'createdTime', 'Created time'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
       Header: header('Created by'),
       accessor: 'createdBy',
-      width: getColumnWidth(filteredList, 'createdBy', 'Created by'),
+      width: utils.getColumnWidth(filteredList, 'createdBy', 'Created by'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }
   ];
 
-  const syncAccounts = async () => {
-    await accountService.syncAccounts();
-    refreshList();
-  }
-  const syncBudgets = async () => {
-    await accountService.syncBudgets();
-    refreshList();
-  }
-  const syncOwners = async () => {
-    await accountService.syncOwners();
-    refreshList();
-  }
+  // const syncAccounts = async () => {
+  //   await accountService.syncAccounts();
+  //   refreshList();
+  // }
+  // const syncBudgets = async () => {
+  //   await accountService.syncBudgets();
+  //   refreshList();
+  // }
+  // const syncOwners = async () => {
+  //   await accountService.syncOwners();
+  //   refreshList();
+  // }
 
   const newAccount = () => {
     handleViewChange('Create new account', null);
@@ -104,9 +97,9 @@ const AccountsListView = (props) => {
       <SearchField onChange={handleChange} searchTerm={searchTerm} />
       <Form>
         <FormGroup>
-          <Button className='mr-2' variant='primary' onClick={() => syncAccounts()}>Sync Accounts</Button>
+          {/* <Button className='mr-2' variant='primary' onClick={() => syncAccounts()}>Sync Accounts</Button>
           <Button className='mr-2' variant='primary' onClick={() => syncBudgets()}>Sync Budgets</Button>
-          <Button className='mr-2' variant='primary' onClick={() => syncOwners()}>Sync Owners</Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncOwners()}>Sync Owners</Button> */}
           <Button className='mr-2' variant='primary' onClick={() => newAccount()}>New Account</Button>
         </FormGroup>
       </Form>
@@ -129,10 +122,10 @@ const AccountsListView = (props) => {
   )
 }
 
-AccountsListView.propTypes = {
+GcpAccountsListView.propTypes = {
   accounts: PropTypes.array.isRequired,
   handleViewChange: PropTypes.func.isRequired,
   refreshList: PropTypes.func.isRequired
 }
 
-export default AccountsListView;
+export default GcpAccountsListView;
