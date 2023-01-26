@@ -1,0 +1,131 @@
+functions:
+  # stepCreateAccount:
+  #   handler: src/handler/account-flow-handler.createAccount
+  # stepCreateAdGroup:
+  #   handler: src/handler/account-flow-handler.createAdGroup
+  #   timeout: 30
+  # stepValidateAdGroup:
+  #   handler: src/handler/account-flow-handler.validateAdGroup
+  # stepCreateAwsAccount:
+  #   handler: src/handler/account-flow-handler.createAwsAccount
+  # stepValidateAwsAccount:
+  #   handler: src/handler/account-flow-handler.validateAwsAccount
+  #   timeout: 30
+  # stepCreateBudget:
+  #   handler: src/handler/account-flow-handler.createBudget
+  # stepValidateSsoGroup:
+  #   handler: src/handler/account-flow-handler.validateSsoGroup
+  # stepAssignSsoGroup:
+  #   handler: src/handler/account-flow-handler.assignSsoGroup
+
+
+  stepCreateAccount:
+    handler: src/handler/
+
+  stepCreateAdGroup: # (add it to G-Suite connector in Azure)
+    handler: src/handler/
+    timeout: 30
+
+  stepValidateAdGroup:
+    handler: src/handler/
+
+  stepCreateGcpAccount:
+    handler: src/handler/
+
+  stepAssignAdGroupAsProjectOwner:
+    handler: src/handler/
+
+  stepSetBillingAccount:
+    handler: src/handler/
+
+  stepCreateNotificationChannel:
+    handler: src/handler/
+
+  stepSetBudget:
+    handler: src/handler/
+
+stepFunctions:
+  stateMachines:
+    createGcpAccount:
+      events:
+        - http:
+            path: accounts
+            method: post
+            cors: true
+            authorizer: ${self:custom.authorizer}
+      name: createGCPAccount-${self:provider.stage}
+      definition:
+        StartAt: Store account in DB
+        States:
+          Store account in DB:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateAccount, Arn]
+            TimeoutSeconds: 60
+            Next: Create account in AWS
+          Create account in AWS:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateAwsAccount, Arn]
+            TimeoutSeconds: 60
+            Retry:
+              - ErrorEquals:
+                  - States.ALL
+                IntervalSeconds: 10
+                MaxAttempts: 1
+                BackoffRate: 1
+            Next: Validate AWS account created
+          Validate AWS account created:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepValidateAwsAccount, Arn]
+            TimeoutSeconds: 60
+            Retry:
+              - ErrorEquals:
+                  - NOT_READY
+                IntervalSeconds: 180
+                MaxAttempts: 30
+                BackoffRate: 1
+            Next: Create AWS Budget
+          Create AWS Budget:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateBudget, Arn]
+            TimeoutSeconds: 60
+            Next: Create AD group
+          Create AD group:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateAdGroup, Arn]
+            TimeoutSeconds: 60
+            Next: Validate AD group created
+          Validate AD group created:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepValidateAdGroup, Arn]
+            TimeoutSeconds: 60
+            Retry:
+              - ErrorEquals:
+                  - NOT_READY
+                IntervalSeconds: 10
+                MaxAttempts: 20
+                BackoffRate: 1
+            Next: Validate AD group is propagated to AWS SSO
+          Validate AD group is propagated to AWS SSO:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepValidateSsoGroup, Arn]
+            TimeoutSeconds: 60
+            Retry:
+              - ErrorEquals:
+                  - NOT_READY
+                IntervalSeconds: 600
+                MaxAttempts: 10
+                BackoffRate: 1
+            Next: AWS SSO assign group
+          AWS SSO assign group:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepAssignSsoGroup, Arn]
+            TimeoutSeconds: 60
+            End: true
