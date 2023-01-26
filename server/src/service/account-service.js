@@ -6,6 +6,8 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient({
   endpoint: process.env.DYNAMO_DB_ENDPOINT
 });
 
+// AWS methods
+
 const getAccounts = async () => {
   const params = {
     TableName: process.env.ACCOUNT_TABLE
@@ -63,7 +65,7 @@ const updateAccount = async (account) => {
   return updatedAccount.Attributes;
 }
 
-const addAccountHistoryRecord = async (accountId, type, record) => {
+const addAccountHistoryRecord = async (accountId, type, record, tableName) => {
   if (!accountId) {
     console.log(`addAccountHistoryRecord called without accountId for type ${type} and record ${JSON.stringify(record)}`);
     return;
@@ -72,7 +74,7 @@ const addAccountHistoryRecord = async (accountId, type, record) => {
     record = omit(record, 'account.history');
   }
   const updateResponse = await dynamoDB.update({
-    TableName: process.env.ACCOUNT_TABLE,
+    TableName: tableName, // process.env.ACCOUNT_TABLE,
     Key: { id: accountId },
     ReturnValues: 'ALL_NEW',
     UpdateExpression: 'set #history = list_append(if_not_exists(#history, :empty_list), :record)',
@@ -96,11 +98,32 @@ const deleteAccount = (id) => {
   return dynamoDB.delete(params).promise();
 };
 
+// GCP methods
+
+const createGcpAccount = async (account) => {
+  if (!account.name || !account.owner || !account.ownerFirstName || !account.ownerLastName) {
+    console.log(`Can't store account ${JSON.stringify(account)}, missing one of mandatory attributes`);
+    throw new Error('Missing one or more of: name, owner, ownerFirstName, ownerLastName');
+  }
+  if (!account.name.startsWith(process.env.ORGANIZATION)) {
+    account.name = `${process.env.ORGANIZATION}-${account.name}`; 
+  }
+  account.id = `${new Date().getTime()}`;
+  account.email = `${account.name}@${process.env.ORGANIZATION_DOMAIN}`;
+  const params = {
+    TableName: process.env.ACCOUNT_GCP_TABLE,
+    Item: account
+  }
+  await dynamoDB.put(params).promise();
+  return account;
+};
+
 module.exports = {
   getAccounts,
   getAccount,
   createAccount,
   updateAccount,
   addAccountHistoryRecord,
-  deleteAccount
+  deleteAccount,
+  createGcpAccount // new
 };
