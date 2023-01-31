@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Navbar } from 'react-bootstrap';
-import { getUser, login, logout } from '../service/authenticationService';
-import config from '../config';
+import { getUser, login, logout } from '../../service/authenticationService';
+import config from '../../config';
 
 class Menu extends React.Component {
   constructor(props) {

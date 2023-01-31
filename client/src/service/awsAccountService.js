@@ -1,9 +1,12 @@
 import { API } from 'aws-amplify';
+import * as utils from '../components/utils';
 
 const getAccounts = async () => {
   try {
-    const accounts = await API.get('accounts', '/accounts');
-    return accounts;
+    console.log('AWS GET ACCOUNTS');
+    // const accounts = await API.get('accounts', '/accounts');
+    // return accounts;
+    return utils.awsMocksAccounts; 
   } catch (error) {
     console.log(error);
   }
@@ -20,6 +23,7 @@ const getAccount = async id => {
 }
 
 const createAccount = account => {
+  console.log('AWS CREATE ACCOUNTS');
   try {
     const createdAccount = API.post('accounts', '/accounts', {
       body: account
