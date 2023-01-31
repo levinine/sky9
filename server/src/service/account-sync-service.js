@@ -176,7 +176,7 @@ const syncOwners = async () => {
         } else {
           console.log(`Account ${account.name} [${account.awsAccountId}] - AWS account owner is not configured as AD group owner - Updating AD`);
           // await activeDirectoryService.execAdRunbook(account.name, account.owner);
-          // account = await accountService.addAccountHistoryRecord(account.id, 'AD Group creation requested', {});
+          // account = await accountService.addAccountHistoryRecord(account.id, 'AD Group creation requested', {}, process.env.ACCOUNT_TABLE);
           await awsSnsService.publishAlert(`Account ${account.name} owner issue`, `Account owner check - ${account.name} [${account.awsAccountId}] - AWS account owner is not configured as AD group owner`);
         }
       }

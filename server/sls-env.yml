@@ -2,6 +2,7 @@ default: &default
   DYNAMO_DB_REGION: ${self:provider.region}
   DYNAMO_DB_ENDPOINT: dynamodb.${self:provider.region}.amazonaws.com
   ACCOUNT_TABLE: Account-${self:provider.stage}
+  ACCOUNT_GCP_TABLE: Account-GCP-${self:provider.stage}
   ORGANIZATION: ${ssm:/sky9/${self:provider.stage}/organization}
   ORGANIZATION_DOMAIN: ${ssm:/sky9/${self:provider.stage}/organizationDomain}
   AD_TENANT_ID: ${ssm:/sky9/${self:provider.stage}/adTenantId}
