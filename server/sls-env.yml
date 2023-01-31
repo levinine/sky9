@@ -10,6 +10,7 @@ default: &default
   AD_CLIENT_SECRET: ${ssm:/sky9/${self:provider.stage}/adAppClientSecretGraph}
   AD_RUNBOOK_URL: ${ssm:/sky9/${self:provider.stage}/adRunbookUrl}
   AD_RUNBOOK_KEY: ${ssm:/sky9/${self:provider.stage}/adRunbookKey}
+  GCP_SERVICE_ACCOUNT: ${ssm:/sky9/${self:provider.stage}/gcpAccountKeys}
   LAMBDA_ROLE: arn:aws:iam::#{AWS::AccountId}:role/${self:service}-${self:provider.stage}-${self:provider.region}-lambdaRole
   SNS_ALERTS_TOPIC: arn:aws:sns:${self:provider.region}:#{AWS::AccountId}:sky9-${self:provider.stage}-alerts-topic
 local:

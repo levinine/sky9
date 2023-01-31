@@ -11,7 +11,8 @@ When Sky9 application is initially deployed, SSO needs to be configured in 3 pla
 Here are the steps to deploy everything for the first time and configure both SSOs:
 
 1. Start adding configuration for new deployment to AWS Parameter Store.
-  At this point you should prepare the following configuration properties: `organization`, `organizationDomain`, `cognitoDomain`, `adTenantId`. If available these two as well: `adRunbookUrl` and `adRunbookKey`
+  At this point you should prepare the following configuration properties: `organization`, `organizationDomain`, `cognitoDomain`, `adTenantId`. If available these two as well: `adRunbookUrl` and `adRunbookKey`.
+  For GCP creation flow prepare `gcpAccountKeys` as well.
 
   ```Bash
   # expected values are prod and test
@@ -22,6 +23,7 @@ Here are the steps to deploy everything for the first time and configure both SS
   aws ssm put-parameter --type String --name "/sky9/$stage/cognitoOrganization" --value "<cognitoOrganization>"
   aws ssm put-parameter --type String --name "/sky9/$stage/adTenantId" --value "<adTenantId>"
   aws ssm put-parameter --type String --name "/sky9/$stage/adRunbookKey" --value "<adRunbookKey>"
+  aws ssm put-parameter --type String --name " /sky9/$stage/gcpAccountKeys" --value '<gcpAccountKeys>'
   # longer format of command is required because the value is URL
   aws ssm put-parameter --type String --name "/sky9/$stage/adRunbookUrl" --cli-input-json '{ "Name": "/sky9/$stage/adRunbookUrl", "Value": "<adRunbookUrl>", "Type": "String" }'
   ```
