@@ -27,7 +27,8 @@ export default class AccountsView extends Component {
   setCloud = async (cloud) => {
     this.setState({
       activeCloud: cloud,
-      serviceHandler: cloud === clouds.AWS ? awsServices : gcpServices
+      serviceHandler: cloud === clouds.AWS ? awsServices : gcpServices,
+      show: 'Hide',
     });
   }
 
@@ -112,7 +113,7 @@ export default class AccountsView extends Component {
                   account={this.state.account}
                   refreshList={this.refreshList}
                   apiFunction={
-                    this.state.show === 'Create new account' ?
+                    this.state.show === 'Create new AWS account' || 'Create new GCP account' ?
                     this.state.serviceHandler.createAccount : this.state.serviceHandler.updateAccount
                   }
                   handleViewChange={this.handleViewChange} />
@@ -134,7 +135,7 @@ export default class AccountsView extends Component {
                   account={this.state.account}
                   refreshList={this.refreshList}
                   apiFunction={
-                    this.state.show === 'Create new account' ?
+                    this.state.show === 'Create new AWS account' || 'Create new GCP account' ?
                     this.state.serviceHandler.createAccount : this.state.serviceHandler.updateAccount
                   }
                   handleViewChange={this.handleViewChange} />

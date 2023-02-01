@@ -9,5 +9,6 @@
   "adAppClientId": "AD registered application: clientId",
   "adRunbookUrl": "URL of Runbook which creates AD group and assigns owner. This group gets propagated to AWS SSO",
   "adRunbookKey": "API key for Runbook",
-  "gcpAccountKeys": "JSON for Service account access, it contains privete key for auth and other service values"
+  "gcpAccountKeys": "JSON for Service account access, it contains privete key for auth and other service values",
+  "gcpParentFolderValue": "Value of gcp parent project"
 }

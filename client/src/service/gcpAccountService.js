@@ -26,12 +26,11 @@ const getAccount = async id => {
 
 const createAccount = account => {
   try {
-    // const createdAccount = API.post('accounts', '/accounts', {
-    //   body: account
-    // });
-    // return createdAccount;
-    console.log('GCP CREATE ACCOUNT');
-    return {};
+    console.log('GCP CREATE ACCOUNT', account);
+    const createdAccount = API.post('gcp-accounts', '/gcp-accounts', {
+      body: account
+    });
+    return createdAccount;
   } catch (error) {
     console.log(error);
   }

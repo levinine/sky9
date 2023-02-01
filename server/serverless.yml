@@ -44,6 +44,7 @@ provider:
     LAMBDA_ROLE: arn:aws:iam::#{AWS::AccountId}:role/${self:service}-${self:provider.stage}-${self:provider.region}-lambdaRole
     SNS_ALERTS_TOPIC: arn:aws:sns:${self:provider.region}:#{AWS::AccountId}:sky9-${self:provider.stage}-alerts-topic
     GCP_SERVICE_ACCOUNT: ${ssm:/sky9/${self:provider.stage}/gcpAccountKeys}
+    GCP_PARENT_FOLDER_VALUE: ${ssm:/sky9/${self:provider.stage}/gcpParentFolderValue, "320110726660"}
 
 plugins:
   - serverless-pseudo-parameters
@@ -55,11 +56,11 @@ plugins:
 functions:
   - ${file(./serverless-account-create.yml):functions}
   - ${file(./serverless-account-crud.yml):functions}
-  # - ${file(./serverless-gcp-account-crud.yml):functions}
+  - ${file(./serverless-gcp-account-create.yml):functions}
 
 stepFunctions:
   - ${file(./serverless-account-create.yml):stepFunctions}
-  # - ${file(./serverless-gcp-account-crud.yml):stepFunctions}
+  - ${file(./serverless-gcp-account-create.yml):stepFunctions}
 
 custom:
   authorizer:

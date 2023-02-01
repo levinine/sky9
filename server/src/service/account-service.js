@@ -101,6 +101,10 @@ const deleteAccount = (id) => {
 // GCP methods
 
 const createGcpAccount = async (account) => {
+  // TODO: Remove when is not needed
+  // projectId = name
+  // displayName = projectId
+  // parent = env value
   if (!account.name || !account.owner || !account.ownerFirstName || !account.ownerLastName) {
     console.log(`Can't store account ${JSON.stringify(account)}, missing one of mandatory attributes`);
     throw new Error('Missing one or more of: name, owner, ownerFirstName, ownerLastName');

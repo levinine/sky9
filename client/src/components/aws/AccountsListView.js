@@ -20,7 +20,6 @@ const AwsAccountsListView = (props) => {
   
   useEffect(() => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    console.log('type of accounts', typeof accounts, accounts);
     const results = (accounts || []).filter(account => {
       return ( 
         account.name.toLowerCase().includes(lowerCaseSearchTerm) ||
@@ -90,7 +89,7 @@ const AwsAccountsListView = (props) => {
   }
 
   const newAccount = () => {
-    handleViewChange('Create new account', null);
+    handleViewChange('Create new AWS account', null);
   }
 
   return (

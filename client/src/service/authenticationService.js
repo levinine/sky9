@@ -47,6 +47,18 @@ const configureAmplify = () => {
             history.push('login');
           }
         }
+      },{
+        name: 'gcp-accounts',
+        endpoint: config.apiUrl,
+        // TODO: add custom header when development is finished
+        // custom_header: async () => {
+        //   let user = await getUser();
+        //   if (user) {
+        //     return { Authorization : user.signInUserSession.idToken.jwtToken };
+        //   } else {
+        //     history.push('login');
+        //   }
+        // }
       }]
     });
   } catch (err) {

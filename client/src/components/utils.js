@@ -1,5 +1,4 @@
 export const getColumnWidth = (rows, accessor, headerText) => {
-  console.log('in get column width');
   const maxWidth = 400
   const magicSpacing = 10
   const cellLength = Math.max(
