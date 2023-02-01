@@ -20,7 +20,6 @@ const GcpAccountsListView = (props) => {
   
   useEffect(() => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    console.log('type of accounts', typeof accounts, accounts);
     const results = (accounts || []).filter(account => {
       return ( 
         account.name.toLowerCase().includes(lowerCaseSearchTerm) ||
@@ -89,7 +88,7 @@ const GcpAccountsListView = (props) => {
   // }
 
   const newAccount = () => {
-    handleViewChange('Create new account', null);
+    handleViewChange('Create new GCP account', null);
   }
 
   return (

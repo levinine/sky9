@@ -1,13 +1,19 @@
 functions:
-  stepCreateGcpAccount: # stepCreateGcpAccount
+  stepCreateGcpAccountInDynamo:
     handler: src/handler/account-flow-handler.createAccountInDynamo
-  stepCreateAdGroup: # (add it to G-Suite connector in Azure)
+  stepCreateAdGroup:
     handler: src/handler/account-flow-handler.createAdGroup
     timeout: 30
   stepValidateAdGroup:
     handler: src/handler/account-flow-handler.validateAdGroup
   stepCreateGcpAccount:
     handler: src/handler/account-flow-handler.createGcpAccount
+    # TODO: Remove event http trigger when development is finished
+    events:
+      - http:
+          path: gcp-accounts
+          method: post
+          cors: true
   stepAssignAdGroupAsProjectOwner:
     handler: src/handler/account-flow-handler.assignAdGroupAsProjectOwner
   stepSetBillingAccount:
@@ -33,39 +39,9 @@ stepFunctions:
           Store account in DB:
             Type: Task
             Resource:
-              Fn::GetAtt: [stepCreateGcpAccount, Arn]
+              Fn::GetAtt: [stepCreateGcpAccountInDynamo, Arn]
             TimeoutSeconds: 60
             Next: Create AD group
-          # Create account in AWS:
-          #   Type: Task
-          #   Resource:
-          #     Fn::GetAtt: [stepCreateAwsAccount, Arn]
-          #   TimeoutSeconds: 60
-          #   Retry:
-          #     - ErrorEquals:
-          #         - States.ALL
-          #       IntervalSeconds: 10
-          #       MaxAttempts: 1
-          #       BackoffRate: 1
-          #   Next: Validate AWS account created
-          # Validate AWS account created:
-          #   Type: Task
-          #   Resource:
-          #     Fn::GetAtt: [stepValidateAwsAccount, Arn]
-          #   TimeoutSeconds: 60
-          #   Retry:
-          #     - ErrorEquals:
-          #         - NOT_READY
-          #       IntervalSeconds: 180
-          #       MaxAttempts: 30
-          #       BackoffRate: 1
-          #   Next: Create AWS Budget
-          # Create AWS Budget:
-          #   Type: Task
-          #   Resource:
-          #     Fn::GetAtt: [stepCreateBudget, Arn]
-          #   TimeoutSeconds: 60
-          #   Next: Create AD group
           Create AD group:
             Type: Task
             Resource:
@@ -83,22 +59,34 @@ stepFunctions:
                 IntervalSeconds: 10
                 MaxAttempts: 20
                 BackoffRate: 1
-            # Next: Validate AD group is propagated to AWS SSO
-          # Validate AD group is propagated to AWS SSO:
-          #   Type: Task
-          #   Resource:
-          #     Fn::GetAtt: [stepValidateSsoGroup, Arn]
-          #   TimeoutSeconds: 60
-          #   Retry:
-          #     - ErrorEquals:
-          #         - NOT_READY
-          #       IntervalSeconds: 600
-          #       MaxAttempts: 10
-          #       BackoffRate: 1
-          #   Next: AWS SSO assign group
-          # AWS SSO assign group:
-          #   Type: Task
-          #   Resource:
-          #     Fn::GetAtt: [stepAssignSsoGroup, Arn]
-          #   TimeoutSeconds: 60
-          #   End: true
+            Next: Create account in GCP
+          Create account in GCP:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateGCPAccount, Arn]
+            TimeoutSeconds: 60
+            Next: Assign AD group as project owner
+          Assign AD group as project owner:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepAssignAdGroupAsProjectOwner, Arn]
+            TimeoutSeconds: 60
+            Next: Set billing account
+          Set billing account:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepSetBillingAccount, Arn]
+            TimeoutSeconds: 60
+            Next: Create notification channel
+          Create notification channel:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateNotificationChannel, Arn]
+            TimeoutSeconds: 60
+            Next: Set budget
+          Set budget:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepSetBudget, Arn]
+            TimeoutSeconds: 60
+            End: true

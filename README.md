@@ -24,6 +24,7 @@ Here are the steps to deploy everything for the first time and configure both SS
   aws ssm put-parameter --type String --name "/sky9/$stage/adTenantId" --value "<adTenantId>"
   aws ssm put-parameter --type String --name "/sky9/$stage/adRunbookKey" --value "<adRunbookKey>"
   aws ssm put-parameter --type String --name " /sky9/$stage/gcpAccountKeys" --value '<gcpAccountKeys>'
+  aws ssm put-parameter --type String --name " /sky9/$stage/gcpParentFolderValue" --value '<gcpParentFolderValue>'
   # longer format of command is required because the value is URL
   aws ssm put-parameter --type String --name "/sky9/$stage/adRunbookUrl" --cli-input-json '{ "Name": "/sky9/$stage/adRunbookUrl", "Value": "<adRunbookUrl>", "Type": "String" }'
   ```

@@ -4,6 +4,7 @@ const awsBudgetService = require('../service/aws-budget-service');
 const awsServiceCatalogService = require('../service/aws-service-catalog-service');
 const awsOrganizationService = require('../service/aws-organization-service');
 const activeDirectoryService = require('../service/active-directory-service');
+const { getGcpAuthClient, getGcpAccountKeys } = require('../service/gcp-auth-client-service');
 
 function NotReady(message) {
   this.name = 'NOT_READY';
@@ -13,6 +14,7 @@ NotReady.prototype = new Error();
 
 // AWS methods
 
+// Create account for dynamo for aws
 const createAccount = async (account) => {
   console.log(account);
   try {
@@ -103,6 +105,7 @@ const assignSsoGroup = async (account) => {
 
 // GCP methods
 
+// Create account for dynamo for gcp
 const createAccountInDynamo = async (account) => {
   console.log(account);
   try {
@@ -119,10 +122,28 @@ const createAccountInDynamo = async (account) => {
 
 const createGcpAccount = async (account) => {
   console.log(`Creating GCP account ${JSON.stringify(account)}`);
-  // const provisionAccount = await awsServiceCatalogService.provisionAccount(account);
-  account = await accountService.addAccountHistoryRecord(account.id, 'GCP account creation requested', { provisionAccount }, account.tableName);
-  console.log(`Finished creating GCP account`);
-  return account;
+  // FOR HTTP Trigger uncomment next 3 lines
+  // const httpTemp = JSON.parse(account.body);
+  // const account = httpTemp;
+  // console.log('httpTemp', httpTemp);
+  try {
+    const gcpClient = await getGcpAuthClient();
+    const url = 'https://cloudresourcemanager.googleapis.com/v3/projects';
+    const body = {
+      "projectId": account.name,
+      "displayName": account.name,
+      "parent": `folders/${process.env.GCP_PARENT_FOLDER_VALUE}`
+    }
+    const createdAccount = await gcpClient.request({ method: 'POST', url: url, data: body });
+    // response from gcp -> { "name": "operations/cp.6791935560210989313" }
+    account.gcpCreationResponse = createdAccount;
+    account = await accountService.addAccountHistoryRecord(account.id, 'GCP account creation requested', { account }, account.tableName);
+    console.log(`Finished creating GCP account`, createdAccount);
+    return account;
+  } catch (error) {
+    console.log('GCP account creation step failed', error);
+    throw error;
+  }
 }
 
 const assignAdGroupAsProjectOwner = async (account) => {

@@ -60,8 +60,8 @@ const GcpAccountForm = (props) => {
 
   const validateForm = () => {
     let valid = true;
-    if (!name.length > 0) {
-      displayMessage(setNameError, 'Name is required!');
+    if (!/^[a-z][a-z0-9-]{5,29}$/g.test(name)) {
+      displayMessage(setNameError, 'Name must be 6 to 30 lowercase letters, digits, or hyphens. It must start with a letter.');
       valid = false;
     }
     if (!validateEmail(owner)) {
