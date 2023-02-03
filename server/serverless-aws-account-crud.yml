@@ -1,8 +1,8 @@
 functions:
   CreateAccount:
-    handler: src/handler/account-handler.createAccount
+    handler: src/handler/aws-account-handler.createAccount
   GetAccounts:
-    handler: src/handler/account-handler.getAccounts
+    handler: src/handler/aws-account-handler.getAccounts
     events:
       - http:
           path: accounts
@@ -10,7 +10,7 @@ functions:
           cors: true
           authorizer: ${self:custom.authorizer}
   GetAccount:
-    handler: src/handler/account-handler.getAccount
+    handler: src/handler/aws-account-handler.getAccount
     events:
       - http:
           path: accounts/{id}
@@ -18,7 +18,7 @@ functions:
           cors: true
           authorizer: ${self:custom.authorizer}
   UpdateAccount:
-    handler: src/handler/account-handler.updateAccount
+    handler: src/handler/aws-account-handler.updateAccount
     events:
       - http:
           path: accounts/{id}
@@ -26,9 +26,9 @@ functions:
           cors: true
           authorizer: ${self:custom.authorizer}
   DeleteAccount:
-    handler: src/handler/account-handler.deleteAccount
+    handler: src/handler/aws-account-handler.deleteAccount
   SyncAccounts:
-    handler: src/handler/account-handler.syncAccounts
+    handler: src/handler/aws-account-handler.syncAccounts
     events:
       - http:
           path: sync-accounts
@@ -37,7 +37,7 @@ functions:
           authorizer: ${self:custom.authorizer}
       - schedule: cron(0,30 8-18 * * ? *)
   SyncBudgets:
-    handler: src/handler/account-handler.syncBudgets
+    handler: src/handler/aws-account-handler.syncBudgets
     events:
       - http:
           path: sync-budgets
@@ -46,7 +46,7 @@ functions:
           authorizer: ${self:custom.authorizer}
       - schedule: cron(1,31 8-18 * * ? *)
   SyncOwners:
-    handler: src/handler/account-handler.syncOwners
+    handler: src/handler/aws-account-handler.syncOwners
     events:
       - http:
           path: sync-owners
@@ -55,7 +55,7 @@ functions:
           authorizer: ${self:custom.authorizer}
       - schedule: cron(2,32 8-18 * * ? *)
   CreateBudget:
-    handler: src/handler/account-handler.createBudget
+    handler: src/handler/aws-account-handler.createBudget
   # TODO: remove before release (GCP AUTH example)
   gcpAuth:
     handler: src/handler/gcp-auth-handler.gcpAuth

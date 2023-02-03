@@ -8,6 +8,7 @@ const runbookUrl = process.env.AD_RUNBOOK_URL;
 const runbookKey = process.env.AD_RUNBOOK_KEY;
 const organization = process.env.ORGANIZATION;
 const organizationDomain = process.env.ORGANIZATION_DOMAIN;
+const gcpOrganization = process.env.GCP_ORGANIZATION;
 
 const scope = 'https://graph.microsoft.com/.default';
 const grantType = 'client_credentials';
@@ -92,16 +93,18 @@ const findGroupMemberEmails = async (name) => {
   return [];
 }
 
+// TODO: adjust for GCP (gcpOrganization, runbookKey)
 const execAdRunbook = async (accountName, owner) => {
   const data = {
     'GroupName': `${accountName}-Administrators`,
     'Owner': owner,
-    'AWS_Account_Email': `${accountName}@${organizationDomain}`
+    'AWS_Account_Email': `${accountName}@${organizationDomain}`,
+    // 'GCP_Account_Email': ``
   };
   const config = {
     headers: {
       'content-type': 'application/json',
-      'from': `Sky9-${organization}`,
+      'from': `Sky9-${organization}`, //gcpOrganization
       'Date': new Date().toISOString(),
       'Key': runbookKey
     }

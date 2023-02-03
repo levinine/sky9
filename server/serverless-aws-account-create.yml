@@ -1,22 +1,22 @@
 functions:
   stepCreateAccount:
-    handler: src/handler/account-flow-handler.createAccount
+    handler: src/handler/aws-account-flow-handler.createAccount
   stepCreateAdGroup:
-    handler: src/handler/account-flow-handler.createAdGroup
+    handler: src/handler/aws-account-flow-handler.createAdGroup
     timeout: 30
   stepValidateAdGroup:
-    handler: src/handler/account-flow-handler.validateAdGroup
+    handler: src/handler/aws-account-flow-handler.validateAdGroup
   stepCreateAwsAccount:
-    handler: src/handler/account-flow-handler.createAwsAccount
+    handler: src/handler/aws-account-flow-handler.createAwsAccount
   stepValidateAwsAccount:
-    handler: src/handler/account-flow-handler.validateAwsAccount
+    handler: src/handler/aws-account-flow-handler.validateAwsAccount
     timeout: 30
   stepCreateBudget:
-    handler: src/handler/account-flow-handler.createBudget
+    handler: src/handler/aws-account-flow-handler.createBudget
   stepValidateSsoGroup:
-    handler: src/handler/account-flow-handler.validateSsoGroup
+    handler: src/handler/aws-account-flow-handler.validateSsoGroup
   stepAssignSsoGroup:
-    handler: src/handler/account-flow-handler.assignSsoGroup
+    handler: src/handler/aws-account-flow-handler.assignSsoGroup
 
 stepFunctions:
   stateMachines:

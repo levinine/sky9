@@ -1,24 +1,25 @@
 const AWS = require('aws-sdk');
 const { omit } = require('lodash');
+const { clouds } = require('../utils');
+
+// COMMON Service for DynamoDB handling
 
 const dynamoDB = new AWS.DynamoDB.DocumentClient({
   region: process.env.DYNAMO_DB_REGION,
   endpoint: process.env.DYNAMO_DB_ENDPOINT
 });
 
-// AWS methods
-
-const getAccounts = async () => {
+const getAccounts = async (tableName) => {
   const params = {
-    TableName: process.env.ACCOUNT_TABLE
+    TableName: tableName
   }
   const accounts = await dynamoDB.scan(params).promise();
   return accounts.Items;
 };
 
-const getAccount = async (id) => {
+const getAccount = async (id, tableName) => {
   const params = {
-    TableName: process.env.ACCOUNT_TABLE,
+    TableName: tableName,
     Key: {
       'id': id
     }
@@ -27,18 +28,23 @@ const getAccount = async (id) => {
   return account.Item;
 };
 
-const createAccount = async (account) => {
+const createAccount = async (account, cloud) => {
+
   if (!account.name || !account.owner || !account.ownerFirstName || !account.ownerLastName) {
     console.log(`Can't store account ${JSON.stringify(account)}, missing one of mandatory attributes`);
     throw new Error('Missing one or more of: name, owner, ownerFirstName, ownerLastName');
   }
-  if (!account.name.startsWith(process.env.ORGANIZATION)) {
+  if (cloud === clouds.AWS && !account.name.startsWith(process.env.ORGANIZATION)) {
     account.name = `${process.env.ORGANIZATION}-${account.name}`; 
   }
+  if (cloud === clouds.GCP && !account.name.startsWith(process.env.GCP_ORGANIZATION)) {
+    account.adName = `${process.env.GCP_ORGANIZATION}-${account.name}`; 
+  }
+
   account.id = `${new Date().getTime()}`;
   account.email = `${account.name}@${process.env.ORGANIZATION_DOMAIN}`;
   const params = {
-    TableName: process.env.ACCOUNT_TABLE,
+    TableName: cloud === clouds.AWS ? process.env.ACCOUNT_TABLE : process.env.ACCOUNT_GCP_TABLE,
     Item: account
   }
   await dynamoDB.put(params).promise();
@@ -46,13 +52,13 @@ const createAccount = async (account) => {
 };
 
 const accountAttributes = ['name', 'email', 'owner', 'ownerFirstName', 'ownerLastName', 'budget', 'actualSpend', 'forecastedSpend', 'history', 'awsAccountId', 'createdTime', 'createdBy', 'members'];
-const updateAccount = async (account) => {
+const updateAccount = async (account, tableName) => {
   if (!account.id) {
     throw new Error('Missing account.id');
   }
   const updateAttributes = accountAttributes.filter(a => account[a] !== undefined);
   const params = {
-    TableName: process.env.ACCOUNT_TABLE,
+    TableName: tableName,
     Key: { 'id': account.id },
     UpdateExpression: 'SET ' + updateAttributes.map(a => `#${a} = :${a}`).join(', '),
     ExpressionAttributeNames: updateAttributes.reduce((o, a) => { o['#' + a] = a; return o; }, {}),
@@ -74,7 +80,7 @@ const addAccountHistoryRecord = async (accountId, type, record, tableName) => {
     record = omit(record, 'account.history');
   }
   const updateResponse = await dynamoDB.update({
-    TableName: tableName, // process.env.ACCOUNT_TABLE,
+    TableName: tableName,
     Key: { id: accountId },
     ReturnValues: 'ALL_NEW',
     UpdateExpression: 'set #history = list_append(if_not_exists(#history, :empty_list), :record)',
@@ -89,37 +95,13 @@ const addAccountHistoryRecord = async (accountId, type, record, tableName) => {
   return updateResponse.Attributes;
 }
 
-const deleteAccount = (id) => {
+const deleteAccount = (id, tableName) => {
   const params = {
-    TableName: process.env.ACCOUNT_TABLE,
+    TableName: tableName,
     Key: { 'id': id },
     ReturnValues: 'ALL_OLD'
   }
   return dynamoDB.delete(params).promise();
-};
-
-// GCP methods
-
-const createGcpAccount = async (account) => {
-  // TODO: Remove when is not needed
-  // projectId = name
-  // displayName = projectId
-  // parent = env value
-  if (!account.name || !account.owner || !account.ownerFirstName || !account.ownerLastName) {
-    console.log(`Can't store account ${JSON.stringify(account)}, missing one of mandatory attributes`);
-    throw new Error('Missing one or more of: name, owner, ownerFirstName, ownerLastName');
-  }
-  if (!account.name.startsWith(process.env.ORGANIZATION)) {
-    account.name = `${process.env.ORGANIZATION}-${account.name}`; 
-  }
-  account.id = `${new Date().getTime()}`;
-  account.email = `${account.name}@${process.env.ORGANIZATION_DOMAIN}`;
-  const params = {
-    TableName: process.env.ACCOUNT_GCP_TABLE,
-    Item: account
-  }
-  await dynamoDB.put(params).promise();
-  return account;
 };
 
 module.exports = {
@@ -128,6 +110,5 @@ module.exports = {
   createAccount,
   updateAccount,
   addAccountHistoryRecord,
-  deleteAccount,
-  createGcpAccount // new
+  deleteAccount
 };

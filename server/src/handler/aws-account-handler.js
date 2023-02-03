@@ -2,11 +2,14 @@ const { okResponse, errorResponse } = require('./responses');
 const accountService = require('../service/account-service');
 const accountSyncService = require('../service/account-sync-service');
 const awsBudgetService = require('../service/aws-budget-service');
+const { clouds } = require('../utils');
+
+const tableName = process.env.ACCOUNT_TABLE;
 
 const getAccount = async (event) => {
   try {
     const id = event.pathParameters.id;
-    const account = await accountService.getAccount(id);
+    const account = await accountService.getAccount(id, tableName);
     return okResponse(account);
   } catch (error) {
     return errorResponse(error);
@@ -15,7 +18,7 @@ const getAccount = async (event) => {
 
 const getAccounts = async () => {
   try {
-    const accounts = await accountService.getAccounts();
+    const accounts = await accountService.getAccounts(tableName);
     return okResponse(accounts);
   } catch (error) {
     console.log(error);
@@ -26,7 +29,7 @@ const getAccounts = async () => {
 const createAccount = async (event) => {
   try {
     const data = JSON.parse(event.body);
-    const account = await accountService.createAccount(data);
+    const account = await accountService.createAccount(data, clouds.AWS);
     return okResponse(account);
   } catch (error) {
     console.log('Account creation failed', error);
@@ -39,7 +42,7 @@ const updateAccount = async (event) => {
   try {
     const id = event.pathParameters.id;
     const account = { ...JSON.parse(event.body), id };
-    const updatedAccount = await accountService.updateAccount(account);
+    const updatedAccount = await accountService.updateAccount(account, tableName);
     return okResponse(updatedAccount);
   } catch (error) {
     console.log('Account update failed', error);
@@ -49,7 +52,7 @@ const updateAccount = async (event) => {
 
 const deleteAccount = async event => {
   const id = process.env.accountId || event.accountId;
-  const account = await accountService.deleteAccount(id);
+  const account = await accountService.deleteAccount(id, tableName);
   return account;
 };
 

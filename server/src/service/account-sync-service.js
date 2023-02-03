@@ -8,11 +8,11 @@ const awsBudgetService = require('./aws-budget-service');
 const awsSnsService = require('./aws-sns-service');
 
 const syncAccountsInitial = async () => {
-
+  const tableName = process.env.ACCOUNT_TABLE;
   const cloudtrailAccounts = await awsCloudtrailService.findProvisionedAccounts();
   const serviceCatalogAccounts = await awsServiceCatalogService.listProvisionedAccounts();
   const organizationAccounts = await awsOrganizationService.getOrganizationAccounts();
-  const dynamoDbAccounts = await accountService.getAccounts();
+  const dynamoDbAccounts = await accountService.getAccounts(tableName);
 
   // console.log(`sync accounts ${JSON.stringify({ cloudtrailAccounts, serviceCatalogAccounts, organizationAccounts, dynamoDbAccounts }, null, 2)}`);
 
@@ -66,7 +66,7 @@ const syncAccountsInitial = async () => {
     }
     account = merge(dbAccount, account);
     console.log(`Updating account ${JSON.stringify(omit(account,'history'))}`);
-    await accountService.updateAccount(account);
+    await accountService.updateAccount(account, tableName);
     syncedAccounts.push(account);
   }
   console.log(`Accounts to be put in DynamoDB`, JSON.stringify(syncedAccounts, null, 2), `\n\n`);
@@ -81,13 +81,13 @@ const syncAccountsInitial = async () => {
     // console.log(`Checking DynamoDB account ${dbAccount.name} [${dbAccount.awsAccountId}]`);
     if (!syncedAccounts.find(a => dbAccount.awsAccountId === a.awsAccountId)) {
       console.log(`DynamoDB account ${dbAccount.name} [${dbAccount.awsAccountId}] not matched with any account -> deleting`);
-      await accountService.deleteAccount(dbAccount.id);
+      await accountService.deleteAccount(dbAccount.id, tableName);
     }
   }
 }
 
 const syncAccountsCreatedTime = async () => {
-  const accounts = await accountService.getAccounts();
+  const accounts = await accountService.getAccounts(tableName);
   const serviceCatalogAccounts = await awsServiceCatalogService.listProvisionedAccounts();
   accounts.forEach(async account => {
     console.log(`\nAccount: ${account.awsAccountId}, createdTime: ${JSON.stringify(account.createdTime)}`);
@@ -96,7 +96,7 @@ const syncAccountsCreatedTime = async () => {
       if (oldSync) {
         const newSync = serviceCatalogAccounts.find(scAccount => scAccount.Id === oldSync.record.Id);
         console.log(`Found this in ServiceCatalog: ${JSON.stringify(newSync.CreatedTime)}, updating`);
-        await accountService.updateAccount({ id: account.id, createdTime: JSON.stringify(newSync.CreatedTime).replace(/"/g, '') });
+        await accountService.updateAccount({ id: account.id, createdTime: JSON.stringify(newSync.CreatedTime).replace(/"/g, '') }, tableName);
       } else {
         console.log('Couldn\'t find old sync record');
       }
@@ -107,11 +107,11 @@ const syncAccountsCreatedTime = async () => {
 }
 
 const syncAccountsMembers = async () => {
-  const accounts = await accountService.getAccounts();
+  const accounts = await accountService.getAccounts(tableName);
   for (account of accounts) {
     const members = await activeDirectoryService.findGroupMemberEmails(account.name);
     console.log('syncAccountsMembers: ', account.name, members);
-    await accountService.updateAccount({ id: account.id, members });
+    await accountService.updateAccount({ id: account.id, members }, tableName);
   }
 }
 
@@ -122,7 +122,7 @@ const syncAccounts = async () => {
 const syncBudgets = async () => {
   const budgets = await awsBudgetService.getAllBudgets();
   // console.log('all budgets', JSON.stringify(budgets, null, 2));
-  const accounts = await accountService.getAccounts();
+  const accounts = await accountService.getAccounts(tableName);
   for (const account of accounts) {
     const budget = budgets.find(budget => budget.CostFilters && budget.CostFilters.LinkedAccount && budget.CostFilters.LinkedAccount.includes(account.awsAccountId));
     if (budget) {
@@ -140,7 +140,7 @@ const syncBudgets = async () => {
       const budgetUpdate = { id: account.id };
       budgetUpdate.actualSpend = budget.CalculatedSpend && budget.CalculatedSpend.ActualSpend && budget.CalculatedSpend.ActualSpend.Amount || "0";
       budgetUpdate.forecastedSpend = budget.CalculatedSpend && budget.CalculatedSpend.ForecastedSpend && budget.CalculatedSpend.ForecastedSpend.Amount || "0";
-      await accountService.updateAccount(budgetUpdate);
+      await accountService.updateAccount(budgetUpdate, tableName);
     } else {
       if (account.budget) {
         console.log(`No budget created for account ${account.name} [${account.awsAccountId}] $${account.budget}. Creating...`);
@@ -158,7 +158,7 @@ const syncBudgets = async () => {
 // - is owner in DynamoDB also the owner of AD group
 const syncOwners = async () => {
   console.log(`Checking account owners`);
-  const accounts = await accountService.getAccounts();
+  const accounts = await accountService.getAccounts(tableName);
   // const user = await activeDirectoryService.findUserByEmail('d.predarski@levi9.com');
   for (const account of accounts) {
     const user = await activeDirectoryService.findUserByEmail(account.owner);
