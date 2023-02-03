@@ -11,6 +11,7 @@
   "adRunbookKey": "API key for Runbook",
   "gcpAccountKeys": "JSON for Service account access, it contains privete key for auth and other service values",
   "gcpParentFolderValue": "Value of gcp parent project",
-  "gcpOrganization": "Name of gcp organization"
+  "gcpOrganization": "Name of gcp organization",
+  "gcpBillingAccountId": "Value of billing account id"
 
 }

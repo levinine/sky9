@@ -16,13 +16,18 @@ functions:
     #       cors: true
   stepAssignAdGroupAsProjectOwner:
     handler: src/handler/gcp-account-flow-handler.assignAdGroupAsProjectOwner
+    # events:
+    #   - http:
+    #       path: gcp-accounts
+    #       method: post
+    #       cors: true
+  stepSetBillingAccount:
+    handler: src/handler/gcp-account-flow-handler.setBillingAccount
     events:
       - http:
           path: gcp-accounts
           method: post
           cors: true
-  stepSetBillingAccount:
-    handler: src/handler/gcp-account-flow-handler.setBillingAccount
   stepCreateNotificationChannel:
     handler: src/handler/gcp-account-flow-handler.createNotificationChannel
   stepSetBudget:
