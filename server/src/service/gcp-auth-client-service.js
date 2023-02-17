@@ -5,7 +5,7 @@ let client = null;
 
 const getGcpAccountKeys = async () => {
   try {
-    return JSON.parse(process.env.GCP_SERVICE_ACCOUNT);
+    return JSON.parse(process.env.GCP_SERVICE_ACCOUNT_KEYS);
   } catch (e) {
     console.log('error while fetching gcp keys', e);
     return null;

@@ -10,7 +10,7 @@ function NotReady(message) {
 }
 NotReady.prototype = new Error();
 
-// Create account for dynamo for gcp
+// Create account for gcp in dynamo
 const createAccount = async (account) => {
     console.log(account);
     try {
@@ -106,7 +106,7 @@ const setBillingAccount = async (account) => {
   console.log(`Setting GCP billing account ${JSON.stringify(account)}`);
   try {
     const gcpClient = await getGcpAuthClient();
-    const url = `https://cloudbilling.googleapis.com/v1/projects/${account.name}/billingInfo`; // PROJECT_ID
+    const url = `https://cloudbilling.googleapis.com/v1/projects/${account.name}/billingInfo`; // name = PROJECT_ID
     const body = {
       "billingAccountName": `billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}`
     }
@@ -121,20 +121,89 @@ const setBillingAccount = async (account) => {
 }
 
 const createNotificationChannel = async (account) => {
-  // console.log(`Creating GCP account ${JSON.stringify(account)}`);
-  // const provisionAccount = await awsServiceCatalogService.provisionAccount(account);
-  account = await accountService.addAccountHistoryRecord(account.id, 'GCP create notification channel', { provisionAccount }, account.tableName);
-  console.log(`Finished creation of notification channel`);
-  return account;
+  console.log(`Creating GCP Notification channel and setting project budget, ${JSON.stringify(account)}`);
+  try {
+    const gcpClient = await getGcpAuthClient();
+    const gcpAccountKeys = await getGcpAccountKeys();
+  
+    const url = `https://monitoring.googleapis.com/v3/projects/${gcpAccountKeys.project_id}/notificationChannels`;
+    const body = {
+      "type": "email",
+      "displayName": `${account.ownerFirstName} ${account.ownerLastName}`,
+      "labels": {
+        "email_address": account.owner
+      }
+    };
+  
+    const createdNotification = await gcpClient.request({ method: 'POST', url, data: body });
+    account.notificationChannelId = createdNotification.data.name;
+    
+    account = await accountService.addAccountHistoryRecord(account.id, 'GCP create notification channel', { account }, account.tableName);
+    console.log(`Finished creation of notification channel`);
+    return account;
+  } catch (error) {
+    console.log('Creation of notification channel failed', error);
+    throw error;
+  }
 }
 
-
 const setBudget = async (account) => {
-  // console.log(`Creating GCP account ${JSON.stringify(account)}`);
-  // const provisionAccount = await awsServiceCatalogService.provisionAccount(account);
-  account = await accountService.addAccountHistoryRecord(account.id, 'GCP set budget', { provisionAccount }, account.tableName);
-  console.log(`Finished setting budget`);
-  return account;
+  console.log(`Setting GCP project budget ${JSON.stringify(account)}`);
+  try {
+    const gcpClient = await getGcpAuthClient();
+    const url = `https://billingbudgets.googleapis.com/v1/billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}/budgets`;
+    const body = {
+      "displayName": `${account.name}-budget`,
+      "budgetFilter": {
+        "projects": [
+          `projects/${account.name}`
+        ],
+        "creditTypesTreatment": "INCLUDE_ALL_CREDITS",
+        "calendarPeriod": "MONTH"
+      },
+      "amount": {
+        "specifiedAmount": {
+          "currencyCode": "USD",
+          "units": `${account.budget}`
+        }
+      },
+      "thresholdRules": [
+        {
+          "thresholdPercent": 0.5,
+          "spendBasis": "CURRENT_SPEND"
+        },
+        {
+          "thresholdPercent": 0.9,
+          "spendBasis": "CURRENT_SPEND"
+        },
+        {
+          "thresholdPercent": 1,
+          "spendBasis": "CURRENT_SPEND"
+        },
+        {
+          "thresholdPercent": 1.2,
+          "spendBasis": "CURRENT_SPEND"
+        },
+        {
+          "thresholdPercent": 0.9,
+          "spendBasis": "FORECASTED_SPEND"
+        }
+      ],
+      "notificationsRule": {
+        "monitoringNotificationChannels": [
+          `${account.notificationChannelId}`
+        ]
+      }
+    };
+  
+    await gcpClient.request({ method: 'POST', url, data: body });
+    account = await accountService.addAccountHistoryRecord(account.id, 'GCP set project budget', { account }, account.tableName);
+    console.log(`Finished setting of project budget`);
+    return account;
+  } catch (error) {
+    console.log('Setting of project budget failed', error);
+    throw error;
+  }
 }
 
 module.exports = {
