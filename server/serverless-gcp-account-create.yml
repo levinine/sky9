@@ -1,27 +1,32 @@
 functions:
-  stepCreateGcpAccountInDynamo:
-    handler: src/handler/account-flow-handler.createAccountInDynamo
+  stepCreateAccount:
+    handler: src/handler/gcp-account-flow-handler.createAccount
   stepCreateAdGroup:
-    handler: src/handler/account-flow-handler.createAdGroup
+    handler: src/handler/gcp-account-flow-handler.createAdGroup
     timeout: 30
   stepValidateAdGroup:
-    handler: src/handler/account-flow-handler.validateAdGroup
+    handler: src/handler/gcp-account-flow-handler.validateAdGroup
   stepCreateGcpAccount:
-    handler: src/handler/account-flow-handler.createGcpAccount
+    handler: src/handler/gcp-account-flow-handler.createGcpAccount
     # TODO: Remove event http trigger when development is finished
+    # events:
+    #   - http:
+    #       path: gcp-accounts
+    #       method: post
+    #       cors: true
+  stepAssignAdGroupAsProjectOwner:
+    handler: src/handler/gcp-account-flow-handler.assignAdGroupAsProjectOwner
     events:
       - http:
           path: gcp-accounts
           method: post
           cors: true
-  stepAssignAdGroupAsProjectOwner:
-    handler: src/handler/account-flow-handler.assignAdGroupAsProjectOwner
   stepSetBillingAccount:
-    handler: src/handler/account-flow-handler.setBillingAccount
+    handler: src/handler/gcp-account-flow-handler.setBillingAccount
   stepCreateNotificationChannel:
-    handler: src/handler/account-flow-handler.createNotificationChannel
+    handler: src/handler/gcp-account-flow-handler.createNotificationChannel
   stepSetBudget:
-    handler: src/handler/account-flow-handler.setBudget
+    handler: src/handler/gcp-account-flow-handler.setBudget
 
 stepFunctions:
   stateMachines:
@@ -39,7 +44,7 @@ stepFunctions:
           Store account in DB:
             Type: Task
             Resource:
-              Fn::GetAtt: [stepCreateGcpAccountInDynamo, Arn]
+              Fn::GetAtt: [stepCreateAccount, Arn]
             TimeoutSeconds: 60
             Next: Create AD group
           Create AD group:
@@ -63,7 +68,7 @@ stepFunctions:
           Create account in GCP:
             Type: Task
             Resource:
-              Fn::GetAtt: [stepCreateGCPAccount, Arn]
+              Fn::GetAtt: [stepCreateGcpAccount, Arn]
             TimeoutSeconds: 60
             Next: Assign AD group as project owner
           Assign AD group as project owner:
