@@ -15,6 +15,7 @@ default: &default
   GCP_SERVICE_ACCOUNT: ${ssm:/sky9/${self:provider.stage}/gcpAccountKeys}
   GCP_PARENT_FOLDER_VALUE: ${ssm:/sky9/${self:provider.stage}/gcpParentFolderValue}
   GCP_ORGANIZATION: ${ssm:/sky9/${self:provider.stage}/gcpOrganization}
+  GCP_BILLING_ACCOUNT_ID: ${ssm:/sky9/${self:provider.stage}/gcpBillingAccountId}
 
 local:
   <<: *default

@@ -75,7 +75,7 @@ const createGcpAccount = async (account) => {
 }
 
 const assignAdGroupAsProjectOwner = async (account) => {
-  console.log(`Assign ad group as ${JSON.stringify(account1)}`);
+  console.log(`Assign ad group as project owner ${JSON.stringify(account)}`);
   // FOR HTTP Trigger uncomment next 2 lines
   // const httpTemp = JSON.parse(account.body);
   // const account = httpTemp;
@@ -103,11 +103,21 @@ const assignAdGroupAsProjectOwner = async (account) => {
 }
 
 const setBillingAccount = async (account) => {
-  // console.log(`Creating GCP account ${JSON.stringify(account)}`);
-  // const provisionAccount = await awsServiceCatalogService.provisionAccount(account);
-  account = await accountService.addAccountHistoryRecord(account.id, 'GCP set billing account', { provisionAccount }, account.tableName);
-  console.log(`Finished setting billing account`);
-  return account;
+  console.log(`Setting GCP billing account ${JSON.stringify(account)}`);
+  try {
+    const gcpClient = await getGcpAuthClient();
+    const url = `https://cloudbilling.googleapis.com/v1/projects/${account.name}/billingInfo`; // PROJECT_ID
+    const body = {
+      "billingAccountName": `billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}`
+    }
+    await gcpClient.request({ method: 'PUT', url: url, data: body });
+    account = await accountService.addAccountHistoryRecord(account.id, 'GCP set billing account', { account }, account.tableName);
+    console.log(`Finished setting GCP billing account`);
+    return account;
+  } catch (error) {
+    console.log('Setting GCP billing account failed', error);
+    throw error;
+  }
 }
 
 const createNotificationChannel = async (account) => {
