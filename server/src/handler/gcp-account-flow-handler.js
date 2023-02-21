@@ -121,7 +121,7 @@ const setBillingAccount = async (account) => {
 }
 
 const createNotificationChannel = async (account) => {
-  console.log(`Creating GCP Notification channel and setting project budget, ${JSON.stringify(account)}`);
+  console.log(`Creating GCP Notification channel ${JSON.stringify(account)}`);
   try {
     const gcpClient = await getGcpAuthClient();
     const gcpAccountKeys = await getGcpAccountKeys();
@@ -168,26 +168,11 @@ const setBudget = async (account) => {
         }
       },
       "thresholdRules": [
-        {
-          "thresholdPercent": 0.5,
-          "spendBasis": "CURRENT_SPEND"
-        },
-        {
-          "thresholdPercent": 0.9,
-          "spendBasis": "CURRENT_SPEND"
-        },
-        {
-          "thresholdPercent": 1,
-          "spendBasis": "CURRENT_SPEND"
-        },
-        {
-          "thresholdPercent": 1.2,
-          "spendBasis": "CURRENT_SPEND"
-        },
-        {
-          "thresholdPercent": 0.9,
-          "spendBasis": "FORECASTED_SPEND"
-        }
+        { "thresholdPercent": 0.5, "spendBasis": "CURRENT_SPEND" },
+        { "thresholdPercent": 0.9, "spendBasis": "CURRENT_SPEND" },
+        { "thresholdPercent": 1, "spendBasis": "CURRENT_SPEND" },
+        { "thresholdPercent": 1.2, "spendBasis": "CURRENT_SPEND" },
+        { "thresholdPercent": 0.9, "spendBasis": "FORECASTED_SPEND" }
       ],
       "notificationsRule": {
         "monitoringNotificationChannels": [
