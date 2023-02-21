@@ -23,11 +23,6 @@ functions:
     #       cors: true
   stepSetBillingAccount:
     handler: src/handler/gcp-account-flow-handler.setBillingAccount
-    events:
-      - http:
-          path: gcp-accounts
-          method: post
-          cors: true
   stepCreateNotificationChannel:
     handler: src/handler/gcp-account-flow-handler.createNotificationChannel
   stepSetBudget:
