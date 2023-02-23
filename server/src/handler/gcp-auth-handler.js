@@ -2,8 +2,9 @@ const { okResponse, errorResponse } = require('./responses');
 const { getGcpAuthClient, getGcpAccountKeys } = require('../service/gcp-auth-client-service');
 const { BigQuery } = require('@google-cloud/bigquery');
 
+// Works with creds as a json
 // const options = {
-//   keyFilename: './root-srb-project-56264-195e99a6d9ea (1).json',
+//   keyFilename: './root-srb-project-56264-195e99a6d9ea.json',
 //   projectId: 'root-srb-project-56264',
 // };
 
@@ -33,24 +34,30 @@ const runBigQuery = async (event) => {
   // const query = `SELECT * from ${project_id}.${datasetId}.${tableId} LIMIT 1000`;
   const gcpAccountKeys = await getGcpAccountKeys();
 
+  console.log('gcpAccountKeys', gcpAccountKeys);
+
   const creds = {
     client_email: gcpAccountKeys.client_email,
     private_key: gcpAccountKeys.private_key,
-    projectId: gcpAccountKeys.project_id,
+    // projectId: gcpAccountKeys.project_id,
   };
+
+  // client_email?: string;
+  // private_key?: string;
 
   const bigquery = new BigQuery(credentials = creds);
 
 
-  const query = `SELECT * FROM $${gcpAccountKeys.project_id}.${'all_billing_data_srb'}.${'gcp_billing_export_resource_v1_0157C8_014F5A_85A508'}`;
+  const query = `SELECT * FROM ${gcpAccountKeys.project_id}.${'all_billing_data_srb'}.${'gcp_billing_export_resource_v1_0157C8_014F5A_85A508'} LIMIT 1`;
   const options = {
     query,
+    // location: 'US'
     // location // add it
   };
   // GOOGLE_APPLICATION_CREDENTIALS='C:/path/to/project/client_secret.json'
-  // const [job] = await bigquery.createQueryJob(options);
-  const [job] = await bigquery.query(options);
-  console.log('job', job);
+  const [job] = await bigquery.createQueryJob(options);
+  // const response = await bigquery.query(options);
+  // console.log('job', job);
 
   const [rows] = await job.getQueryResults();
   console.log('rows', rows);
