@@ -12,5 +12,6 @@
   "gcpAccountKeys": "JSON for Service account access, it contains privete key for auth and other service values",
   "gcpParentFolderValue": "Value of gcp parent project",
   "gcpOrganization": "Name of gcp organization",
-  "gcpBillingAccountId": "Value of billing account id"
+  "gcpBillingAccountId": "Value of billing account id",
+  "gcpBudgetSubscriptionId": "Subscription ID for pulling 'budget update messages' from gcp pubsub. Using for syncing budgets between GCP and AWS DynamoDB"
 }
