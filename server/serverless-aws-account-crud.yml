@@ -56,11 +56,3 @@ functions:
       - schedule: cron(2,32 8-18 * * ? *)
   CreateBudget:
     handler: src/handler/aws-account-handler.createBudget
-  # TODO: remove before release (GCP AUTH example)
-  gcpAuth:
-    handler: src/handler/gcp-auth-handler.gcpAuth
-    events:
-      - http:
-          path: gcp/auth
-          method: get
-          cors: true

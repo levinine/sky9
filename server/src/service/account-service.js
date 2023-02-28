@@ -51,7 +51,7 @@ const createAccount = async (account, cloud) => {
   return account;
 };
 
-const accountAttributes = ['name', 'email', 'owner', 'ownerFirstName', 'ownerLastName', 'budget', 'actualSpend', 'forecastedSpend', 'history', 'awsAccountId', 'createdTime', 'createdBy', 'members'];
+const accountAttributes = ['name', 'email', 'owner', 'ownerFirstName', 'ownerLastName', 'budget', 'actualSpend', 'forecastedSpend', 'history', 'awsAccountId', 'gcpProjectId', 'createdTime', 'createdBy', 'members'];
 const updateAccount = async (account, tableName) => {
   if (!account.id) {
     throw new Error('Missing account.id');

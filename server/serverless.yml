@@ -47,8 +47,10 @@ provider:
     GCP_PARENT_FOLDER_VALUE: ${ssm:/sky9/${self:provider.stage}/gcpParentFolderValue, "320110726660"}
     GCP_ORGANIZATION: ${ssm:/sky9/${self:provider.stage}/gcpOrganization, "GCP-SRB"}
     GCP_BILLING_ACCOUNT_ID: ${ssm:/sky9/${self:provider.stage}/gcpBillingAccountId, "123123"}
+    GCP_BUDGET_SUBSCRIPTION_ID: ${ssm:/sky9/${self:provider.stage}/gcpBudgetSubscriptionId, "example-budget-sub"}
 
 plugins:
+  - serverless-offline-scheduler
   - serverless-pseudo-parameters
   - serverless-dynamodb-local
   - serverless-offline
@@ -59,6 +61,7 @@ functions:
   - ${file(./serverless-aws-account-create.yml):functions}
   - ${file(./serverless-aws-account-crud.yml):functions}
   - ${file(./serverless-gcp-account-create.yml):functions}
+  - ${file(./serverless-gcp-account-crud.yml):functions}
 
 stepFunctions:
   - ${file(./serverless-aws-account-create.yml):stepFunctions}

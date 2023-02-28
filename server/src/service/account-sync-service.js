@@ -7,8 +7,9 @@ const activeDirectoryService = require('./active-directory-service');
 const awsBudgetService = require('./aws-budget-service');
 const awsSnsService = require('./aws-sns-service');
 
+const tableName = process.env.ACCOUNT_TABLE;
+
 const syncAccountsInitial = async () => {
-  const tableName = process.env.ACCOUNT_TABLE;
   const cloudtrailAccounts = await awsCloudtrailService.findProvisionedAccounts();
   const serviceCatalogAccounts = await awsServiceCatalogService.listProvisionedAccounts();
   const organizationAccounts = await awsOrganizationService.getOrganizationAccounts();

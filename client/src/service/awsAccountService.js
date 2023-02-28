@@ -4,6 +4,7 @@ import * as utils from '../components/utils';
 const getAccounts = async () => {
   try {
     console.log('AWS GET ACCOUNTS');
+    // TODO: uncomment before deployment
     // const accounts = await API.get('accounts', '/accounts');
     // return accounts;
     return utils.awsMocksAccounts; 
