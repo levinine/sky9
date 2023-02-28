@@ -2,6 +2,7 @@ const { okResponse, errorResponse } = require('./responses');
 const { getGcpAuthClient, getGcpAccountKeys } = require('../service/gcp-auth-client-service');
 const { groupBy, mapValues, orderBy } = require('lodash');
 const accountService = require('../service/account-service');
+const pubSubService = require('../service/gcp-pubsub-service');
 
 // TODO: remove before release (GCP AUTH example)
 const gcpAuth = async (event) => {
@@ -22,39 +23,6 @@ const gcpAuth = async (event) => {
   }
 };
 
-// TODO - maybe move it to gcp pubsub service
-const acknowledgeMessages = async (ids) => {
-  const gcpClient = await getGcpAuthClient();
-  const gcpAccountKeys = await getGcpAccountKeys();
-
-  const subscription = `projects/${gcpAccountKeys.project_id}/subscriptions/${process.env.GCP_BUDGET_SUBSCRIPTION_ID}`;
-  const url = `https://pubsub.googleapis.com/v1/${subscription}:acknowledge`
-  const body = {
-    ackIds: ids
-  };
-  return await gcpClient.request({ method: 'POST', url, data: body});
-}
-
-// TODO - maybe move it to gcp pubsub service
-const getMessages = async () => {
-  const gcpClient = await getGcpAuthClient();
-  const gcpAccountKeys = await getGcpAccountKeys();
-
-  const subscription = `projects/${gcpAccountKeys.project_id}/subscriptions/${process.env.GCP_BUDGET_SUBSCRIPTION_ID}`;
-  const url = `https://pubsub.googleapis.com/v1/${subscription}:pull`;
-  const body = {
-    maxMessages: 1000
-  };
-  const response = await gcpClient.request({ method: 'POST', url, data: body});
-  // TODO - remove (used for testing purpose)
-  // const response = {
-  //   data: {
-  //     receivedMessages: mockedRawMessages
-  //   }
-  // }
-  return response;
-}
-
 // Description
 // GCP does not have an API for getting spent budget per account
 // Instead of that, we activated budget notification (on budget threshold) to be sent to pubsub topic.
@@ -64,11 +32,11 @@ const syncBudgets = async (event) => {
 
   try {
   // get message from gcp pub/sub
-  let messagesResponse = await getMessages();
+  let messagesResponse = await pubSubService.getMessages();
   const rawMessages = messagesResponse.data.receivedMessages || [];
 
   // encode message content
-  const messages = rawMessages.map((message, index) => {
+  const messages = rawMessages.map((message) => {
     const data = Buffer.from(message.message.data, 'base64');
     return JSON.parse(data.toString());
   });
@@ -103,15 +71,15 @@ const syncBudgets = async (event) => {
 
   // purge processed messages
   const ackIds = rawMessages.map(message => message.ackId);
-  await acknowledgeMessages(ackIds);
+  await pubSubService.acknowledgeMessages(ackIds);
   console.log('acknowledge messages finished');
 
   // call for a new batch of messages
   if (messages.length) {
-    syncBudgets();
+    await syncBudgets();
   }
  
-  return okResponse({ success: true, message: 'Budget sync is in progress' });
+  return okResponse({ success: true, message: 'Budget sync is done' });
   } catch (error) {
     console.log('Budget sync failed', error);
     return errorResponse({ statusCode: 500, message: 'Budget sync failed'});

@@ -10,6 +10,7 @@ functions:
           # authorizer: ${self:custom.authorizer}
   syncBudgets:
     handler: src/handler/gcp-account-handler.syncBudgets
+    timeout: 300
     events:
       - http:
           path: gcp/sync-budgets
