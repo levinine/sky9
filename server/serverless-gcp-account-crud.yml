@@ -14,7 +14,7 @@ functions:
     events:
       - http:
           path: gcp/sync-budgets
-          method: get # TODO: make post (node version issue)
+          method: post # use node v15.14.0 (otherwise post api does not work)
           cors: true
           # TODO uncomment authorizer before deployment
           # authorizer: ${self:custom.authorizer}
@@ -25,7 +25,7 @@ functions:
     events:
       - http:
           path: gcp/sync-accounts
-          method: get # TODO: make post (node version issue)
+          method: post
           cors: true
           # TODO uncomment authorizer before deployment
           # authorizer: ${self:custom.authorizer}
@@ -35,7 +35,7 @@ functions:
     events:
       - http:
           path: gcp/sync-owners
-          method: get # TODO: make post (node version issue)
+          method: post
           cors: true
           # TODO uncomment authorizer before deployment
           # authorizer: ${self:custom.authorizer}
