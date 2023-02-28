@@ -1,9 +1,6 @@
 const { okResponse, errorResponse } = require('./responses');
 const { getGcpAuthClient, getGcpAccountKeys } = require('../service/gcp-auth-client-service');
-const { groupBy, mapValues, orderBy } = require('lodash');
-const accountService = require('../service/account-service');
 const accountSyncService = require('../service/gcp-account-sync-service');
-const pubSubService = require('../service/gcp-pubsub-service');
 
 // TODO: remove before release (GCP AUTH example)
 const gcpAuth = async (event) => {
@@ -29,57 +26,9 @@ const gcpAuth = async (event) => {
 // Lambda task: Fetching messages from topic and updating account/project 'spent amount' value in AWS Dynamodb Table
 // Lambda will retrigger new execution if there are more messages to be proceeded
 const syncBudgets = async (event) => {
-
   try {
-  // get message from gcp pub/sub
-  let messagesResponse = await pubSubService.getMessages();
-  const rawMessages = messagesResponse.data.receivedMessages || [];
-
-  // encode message content
-  const messages = rawMessages.map((message) => {
-    const data = Buffer.from(message.message.data, 'base64');
-    return JSON.parse(data.toString());
-  });
-
-  // sort budget per name and costAmount (possible duplicates)
-  const sortedBudgets = mapValues(groupBy(messages, message => message.budgetDisplayName), object => orderBy(object, 'costAmount', 'desc'));
-
-  // get existing accounts from dynamodb
-  const tableName = process.env.ACCOUNT_GCP_TABLE;
-  const accounts = await accountService.getAccounts(tableName);
-
-  // const dynamoAccounts = accounts.map(account => { return { name: account.name, id: account.id, actualSpend: account.actualSpend } });
-
-  // budget name === ${account/project name} + ${suffix '-budget'}
-  const budgetNames = Object.keys(sortedBudgets);
-
-  const events = [];
-  // iterate through budget messages from pubsub and pick accounts for update
-  budgetNames.forEach(budgetName => {
-    const accountName = budgetName.replace('-budget', '');
-    const accountForUpdate = accounts.find(account => account.name === accountName);
-    // if condition is true, call dynamodb and update account actualSpend value
-    if (accountForUpdate && Number(accountForUpdate.actualSpend) < Number(sortedBudgets[budgetName][0].costAmount)) {
-      console.log(`Update budget for: ${accountForUpdate.id} - ${accountForUpdate.name}, old cost ${accountForUpdate.actualSpend}, new cost ${sortedBudgets[budgetName][0].costAmount}`)
-      // TODO call dynamo for item update, uncomment real call to dynamoDB
-      // get the biggest sorted value for actualSpend (because of message duplicates)
-      // events.push(accountService.updateAccount({ id: accountForUpdate.id, actualSpend: `${sortedBudgets[name][0].costAmount}` }, tableName));
-      events.push(Promise.resolve(accountForUpdate.name));
-    }
-  })
-  await Promise.all(events);
-
-  // purge processed messages
-  const ackIds = rawMessages.map(message => message.ackId);
-  await pubSubService.acknowledgeMessages(ackIds);
-  console.log('acknowledge messages finished');
-
-  // call for a new batch of messages
-  if (messages.length) {
-    await syncBudgets();
-  }
- 
-  return okResponse({ success: true, message: 'Budget sync is done' });
+    await accountSyncService.syncBudgets();
+    return okResponse({ success: true, message: 'Budget sync is done' });
   } catch (error) {
     console.log('Budget sync failed', error);
     return errorResponse({ statusCode: 500, message: 'Budget sync failed'});

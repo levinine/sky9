@@ -14,7 +14,7 @@ functions:
     events:
       - http:
           path: gcp/sync-budgets
-          method: post
+          method: get # TODO: make post (node version issue)
           cors: true
           # TODO uncomment authorizer before deployment
           # authorizer: ${self:custom.authorizer}
@@ -25,7 +25,7 @@ functions:
     events:
       - http:
           path: gcp/sync-accounts
-          method: post
+          method: get # TODO: make post (node version issue)
           cors: true
           # TODO uncomment authorizer before deployment
           # authorizer: ${self:custom.authorizer}
@@ -35,7 +35,7 @@ functions:
     events:
       - http:
           path: gcp/sync-owners
-          method: post
+          method: get # TODO: make post (node version issue)
           cors: true
           # TODO uncomment authorizer before deployment
           # authorizer: ${self:custom.authorizer}

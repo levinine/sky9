@@ -49,7 +49,7 @@ const updateAccount = async account => {
 
 const syncAccounts = async () => {
   try {
-    await API.post('gcp-accounts', '/gcp/sync-accounts');
+    await API.get('gcp-accounts', '/gcp/sync-accounts'); // TODO: make post (node version issue)
     console.log('GCP SYNC ACCOUNTS');
   } catch (error) {
     console.log(error);
@@ -58,7 +58,7 @@ const syncAccounts = async () => {
 
 const syncBudgets = async () => {
   try {
-    await API.post('gcp-accounts', '/gcp/sync-budgets');
+    await API.get('gcp-accounts', '/gcp/sync-budgets'); // TODO: make post (node version issue)
     console.log('GCP SYNC BUDGETS');
   } catch (error) {
     console.log(error);
@@ -67,7 +67,7 @@ const syncBudgets = async () => {
 
 const syncOwners = async () => {
   try {
-    await API.post('gcp-accounts', '/gcp/sync-owners');
+    await API.get('gcp-accounts', '/gcp/sync-owners'); // TODO: make post (node version issue)
     console.log('GCP SYNC OWNERS');
   } catch (error) {
     console.log(error);
