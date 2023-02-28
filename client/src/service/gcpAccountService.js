@@ -3,7 +3,7 @@ import * as utils from '../components/utils';
 
 const getAccounts = async () => {
   try {
-    // const accounts = await API.get('accounts', '/accounts');
+    // const accounts = await API.get('gcp-accounts', '/accounts');
     // return accounts;
     console.log('GCP GET ACCOUNTS');
     return utils.gcpMockAccounts;
@@ -15,7 +15,7 @@ const getAccounts = async () => {
 
 const getAccount = async id => {
   try {
-    // const account = await API.get('accounts', '/accounts/' + id);
+    // const account = await API.get('gcp-accounts', '/accounts/' + id);
     // return account;
     console.log('GCP GET ACCOUN');
     return {};
@@ -38,7 +38,7 @@ const createAccount = account => {
 
 const updateAccount = async account => {
   try {
-    // const updatedAccount = await API.put('accounts', '/accounts/' + account.id, { body: account });
+    // const updatedAccount = await API.put('gcp-accounts', '/accounts/' + account.id, { body: account });
     // return updatedAccount;
     console.log('GCP UPDATE ACCOUNT');
     return {};
@@ -49,7 +49,7 @@ const updateAccount = async account => {
 
 const syncAccounts = async () => {
   try {
-    // await API.post('accounts', '/sync-accounts');
+    // await API.post('gcp-accounts', '/sync-accounts');
     console.log('GCP SYNC ACCOUNTS');
   } catch (error) {
     console.log(error);
@@ -58,7 +58,7 @@ const syncAccounts = async () => {
 
 const syncBudgets = async () => {
   try {
-    // await API.post('accounts', '/sync-budgets');
+    await API.get('gcp-accounts', '/gcp/sync-budgets');
     console.log('GCP SYNC BUDGETS');
   } catch (error) {
     console.log(error);
@@ -67,7 +67,7 @@ const syncBudgets = async () => {
 
 const syncOwners = async () => {
   try {
-    // await API.post('accounts', '/sync-owners');
+    // await API.post('gcp-accounts', '/sync-owners');
     console.log('GCP SYNC OWNERS');
   } catch (error) {
     console.log(error);

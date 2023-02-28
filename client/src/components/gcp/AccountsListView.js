@@ -78,10 +78,6 @@ const GcpAccountsListView = (props) => {
   //   await accountService.syncAccounts();
   //   refreshList();
   // }
-  // const syncBudgets = async () => {
-  //   await accountService.syncBudgets();
-  //   refreshList();
-  // }
   // const syncOwners = async () => {
   //   await accountService.syncOwners();
   //   refreshList();
@@ -90,16 +86,19 @@ const GcpAccountsListView = (props) => {
   const newAccount = () => {
     handleViewChange('Create new GCP account', null);
   }
-
+  const syncBudgets = async () => {
+    await accountService.syncBudgets();
+    refreshList();
+  }
   return (
     <div>
       <SearchField onChange={handleChange} searchTerm={searchTerm} />
       <Form>
         <FormGroup>
           {/* <Button className='mr-2' variant='primary' onClick={() => syncAccounts()}>Sync Accounts</Button>
-          <Button className='mr-2' variant='primary' onClick={() => syncBudgets()}>Sync Budgets</Button>
           <Button className='mr-2' variant='primary' onClick={() => syncOwners()}>Sync Owners</Button> */}
           <Button className='mr-2' variant='primary' onClick={() => newAccount()}>New Account</Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncBudgets()}>Sync Budgets</Button>
         </FormGroup>
       </Form>
 

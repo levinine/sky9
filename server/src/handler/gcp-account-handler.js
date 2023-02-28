@@ -12,7 +12,6 @@ const gcpAuth = async (event) => {
     if (gcpClient && gcpAccountKeys) {
       const url = `https://cloudresourcemanager.googleapis.com/v3/projects/${gcpAccountKeys.project_id}`;
       const res = await gcpClient.request({url});
-      console.log('res', res);
       return okResponse({gcp: true, success: true, result: res.data});
     } else {
       throw new Error('Cannot fetch gcp account keys or client');
@@ -62,7 +61,7 @@ const syncBudgets = async (event) => {
     if (accountForUpdate && Number(accountForUpdate.forecastedSpend) < Number(sortedBudgets[budgetName][0].costAmount)) {
       console.log(`Update budget for: ${accountForUpdate.id} - ${accountForUpdate.name}, old cost ${accountForUpdate.forecastedSpend}, new cost ${sortedBudgets[budgetName][0].costAmount}`)
       // TODO call dynamo for item update, uncomment real call to dynamoDB
-      // get the biggest sorted value for forecastedSpend (because of message duplicate)
+      // get the biggest sorted value for forecastedSpend (because of message duplicates)
       // events.push(accountService.updateAccount({ id: accountForUpdate.id, forecastedSpend: `${sortedBudgets[name][0].costAmount}` }, tableName));
       events.push(Promise.resolve(accountForUpdate.name));
     }
