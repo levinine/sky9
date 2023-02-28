@@ -2,6 +2,7 @@ const { okResponse, errorResponse } = require('./responses');
 const { getGcpAuthClient, getGcpAccountKeys } = require('../service/gcp-auth-client-service');
 const { groupBy, mapValues, orderBy } = require('lodash');
 const accountService = require('../service/account-service');
+const accountSyncService = require('../service/gcp-account-sync-service');
 const pubSubService = require('../service/gcp-pubsub-service');
 
 // TODO: remove before release (GCP AUTH example)
@@ -85,7 +86,29 @@ const syncBudgets = async (event) => {
   }
 };
 
+const syncOwners = async () => {
+  try {
+    const result = await accountSyncService.syncOwners();
+    return okResponse(result);
+  } catch (error) {
+    console.log('Owners sync failed', error);
+    return errorResponse(error);
+  }
+}
+
+const syncAccounts = async () => {
+  try {
+    const result = await accountSyncService.syncOwners();
+    return okResponse(result);
+  } catch (error) {
+    console.log('Owners sync failed', error);
+    return errorResponse(error);
+  }
+}
+
 module.exports = {
   gcpAuth,
-  syncBudgets
+  syncBudgets,
+  syncOwners,
+  syncAccounts
 };

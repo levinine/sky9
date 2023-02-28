@@ -37,9 +37,9 @@ const GcpAccountsListView = (props) => {
     return <div style={{ textAlign: 'left' }}>{header}</div>
   }
   const columns = [{
-      Header: header('GCP account'),
-      accessor: 'gcpAccountId',
-      width: utils.getColumnWidth(filteredList, 'gcpAccountId', 'GCP account'),
+      Header: header('GCP project'),
+      accessor: 'gcpProjectId',
+      width: utils.getColumnWidth(filteredList, 'gcpProjectId', 'GCP Project'),
       Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
     }, {
       Header: header('Name'),
@@ -74,14 +74,14 @@ const GcpAccountsListView = (props) => {
     }
   ];
 
-  // const syncAccounts = async () => {
-  //   await accountService.syncAccounts();
-  //   refreshList();
-  // }
-  // const syncOwners = async () => {
-  //   await accountService.syncOwners();
-  //   refreshList();
-  // }
+  const syncAccounts = async () => {
+    await accountService.syncAccounts();
+    refreshList();
+  }
+  const syncOwners = async () => {
+    await accountService.syncOwners();
+    refreshList();
+  }
 
   const newAccount = () => {
     handleViewChange('Create new GCP account', null);
@@ -95,10 +95,10 @@ const GcpAccountsListView = (props) => {
       <SearchField onChange={handleChange} searchTerm={searchTerm} />
       <Form>
         <FormGroup>
-          {/* <Button className='mr-2' variant='primary' onClick={() => syncAccounts()}>Sync Accounts</Button>
-          <Button className='mr-2' variant='primary' onClick={() => syncOwners()}>Sync Owners</Button> */}
-          <Button className='mr-2' variant='primary' onClick={() => newAccount()}>New Account</Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncAccounts()}>Sync Accounts</Button>
           <Button className='mr-2' variant='primary' onClick={() => syncBudgets()}>Sync Budgets</Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncOwners()}>Sync Owners</Button>
+          <Button className='mr-2' variant='primary' onClick={() => newAccount()}>New Account</Button>
         </FormGroup>
       </Form>
 

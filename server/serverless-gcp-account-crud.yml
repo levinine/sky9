@@ -14,8 +14,28 @@ functions:
     events:
       - http:
           path: gcp/sync-budgets
-          method: get
+          method: post
           cors: true
           # TODO uncomment authorizer before deployment
           # authorizer: ${self:custom.authorizer}
       - schedule: rate(1 hour)
+  syncAccounts:
+    handler: src/handler/gcp-account-handler.syncAccounts
+    timeout: 60
+    events:
+      - http:
+          path: gcp/sync-accounts
+          method: post
+          cors: true
+          # TODO uncomment authorizer before deployment
+          # authorizer: ${self:custom.authorizer}
+  syncOwners:
+    handler: src/handler/gcp-account-handler.syncOwners
+    timeout: 60
+    events:
+      - http:
+          path: gcp/sync-owners
+          method: post
+          cors: true
+          # TODO uncomment authorizer before deployment
+          # authorizer: ${self:custom.authorizer}

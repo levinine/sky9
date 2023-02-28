@@ -65,6 +65,7 @@ const createGcpAccount = async (account) => {
     const createdAccount = await gcpClient.request({ method: 'POST', url: url, data: body });
     // response from gcp -> { "name": "operations/cp.6791935560210989313" }
     account.gcpCreationResponse = createdAccount;
+    account.gcpProjectId = account.name;
     account = await accountService.addAccountHistoryRecord(account.id, 'GCP account creation requested', { account }, account.tableName);
     console.log(`Finished creating GCP account`, createdAccount);
     return account;
