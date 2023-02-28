@@ -47,7 +47,7 @@ const syncBudgets = async (event) => {
   const tableName = process.env.ACCOUNT_GCP_TABLE;
   const accounts = await accountService.getAccounts(tableName);
 
-  // const dynamoAccounts = accounts.map(account => { return { name: account.name, id: account.id, forecastedSpend: account.forecastedSpend } });
+  // const dynamoAccounts = accounts.map(account => { return { name: account.name, id: account.id, actualSpend: account.actualSpend } });
 
   // budget name === ${account/project name} + ${suffix '-budget'}
   const budgetNames = Object.keys(sortedBudgets);
@@ -57,12 +57,12 @@ const syncBudgets = async (event) => {
   budgetNames.forEach(budgetName => {
     const accountName = budgetName.replace('-budget', '');
     const accountForUpdate = accounts.find(account => account.name === accountName);
-    // if condition is true, call dynamodb and update account forecastedSpend value
-    if (accountForUpdate && Number(accountForUpdate.forecastedSpend) < Number(sortedBudgets[budgetName][0].costAmount)) {
-      console.log(`Update budget for: ${accountForUpdate.id} - ${accountForUpdate.name}, old cost ${accountForUpdate.forecastedSpend}, new cost ${sortedBudgets[budgetName][0].costAmount}`)
+    // if condition is true, call dynamodb and update account actualSpend value
+    if (accountForUpdate && Number(accountForUpdate.actualSpend) < Number(sortedBudgets[budgetName][0].costAmount)) {
+      console.log(`Update budget for: ${accountForUpdate.id} - ${accountForUpdate.name}, old cost ${accountForUpdate.actualSpend}, new cost ${sortedBudgets[budgetName][0].costAmount}`)
       // TODO call dynamo for item update, uncomment real call to dynamoDB
-      // get the biggest sorted value for forecastedSpend (because of message duplicates)
-      // events.push(accountService.updateAccount({ id: accountForUpdate.id, forecastedSpend: `${sortedBudgets[name][0].costAmount}` }, tableName));
+      // get the biggest sorted value for actualSpend (because of message duplicates)
+      // events.push(accountService.updateAccount({ id: accountForUpdate.id, actualSpend: `${sortedBudgets[name][0].costAmount}` }, tableName));
       events.push(Promise.resolve(accountForUpdate.name));
     }
   })
