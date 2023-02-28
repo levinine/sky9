@@ -91,9 +91,10 @@ const syncBudgets = async (event) => {
     const accountName = budgetName.replace('-budget', '');
     const accountForUpdate = accounts.find(account => account.name === accountName);
     // if condition is true, call dynamodb and update account forecastedSpend value
-    if (accountForUpdate && Number(accountForUpdate.forecastedSpend) < Number(sortedBudgets[name][0].costAmount)) {
-      console.log(`Update budget for: ${accountForUpdate.id} - ${accountForUpdate.name}, old cost ${accountForUpdate.forecastedSpend}, new cost ${sortedBudgets[name][0].costAmount}`)
+    if (accountForUpdate && Number(accountForUpdate.forecastedSpend) < Number(sortedBudgets[budgetName][0].costAmount)) {
+      console.log(`Update budget for: ${accountForUpdate.id} - ${accountForUpdate.name}, old cost ${accountForUpdate.forecastedSpend}, new cost ${sortedBudgets[budgetName][0].costAmount}`)
       // TODO call dynamo for item update, uncomment real call to dynamoDB
+      // get the biggest sorted value for forecastedSpend (because of message duplicate)
       // events.push(accountService.updateAccount({ id: accountForUpdate.id, forecastedSpend: `${sortedBudgets[name][0].costAmount}` }, tableName));
       events.push(Promise.resolve(accountForUpdate.name));
     }
