@@ -1,6 +1,4 @@
 functions:
-  CreateBudget:
-    handler: src/handler/aws-account-handler.createBudget
   # TODO: remove before release (GCP AUTH example)
   gcpAuth:
     handler: src/handler/gcp-account-handler.gcpAuth
@@ -9,10 +7,14 @@ functions:
           path: gcp/gcpAuth
           method: get
           cors: true
+          # authorizer: ${self:custom.authorizer}
   syncBudgets:
     handler: src/handler/gcp-account-handler.syncBudgets
     events:
       - http:
-          path: gcp/syncBudgets
+          path: gcp/sync-budgets
           method: get
           cors: true
+          # TODO uncomment authorizer before deployment
+          # authorizer: ${self:custom.authorizer}
+      - schedule: rate(1 hour)

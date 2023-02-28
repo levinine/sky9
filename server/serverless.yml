@@ -50,6 +50,7 @@ provider:
     GCP_BUDGET_SUBSCRIPTION_ID: ${ssm:/sky9/${self:provider.stage}/gcpBudgetSubscriptionId, "example-budget-sub"}
 
 plugins:
+  - serverless-offline-scheduler
   - serverless-pseudo-parameters
   - serverless-dynamodb-local
   - serverless-offline
