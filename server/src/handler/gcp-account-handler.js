@@ -2,6 +2,8 @@ const { okResponse, errorResponse } = require('./responses');
 const { getGcpAuthClient, getGcpAccountKeys } = require('../service/gcp-auth-client-service');
 const accountSyncService = require('../service/gcp-account-sync-service');
 
+const tableName = process.env.ACCOUNT_GCP_TABLE;
+
 // TODO: remove before release (GCP AUTH example)
 const gcpAuth = async (event) => {
   try {
@@ -17,6 +19,37 @@ const gcpAuth = async (event) => {
   } catch (error) {
     console.log('auth error', error);
     return errorResponse({ statusCode: 500, message: 'Cannot fetch gcp account keys or client'});
+  }
+};
+
+const getAccount = async (event) => {
+  try {
+    const id = event.pathParameters.id;
+    const account = await accountService.getAccount(id, tableName);
+    return okResponse(account);
+  } catch (error) {
+    return errorResponse(error);
+  }
+};
+
+const getAccounts = async () => {
+  try {
+    const accounts = await accountService.getAccounts(tableName);
+    return okResponse(accounts);
+  } catch (error) {
+    console.log(error);
+    return errorResponse(error);
+  }
+};
+
+const createAccount = async (event) => {
+  try {
+    const data = JSON.parse(event.body);
+    const account = await accountService.createAccount(data, clouds.GCP);
+    return okResponse(account);
+  } catch (error) {
+    console.log('Account creation failed', error);
+    return errorResponse(error);
   }
 };
 
@@ -57,6 +90,9 @@ const syncAccounts = async () => {
 
 module.exports = {
   gcpAuth,
+  createAccount,
+  getAccount,
+  getAccounts,
   syncBudgets,
   syncOwners,
   syncAccounts

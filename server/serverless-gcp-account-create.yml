@@ -33,7 +33,7 @@ stepFunctions:
     createGcpAccount:
       events:
         - http:
-            path: gcp-accounts
+            path: gcp/accounts
             method: post
             cors: true
             authorizer: ${self:custom.authorizer}

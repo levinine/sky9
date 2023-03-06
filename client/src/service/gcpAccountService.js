@@ -3,9 +3,8 @@ import * as utils from '../components/utils';
 
 const getAccounts = async () => {
   try {
-    // const accounts = await API.get('gcp-accounts', '/accounts');
-    // return accounts;
-    console.log('GCP GET ACCOUNTS');
+    // TODO: uncomment before deployment
+    // return await API.get('gcp-accounts', '/gcp/accounts');
     return utils.gcpMockAccounts;
   } catch (error) {
     console.log(error);
@@ -15,10 +14,9 @@ const getAccounts = async () => {
 
 const getAccount = async id => {
   try {
-    // const account = await API.get('gcp-accounts', '/accounts/' + id);
-    // return account;
-    console.log('GCP GET ACCOUN');
-    return {};
+    // TODO: uncomment before deployment
+    // return await API.get('gcp-accounts', '/gcp/accounts/' + id);
+    return utils.gcpMockAccounts[0];
   } catch (error) {
     console.log(error);
   }
@@ -26,8 +24,7 @@ const getAccount = async id => {
 
 const createAccount = account => {
   try {
-    console.log('GCP CREATE ACCOUNT', account);
-    const createdAccount = API.post('gcp-accounts', '/gcp-accounts', {
+    const createdAccount = API.post('gcp-accounts', '/gcp/accounts', {
       body: account
     });
     return createdAccount;
@@ -50,7 +47,6 @@ const updateAccount = async account => {
 const syncAccounts = async () => {
   try {
     await API.post('gcp-accounts', '/gcp/sync-accounts');
-    console.log('GCP SYNC ACCOUNTS');
   } catch (error) {
     console.log(error);
   }
@@ -59,7 +55,6 @@ const syncAccounts = async () => {
 const syncBudgets = async () => {
   try {
     await API.post('gcp-accounts', '/gcp/sync-budgets');
-    console.log('GCP SYNC BUDGETS');
   } catch (error) {
     console.log(error);
   }
@@ -68,7 +63,6 @@ const syncBudgets = async () => {
 const syncOwners = async () => {
   try {
     await API.post('gcp-accounts', '/gcp/sync-owners');
-    console.log('GCP SYNC OWNERS');
   } catch (error) {
     console.log(error);
   }

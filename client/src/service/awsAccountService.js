@@ -16,8 +16,10 @@ const getAccounts = async () => {
 
 const getAccount = async id => {
   try {
-    const account = await API.get('accounts', '/accounts/' + id);
-    return account;
+    // TODO: uncomment before deployment
+    // const account = await API.get('accounts', '/accounts/' + id);
+    // return account;
+    return utils.awsMocksAccounts[0]; 
   } catch (error) {
     console.log(error);
   }
