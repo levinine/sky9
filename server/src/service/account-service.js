@@ -38,6 +38,7 @@ const createAccount = async (account, cloud) => {
     account.name = `${process.env.ORGANIZATION}-${account.name}`; 
   }
   if (cloud === clouds.GCP && !account.name.startsWith(process.env.GCP_ORGANIZATION)) {
+    // do not use 'name' property, because GCP allows less characters for project name
     account.adName = `${process.env.GCP_ORGANIZATION}-${account.name}`; 
   }
 
