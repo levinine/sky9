@@ -17,7 +17,7 @@ const createAccount = async (account) => {
     console.log(account);
     try {
       const tableName = process.env.ACCOUNT_GCP_TABLE;
-      account = await accountService.createAccount(account, clouds.AWS);
+      account = await accountService.createAccount(account, clouds.GCP);
       account = await accountService.addAccountHistoryRecord(account.id, 'DynamoDB created', { account }, tableName);
       account.tableName = tableName;
       return account;

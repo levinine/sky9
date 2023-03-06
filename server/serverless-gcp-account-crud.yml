@@ -8,7 +8,25 @@ functions:
           method: get
           cors: true
           # authorizer: ${self:custom.authorizer}
-  syncBudgets:
+  gcpCreateAccount:
+    handler: src/handler/gcp-account-handler.createAccount
+  gcpGetAccounts:
+    handler: src/handler/gcp-account-handler.getAccounts
+    events:
+      - http:
+          path: gcp/accounts
+          method: get
+          cors: true
+          # authorizer: ${self:custom.authorizer}
+  gcpGetAccount:
+    handler: src/handler/gcp-account-handler.getAccount
+    events:
+      - http:
+          path: gcp/accounts/{id}
+          method: get
+          cors: true
+          # authorizer: ${self:custom.authorizer}
+  gcpSyncBudgets:
     handler: src/handler/gcp-account-handler.syncBudgets
     timeout: 300
     events:
@@ -19,7 +37,7 @@ functions:
           # TODO uncomment authorizer before deployment
           # authorizer: ${self:custom.authorizer}
       - schedule: rate(1 hour)
-  syncAccounts:
+  gcpSyncAccounts:
     handler: src/handler/gcp-account-handler.syncAccounts
     timeout: 60
     events:
@@ -29,7 +47,7 @@ functions:
           cors: true
           # TODO uncomment authorizer before deployment
           # authorizer: ${self:custom.authorizer}
-  syncOwners:
+  gcpSyncOwners:
     handler: src/handler/gcp-account-handler.syncOwners
     timeout: 60
     events:
