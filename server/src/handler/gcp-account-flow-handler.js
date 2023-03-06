@@ -2,6 +2,8 @@
 const accountService = require('../service/account-service');
 const activeDirectoryService = require('../service/active-directory-service');
 const { getGcpAuthClient, getGcpAccountKeys } = require('../service/gcp-auth-client-service');
+const { setBudgetForEmailNotification, setBudgetForPubSubNotification } = require('../service/gcp-budget-service');
+
 const { clouds } = require('../utils');
 
 function NotReady(message) {
@@ -149,45 +151,14 @@ const createNotificationChannel = async (account) => {
 }
 
 const setBudget = async (account) => {
-  console.log(`Setting GCP project budget ${JSON.stringify(account)}`);
   try {
-    const gcpClient = await getGcpAuthClient();
-    const url = `https://billingbudgets.googleapis.com/v1/billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}/budgets`;
-    const body = {
-      "displayName": `${account.name}-budget`,
-      "budgetFilter": {
-        "projects": [
-          `projects/${account.name}`
-        ],
-        "creditTypesTreatment": "INCLUDE_ALL_CREDITS",
-        "calendarPeriod": "MONTH"
-      },
-      "amount": {
-        "specifiedAmount": {
-          "currencyCode": "USD",
-          "units": `${account.budget}`
-        }
-      },
-      "thresholdRules": [
-        { "thresholdPercent": 0.5, "spendBasis": "CURRENT_SPEND" },
-        { "thresholdPercent": 0.9, "spendBasis": "CURRENT_SPEND" },
-        { "thresholdPercent": 1, "spendBasis": "CURRENT_SPEND" },
-        { "thresholdPercent": 1.2, "spendBasis": "CURRENT_SPEND" },
-        { "thresholdPercent": 0.9, "spendBasis": "FORECASTED_SPEND" }
-      ],
-      "notificationsRule": {
-        "monitoringNotificationChannels": [
-          `${account.notificationChannelId}`
-        ]
-      }
-    };
-  
-    await gcpClient.request({ method: 'POST', url, data: body });
-    account = await accountService.addAccountHistoryRecord(account.id, 'GCP set project budget', { account }, account.tableName);
-    console.log(`Finished setting of project budget`);
+    await setBudgetForEmailNotification(account);
+    account = await accountService.addAccountHistoryRecord(account.id, 'GCP set project budget for email notification', { account }, account.tableName);
+    await setBudgetForPubSubNotification(account);
+    account = await accountService.addAccountHistoryRecord(account.id, 'GCP set project budget for pubsub notiffication', { account }, account.tableName);
     return account;
   } catch (error) {
-    console.log('Setting of project budget failed', error);
+    console.log('Setting of project budgets failed', error);
     throw error;
   }
 }
