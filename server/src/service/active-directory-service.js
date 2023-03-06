@@ -104,7 +104,7 @@ const execAdRunbook = async (accountName, owner) => {
   const config = {
     headers: {
       'content-type': 'application/json',
-      'from': `Sky9-${organization}`, //gcpOrganization
+      'from': `Sky9-${organization}`, // gcpOrganization
       'Date': new Date().toISOString(),
       'Key': runbookKey
     }

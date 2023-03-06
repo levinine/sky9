@@ -17,6 +17,7 @@ default: &default
   GCP_ORGANIZATION: ${ssm:/sky9/${self:provider.stage}/gcpOrganization}
   GCP_BILLING_ACCOUNT_ID: ${ssm:/sky9/${self:provider.stage}/gcpBillingAccountId}
   GCP_BUDGET_SUBSCRIPTION_ID: ${ssm:/sky9/${self:provider.stage}/gcpBudgetSubscriptionId}
+  GCP_PUBSUB_TOPIC_ID: ${ssm:/sky9/${self:provider.stage}/gcpPubSubTopicId}
 
 local:
   <<: *default

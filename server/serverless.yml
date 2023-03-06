@@ -46,8 +46,9 @@ provider:
     GCP_SERVICE_ACCOUNT_KEYS: ${ssm:/sky9/${self:provider.stage}/gcpAccountKeys}
     GCP_PARENT_FOLDER_VALUE: ${ssm:/sky9/${self:provider.stage}/gcpParentFolderValue, "320110726660"}
     GCP_ORGANIZATION: ${ssm:/sky9/${self:provider.stage}/gcpOrganization, "GCP-SRB"}
-    GCP_BILLING_ACCOUNT_ID: ${ssm:/sky9/${self:provider.stage}/gcpBillingAccountId, "123123"}
-    GCP_BUDGET_SUBSCRIPTION_ID: ${ssm:/sky9/${self:provider.stage}/gcpBudgetSubscriptionId, "example-budget-sub"}
+    GCP_BILLING_ACCOUNT_ID: ${ssm:/sky9/${self:provider.stage}/gcpBillingAccountId, "0157C8-014F5A-85A508"}
+    GCP_BUDGET_SUBSCRIPTION_ID: ${ssm:/sky9/${self:provider.stage}/gcpBudgetSubscriptionId, "example-budget-sub"} # TODO: GCP_BUDGET_PUBSUB_SUBSCRIPTION_ID
+    GCP_PUBSUB_TOPIC_ID: ${ssm:/sky9/${self:provider.stage}/gcpPubSubTopicId, "example-budget"}
 
 plugins:
   - serverless-offline-scheduler
