@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { clouds } = require('../utils');
 
 const clientId = process.env.AD_CLIENT_ID;
 const clientSecret = process.env.AD_CLIENT_SECRET;
@@ -93,18 +94,16 @@ const findGroupMemberEmails = async (name) => {
   return [];
 }
 
-// TODO: adjust for GCP (gcpOrganization, runbookKey)
-const execAdRunbook = async (accountName, owner) => {
+const execAdRunbook = async (accountName, owner, cloud) => {
   const data = {
     'GroupName': `${accountName}-Administrators`,
     'Owner': owner,
-    'AWS_Account_Email': `${accountName}@${organizationDomain}`,
-    // 'GCP_Account_Email': ``
+    'Account_Email': `${accountName}@${organizationDomain}`, // AWS_Account_Email -> Account_Email
   };
   const config = {
     headers: {
       'content-type': 'application/json',
-      'from': `Sky9-${organization}`, // gcpOrganization
+      'from': `Sky9-${cloud === clouds.AWS ? organization : gcpOrganization}`,
       'Date': new Date().toISOString(),
       'Key': runbookKey
     }

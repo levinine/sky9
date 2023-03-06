@@ -29,7 +29,7 @@ const createAccount = async (account) => {
 
 const createAdGroup = async (account) => {
   console.log('Create AD group step', account);
-  const result = await activeDirectoryService.execAdRunbook(account.name, account.owner);
+  const result = await activeDirectoryService.execAdRunbook(account.name, account.owner, clouds.AWS);
   account = await accountService.addAccountHistoryRecord(account.id, 'AD Group creation requested', {}, account.tableName);
   console.log('Create AD group step finished', result);
   return account;
