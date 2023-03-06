@@ -11,7 +11,7 @@ const setBudgetForEmailNotification = async (account) => {
         "projects": [
           `projects/${account.name}`
         ],
-        "creditTypesTreatment": "INCLUDE_ALL_CREDITS",
+        "creditTypesTreatment": "EXCLUDE_ALL_CREDITS",
         "calendarPeriod": "MONTH"
       },
       "amount": {
