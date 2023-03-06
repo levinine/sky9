@@ -13,6 +13,6 @@
   "gcpParentFolderValue": "Value of gcp parent project",
   "gcpOrganization": "Name of gcp organization",
   "gcpBillingAccountId": "Value of billing account id",
-  "gcpBudgetSubscriptionId": "Subscription ID for pulling 'budget update messages' from gcp pubsub. Using for syncing budgets between GCP and AWS DynamoDB",
+  "gcpBudgetPubSubSubscriptionId": "Subscription ID for pulling 'budget update messages' from gcp pubsub. Using for syncing budgets between GCP and AWS DynamoDB",
   "gcpPubSubTopicId": "PubSub Topic id that is used for pulling messages from budget threshold notification"
 }

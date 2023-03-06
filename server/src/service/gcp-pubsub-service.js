@@ -4,7 +4,7 @@ const acknowledgeMessages = async (ids) => {
   const gcpClient = await getGcpAuthClient();
   const gcpAccountKeys = await getGcpAccountKeys();
 
-  const subscription = `projects/${gcpAccountKeys.project_id}/subscriptions/${process.env.GCP_BUDGET_SUBSCRIPTION_ID}`;
+  const subscription = `projects/${gcpAccountKeys.project_id}/subscriptions/${process.env.GCP_BUDGET_PUBSUB_SUBSCRIPTION_ID}`;
   const url = `https://pubsub.googleapis.com/v1/${subscription}:acknowledge`
   const body = {
     ackIds: ids
@@ -16,7 +16,7 @@ const getMessages = async () => {
   const gcpClient = await getGcpAuthClient();
   const gcpAccountKeys = await getGcpAccountKeys();
 
-  const subscription = `projects/${gcpAccountKeys.project_id}/subscriptions/${process.env.GCP_BUDGET_SUBSCRIPTION_ID}`;
+  const subscription = `projects/${gcpAccountKeys.project_id}/subscriptions/${process.env.GCP_BUDGET_PUBSUB_SUBSCRIPTION_ID}`;
   const url = `https://pubsub.googleapis.com/v1/${subscription}:pull`;
   const body = {
     maxMessages: 1000
