@@ -1,10 +1,11 @@
 import { API } from 'aws-amplify';
+import * as utils from '../components/utils';
 
 const getAccounts = async () => {
   try {
-    const accounts = await API.get('gcp-accounts', '/gcp/accounts');
-    return accounts;
-    // return utils.gcpMockAccounts;
+    // TODO: uncomment before deployment
+    // return await API.get('gcp-accounts', '/gcp/accounts');
+    return utils.gcpMockAccounts;
   } catch (error) {
     console.log(error);
   }
@@ -13,8 +14,9 @@ const getAccounts = async () => {
 
 const getAccount = async id => {
   try {
-    const account = await API.get('gcp-accounts', '/gcp/accounts/' + id);
-    return account;
+    // TODO: uncomment before deployment
+    // return await API.get('gcp-accounts', '/gcp/accounts/' + id);
+    return utils.gcpMockAccounts[0];
   } catch (error) {
     console.log(error);
   }
