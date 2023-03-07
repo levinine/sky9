@@ -36,10 +36,11 @@ const createAccount = async (account, cloud) => {
   }
   if (cloud === clouds.AWS && !account.name.startsWith(process.env.ORGANIZATION)) {
     account.name = `${process.env.ORGANIZATION}-${account.name}`; 
+    account.adGroupName = `${process.env.ORGANIZATION}-${account.name}`; 
   }
   if (cloud === clouds.GCP && !account.name.startsWith(process.env.GCP_ORGANIZATION)) {
     // do not use 'name' property, because GCP allows less characters for project name
-    account.adName = `${process.env.GCP_ORGANIZATION}-${account.name}`; 
+    account.adGroupName = `${process.env.GCP_ORGANIZATION}-${account.name}`; 
   }
 
   account.id = `${new Date().getTime()}`;
@@ -52,7 +53,7 @@ const createAccount = async (account, cloud) => {
   return account;
 };
 
-const accountAttributes = ['name', 'email', 'owner', 'ownerFirstName', 'ownerLastName', 'budget', 'actualSpend', 'forecastedSpend', 'history', 'awsAccountId', 'gcpProjectId', 'createdTime', 'createdBy', 'members'];
+const accountAttributes = ['name', 'email', 'owner', 'ownerFirstName', 'ownerLastName', 'budget', 'actualSpend', 'forecastedSpend', 'history', 'awsAccountId', 'gcpProjectId', 'adGroupName', 'createdTime', 'createdBy', 'members'];
 const updateAccount = async (account, tableName) => {
   if (!account.id) {
     throw new Error('Missing account.id');
