@@ -1,16 +1,17 @@
+const { groupBy, mapValues, orderBy } = require('lodash');
 const accountService = require('./account-service');
 const activeDirectoryService = require('./active-directory-service');
 const awsSnsService = require('./aws-sns-service');
 const pubSubService = require('./gcp-pubsub-service');
-const { groupBy, mapValues, orderBy } = require('lodash');
+const { budgetNameSuffix } = require('../utils');
 
 const tableName = process.env.ACCOUNT_GCP_TABLE;
 
 const syncAccountsMembers = async () => {
   const accounts = await accountService.getAccounts(tableName);
   for (account of accounts) {
-    const members = await activeDirectoryService.findGroupMemberEmails(account.name);
-    console.log('syncAccountsMembers: ', account.name, members);
+    const members = await activeDirectoryService.findGroupMemberEmails(account.adGroupName);
+    console.log('syncAccountsMembers: ', account.adGroupName, members);
     await accountService.updateAccount({ id: account.id, members }, tableName);
   }
 }
@@ -28,21 +29,21 @@ const syncOwners = async () => {
   for (const account of accounts) {
     const user = await activeDirectoryService.findUserByEmail(account.owner);
     if (!user) {
-      console.log(`Account ${account.name} [${account.gcpProjectId}] - owner not found in AD`);
-      await awsSnsService.publishAlert(`Account ${account.name} owner issue`, `Account owner check - ${account.name} [${account.gcpProjectId}] - owner not found in AD`);
+      console.log(`Account ${account.adGroupName} [${account.gcpProjectId}] - owner not found in AD`);
+      await awsSnsService.publishAlert(`Account ${account.adGroupName} owner issue`, `Account owner check - ${account.adGroupName} [${account.gcpProjectId}] - owner not found in AD`);
     } else {
-      const group = await activeDirectoryService.findGroupByName(account.name);
+      const group = await activeDirectoryService.findGroupByName(account.adGroupName);
       if (!group) {
-        console.log(`Account ${account.name} [${account.gcpProjectId}] - group not found in AD`);
+        console.log(`Account ${account.adGroupName} [${account.gcpProjectId}] - group not found in AD`);
       } else {
         const owners = await activeDirectoryService.findGroupOwners(group.id);
         if (owners.includes(account.owner)) {
-          console.log(`Account ${account.name} [${account.gcpProjectId}] - AWS account owner and AD group owner is the same - All Good!`);
+          console.log(`Account ${account.adGroupName} [${account.gcpProjectId}] - AWS account owner and AD group owner is the same - All Good!`);
         } else {
-          console.log(`Account ${account.name} [${account.gcpProjectId}] - AWS account owner is not configured as AD group owner - Updating AD`);
-          // await activeDirectoryService.execAdRunbook(account.name, account.owner);
+          console.log(`Account ${account.adGroupName} [${account.gcpProjectId}] - AWS account owner is not configured as AD group owner - Updating AD`);
+          // await activeDirectoryService.execAdRunbook(account.adGroupName, account.owner);
           // account = await accountService.addAccountHistoryRecord(account.id, 'AD Group creation requested', {}, process.env.ACCOUNT_TABLE);
-          await awsSnsService.publishAlert(`Account ${account.name} owner issue`, `Account owner check - ${account.name} [${account.gcpProjectId}] - AWS account owner is not configured as AD group owner`);
+          await awsSnsService.publishAlert(`Account ${account.adGroupName} owner issue`, `Account owner check - ${account.adGroupName} [${account.gcpProjectId}] - AWS account owner is not configured as AD group owner`);
         }
       }
     }
@@ -72,13 +73,13 @@ const syncBudgets = async () => {
   // get existing accounts from dynamodb
   const accounts = await accountService.getAccounts(tableName);
 
-  // budget name === ${account/project name} + ${suffix '-budget'}
+  // budget name === ${account/project name} + ${suffix '-budget-pubsub'}
   const budgetNames = Object.keys(sortedBudgets);
 
   const events = [];
   // iterate through budget messages from pubsub and pick accounts for update
   budgetNames.forEach(budgetName => {
-    const accountName = budgetName.replace('-budget', '');
+    const accountName = budgetName.replace(budgetNameSuffix.PUBSUB, '');
     const accountForUpdate = accounts.find(account => account.name === accountName);
     // if condition is true, call dynamodb and update account actualSpend value
     if (accountForUpdate && Number(accountForUpdate.actualSpend) < Number(sortedBudgets[budgetName][0].costAmount)) {

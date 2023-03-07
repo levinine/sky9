@@ -1,4 +1,6 @@
 const { getGcpAuthClient, getGcpAccountKeys } = require('./gcp-auth-client-service');
+const { budgetNameSuffix } = require('../utils');
+
 
 const setBudgetForEmailNotification = async (account) => {
   console.log(`Setting GCP project budget for email notification ${JSON.stringify(account)}`);
@@ -6,7 +8,7 @@ const setBudgetForEmailNotification = async (account) => {
     const gcpClient = await getGcpAuthClient();
     const url = `https://billingbudgets.googleapis.com/v1/billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}/budgets`;
     const body = {
-      "displayName": `${account.name}-budget-email`,
+      "displayName": `${account.name}${budgetNameSuffix.EMAIL}`,
       "budgetFilter": {
         "projects": [
           `projects/${account.name}`
@@ -49,7 +51,7 @@ const setBudgetForPubSubNotification = async (account) => {
     const gcpAccountKeys = await getGcpAccountKeys();
     const url = `https://billingbudgets.googleapis.com/v1/billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}/budgets`;
     const body = {
-      "displayName": `${account.name}-budget-pubsub`,
+      "displayName": `${account.name}${budgetNameSuffix.PUBSUB}`,
       "budgetFilter": {
         "projects": [
           `projects/${account.name}`
