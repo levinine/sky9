@@ -3,8 +3,14 @@ const clouds = {
   GCP: 'GCP'
 }
 
+const budgetNameSuffix = {
+  EMAIL: '-budget-email',
+  PUBSUB: '-budget-pubsub'
+}
+
 module.exports = {
-  clouds
+  clouds,
+  budgetNameSuffix
 }
 
 // AWS ACCOUNT VALUES
