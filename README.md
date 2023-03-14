@@ -23,11 +23,14 @@ Here are the steps to deploy everything for the first time and configure both SS
   aws ssm put-parameter --type String --name "/sky9/$stage/cognitoOrganization" --value "<cognitoOrganization>"
   aws ssm put-parameter --type String --name "/sky9/$stage/adTenantId" --value "<adTenantId>"
   aws ssm put-parameter --type String --name "/sky9/$stage/adRunbookKey" --value "<adRunbookKey>"
+  # longer format of command is required because the value is URL
+  aws ssm put-parameter --type String --name "/sky9/$stage/adRunbookUrl" --cli-input-json '{ "Name": "/sky9/$stage/adRunbookUrl", "Value": "<adRunbookUrl>", "Type": "String" }'
   aws ssm put-parameter --type String --name " /sky9/$stage/gcpAccountKeys" --value '<gcpAccountKeys>'
   aws ssm put-parameter --type String --name " /sky9/$stage/gcpParentFolderValue" --value '<gcpParentFolderValue>'
   aws ssm put-parameter --type String --name " /sky9/$stage/gcpOrganization" --value '<gcpOrganization>'
-  # longer format of command is required because the value is URL
-  aws ssm put-parameter --type String --name "/sky9/$stage/adRunbookUrl" --cli-input-json '{ "Name": "/sky9/$stage/adRunbookUrl", "Value": "<adRunbookUrl>", "Type": "String" }'
+  aws ssm put-parameter --type String --name " /sky9/$stage/gcpBillingAccountId" --value '<gcpBillingAccountId>'
+  aws ssm put-parameter --type String --name " /sky9/$stage/gcpBudgetPubSubSubscriptionId" --value '<gcpBudgetPubSubSubscriptionId>'
+  aws ssm put-parameter --type String --name " /sky9/$stage/gcpPubSubTopicId" --value '<gcpPubSubTopicId>'
   ```
 
 2. Deploy infrastructure for the client. This will create S3 bucket and CloudFront distribution. Interesting values to pick-up here is CloudFront distribution public URL, which will be used to configure client build, Cognito's redirectURL config parameter, and AD application Home page URL.
