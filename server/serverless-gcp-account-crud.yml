@@ -55,6 +55,7 @@ functions:
           cors: true
           # TODO uncomment authorizer before deployment
           # authorizer: ${self:custom.authorizer}
+      - schedule: cron(0,30 8-18 * * ? *)
   gcpSyncOwners:
     handler: src/handler/gcp-account-handler.syncOwners
     timeout: 60
@@ -65,3 +66,4 @@ functions:
           cors: true
           # TODO uncomment authorizer before deployment
           # authorizer: ${self:custom.authorizer}
+      - schedule: cron(2,32 8-18 * * ? *)
