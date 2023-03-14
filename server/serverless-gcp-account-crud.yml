@@ -26,6 +26,14 @@ functions:
           method: get
           cors: true
           # authorizer: ${self:custom.authorizer}
+  gcpUpdateAccount:
+    handler: src/handler/gcp-account-handler.updateAccount
+    events:
+      - http:
+          path: gcp/accounts/{id}
+          method: put
+          cors: true
+          # authorizer: ${self:custom.authorizer}
   gcpSyncBudgets:
     handler: src/handler/gcp-account-handler.syncBudgets
     timeout: 300
