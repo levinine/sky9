@@ -1,6 +1,8 @@
 const { okResponse, errorResponse } = require('./responses');
 const { getGcpAuthClient, getGcpAccountKeys } = require('../service/gcp-auth-client-service');
 const accountSyncService = require('../service/gcp-account-sync-service');
+const { getBudgetList, updateBudget } = require('../service/gcp-budget-service');
+import * as utils from '../utils';
 
 const tableName = process.env.ACCOUNT_GCP_TABLE;
 
@@ -38,6 +40,34 @@ const getAccounts = async () => {
     return okResponse(accounts);
   } catch (error) {
     console.log(error);
+    return errorResponse(error);
+  }
+};
+
+const updateAccount = async (event) => {
+  console.log('updateAccount', event);
+  try {
+    const id = event.pathParameters.id;
+    const account = { ...JSON.parse(event.body), id };
+
+    const oldStateAccount = await accountService.getAccount(id, tableName);
+
+    // check and update budget in gcp if needed
+    if (oldStateAccount.budget != account.budget) {
+      const budgets = await getBudgetList();
+      const budgetsForUpdate = budgets.filter(budget => budget.displayName === `${account.name}${utils.budgetNameSuffix.EMAIL}` || budget.displayName === `${account.name}${utils.budgetNameSuffix.PUBSUB}`);
+
+      await Promise.all(budgetsForUpdate.map(async (budget) => {
+        await updateBudget(budget, account.budget);
+      }));
+    }
+
+    // update account project in dynamodb
+    const updatedAccount = await accountService.updateAccount(account, tableName);
+    
+    return okResponse(updatedAccount);
+  } catch (error) {
+    console.log('Account update failed', error);
     return errorResponse(error);
   }
 };
@@ -93,6 +123,7 @@ module.exports = {
   createAccount,
   getAccount,
   getAccounts,
+  updateAccount,
   syncBudgets,
   syncOwners,
   syncAccounts

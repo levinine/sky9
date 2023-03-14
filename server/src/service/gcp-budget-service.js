@@ -100,7 +100,49 @@ const setBudgetForPubSubNotification = async (account) => {
   }
 }
 
+
+const getBudgetList = async () => {
+  console.log('Getting GCP budget list');
+  try {
+    const gcpClient = await getGcpAuthClient();
+    const url = `https://billingbudgets.googleapis.com/v1/billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}/budgets`;
+    let response = {};
+    let budgets = [];
+    let nextToken = null;
+
+    // use next token to get all pages/budgets
+    do {
+      response = await gcpClient.request({ method: 'GET', url: !nextToken ? url : `${url}?pageToken=${nextToken}` });
+      budgets.push(response.budgets);
+      nextToken = response.nextPageToken ? response.nextPageToken : null;
+    } while (nextToken);
+
+    return budgets;
+  } catch (error) {
+    console.log('Getting budget list failed', error);
+    throw error;
+  }
+}
+
+const updateBudget = async (budget, newAmount) => {
+  console.log(`Updating GCP project budget amount, new amount: ${newAmount}, budget: ${JSON.stringify(budget)}`);
+  try {
+    const gcpClient = await getGcpAuthClient();
+    const url = `https://billingbudgets.googleapis.com/v1/billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}/budgets/${budget.name}`;
+    const body = {
+      amount: budget.amount
+    };
+    body.amount.specifiedAmount.units = `${newAmount}`;
+    return await gcpClient.request({ method: 'PATCH', url, data: body });
+  } catch (error) {
+    console.log('Updating budget failed', error);
+    throw error;
+  }
+}
+
 module.exports = {
   setBudgetForEmailNotification,
-  setBudgetForPubSubNotification
+  setBudgetForPubSubNotification,
+  getBudgetList,
+  updateBudget
 };

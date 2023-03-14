@@ -24,10 +24,9 @@ const getAccount = async id => {
 
 const createAccount = account => {
   try {
-    const createdAccount = API.post('gcp-accounts', '/gcp/accounts', {
+    return API.post('gcp-accounts', '/gcp/accounts', {
       body: account
     });
-    return createdAccount;
   } catch (error) {
     console.log(error);
   }
@@ -35,10 +34,7 @@ const createAccount = account => {
 
 const updateAccount = async account => {
   try {
-    // const updatedAccount = await API.put('gcp-accounts', '/accounts/' + account.id, { body: account });
-    // return updatedAccount;
-    console.log('GCP UPDATE ACCOUNT');
-    return {};
+    return await API.put('gcp-accounts', '/gcp/accounts/' + account.id, { body: account });
   } catch (error) {
     console.log(error);
   }

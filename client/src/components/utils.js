@@ -8,6 +8,11 @@ export const getColumnWidth = (rows, accessor, headerText) => {
   return Math.min(maxWidth, cellLength * magicSpacing)
 }
 
+export const budgetNameSuffix = {
+  EMAIL: '-budget-email',
+  PUBSUB: '-budget-pubsub'
+}
+
 export const awsMocksAccounts = [
   {
       "forecastedSpend": "0.035",

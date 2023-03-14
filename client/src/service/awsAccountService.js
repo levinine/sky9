@@ -5,20 +5,17 @@ const getAccounts = async () => {
   try {
     console.log('AWS GET ACCOUNTS');
     // TODO: uncomment before deployment
-    // const accounts = await API.get('accounts', '/accounts');
-    // return accounts;
+    // return await API.get('accounts', '/accounts');
     return utils.awsMocksAccounts; 
   } catch (error) {
     console.log(error);
   }
-  return [];
 }
 
 const getAccount = async id => {
   try {
     // TODO: uncomment before deployment
-    // const account = await API.get('accounts', '/accounts/' + id);
-    // return account;
+    // return = await API.get('accounts', '/accounts/' + id);
     return utils.awsMocksAccounts[0]; 
   } catch (error) {
     console.log(error);
@@ -26,12 +23,10 @@ const getAccount = async id => {
 }
 
 const createAccount = account => {
-  console.log('AWS CREATE ACCOUNTS');
   try {
-    const createdAccount = API.post('accounts', '/accounts', {
+    return API.post('accounts', '/accounts', {
       body: account
     });
-    return createdAccount;
   } catch (error) {
     console.log(error);
   }
@@ -39,8 +34,7 @@ const createAccount = account => {
 
 const updateAccount = async account => {
   try {
-    const updatedAccount = await API.put('accounts', '/accounts/' + account.id, { body: account });
-    return updatedAccount;
+    return await API.put('accounts', '/accounts/' + account.id, { body: account });
   } catch (error) {
     console.log(error);
   }
