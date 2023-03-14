@@ -87,12 +87,12 @@ export default class AccountsView extends Component {
         <div className='container-fluid'>
           <div className='row'>
             <div className='col-5'>
-            <Form>
-              <FormGroup>
-                <Button className='mr-2 active' variant='warning' onClick={() => this.setCloud(clouds.AWS)}>AWS</Button>
-                <Button className='mr-2' variant='secondary' onClick={() => this.setCloud(clouds.GCP)}>GCP</Button>
-              </FormGroup>
-            </Form>
+              <Form>
+                <FormGroup>
+                  <Button className='mr-2 active' variant='warning' onClick={() => this.setCloud(clouds.AWS)}>AWS</Button>
+                  <Button className='mr-2' variant='secondary' onClick={() => this.setCloud(clouds.GCP)}>GCP</Button>
+                </FormGroup>
+              </Form>
             </div>
             <div className='col-7'>
               <h4>{this.state.activeCloud === clouds.AWS ? 'AWS Accounts' : 'GCP Accounts'}</h4>
@@ -142,15 +142,6 @@ export default class AccountsView extends Component {
               </div>
             </div>
           }
-
-
-          {/* { this.state.activeCloud === clouds.AWS &&
-            <DashboardAWS/>
-          }
-
-          { this.state.activeCloud === clouds.GCP &&
-            <DashboardGCP/>
-          } */}
 
         </div>
     )

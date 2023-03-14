@@ -1,13 +1,4 @@
 functions:
-  # TODO: remove before release (GCP AUTH example)
-  gcpAuth:
-    handler: src/handler/gcp-account-handler.gcpAuth
-    events:
-      - http:
-          path: gcp/gcpAuth
-          method: get
-          cors: true
-          # authorizer: ${self:custom.authorizer}
   gcpCreateAccount:
     handler: src/handler/gcp-account-handler.createAccount
   gcpGetAccounts:
@@ -17,7 +8,7 @@ functions:
           path: gcp/accounts
           method: get
           cors: true
-          # authorizer: ${self:custom.authorizer}
+          authorizer: ${self:custom.authorizer}
   gcpGetAccount:
     handler: src/handler/gcp-account-handler.getAccount
     events:
@@ -25,7 +16,7 @@ functions:
           path: gcp/accounts/{id}
           method: get
           cors: true
-          # authorizer: ${self:custom.authorizer}
+          authorizer: ${self:custom.authorizer}
   gcpUpdateAccount:
     handler: src/handler/gcp-account-handler.updateAccount
     events:
@@ -33,17 +24,16 @@ functions:
           path: gcp/accounts/{id}
           method: put
           cors: true
-          # authorizer: ${self:custom.authorizer}
+          authorizer: ${self:custom.authorizer}
   gcpSyncBudgets:
     handler: src/handler/gcp-account-handler.syncBudgets
     timeout: 300
     events:
       - http:
           path: gcp/sync-budgets
-          method: post # use node v15.14.0 (otherwise post api does not work)
+          method: post # TODO: use node v15.14.0 (otherwise post api does not work)
           cors: true
-          # TODO uncomment authorizer before deployment
-          # authorizer: ${self:custom.authorizer}
+          authorizer: ${self:custom.authorizer}
       - schedule: rate(1 hour)
   gcpSyncAccounts:
     handler: src/handler/gcp-account-handler.syncAccounts
@@ -53,8 +43,7 @@ functions:
           path: gcp/sync-accounts
           method: post
           cors: true
-          # TODO uncomment authorizer before deployment
-          # authorizer: ${self:custom.authorizer}
+          authorizer: ${self:custom.authorizer}
       - schedule: cron(0,30 8-18 * * ? *)
   gcpSyncOwners:
     handler: src/handler/gcp-account-handler.syncOwners
@@ -64,6 +53,5 @@ functions:
           path: gcp/sync-owners
           method: post
           cors: true
-          # TODO uncomment authorizer before deployment
-          # authorizer: ${self:custom.authorizer}
+          authorizer: ${self:custom.authorizer}
       - schedule: cron(2,32 8-18 * * ? *)

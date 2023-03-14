@@ -11,7 +11,6 @@ export default function Routes() {
     return (
       <Switch>
         <Route path='/' exact component={AccountsView} />
-        {/* <Route path='/login' exact component={AccountsView} /> */}
         <Route path='/login' component={Login} />
         <Route path='/forbidden' component={ErrorForbidden} />
         <Route path='*' component={ErrorNotFound} />

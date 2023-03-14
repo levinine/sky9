@@ -1,28 +1,10 @@
 const { okResponse, errorResponse } = require('./responses');
-const { getGcpAuthClient, getGcpAccountKeys } = require('../service/gcp-auth-client-service');
+const accountService = require('../service/account-service');
 const accountSyncService = require('../service/gcp-account-sync-service');
 const { getBudgetList, updateBudget } = require('../service/gcp-budget-service');
-import * as utils from '../utils';
+const { clouds, budgetNameSuffix } = require('../utils');
 
 const tableName = process.env.ACCOUNT_GCP_TABLE;
-
-// TODO: remove before release (GCP AUTH example)
-const gcpAuth = async (event) => {
-  try {
-    const gcpClient = await getGcpAuthClient();
-    const gcpAccountKeys = await getGcpAccountKeys();
-    if (gcpClient && gcpAccountKeys) {
-      const url = `https://cloudresourcemanager.googleapis.com/v3/projects/${gcpAccountKeys.project_id}`;
-      const res = await gcpClient.request({url});
-      return okResponse({gcp: true, success: true, result: res.data});
-    } else {
-      throw new Error('Cannot fetch gcp account keys or client');
-    }
-  } catch (error) {
-    console.log('auth error', error);
-    return errorResponse({ statusCode: 500, message: 'Cannot fetch gcp account keys or client'});
-  }
-};
 
 const getAccount = async (event) => {
   try {
@@ -55,7 +37,7 @@ const updateAccount = async (event) => {
     // check and update budget in gcp if needed
     if (oldStateAccount.budget != account.budget) {
       const budgets = await getBudgetList();
-      const budgetsForUpdate = budgets.filter(budget => budget.displayName === `${account.name}${utils.budgetNameSuffix.EMAIL}` || budget.displayName === `${account.name}${utils.budgetNameSuffix.PUBSUB}`);
+      const budgetsForUpdate = budgets.filter(budget => budget.displayName === `${account.name}${budgetNameSuffix.EMAIL}` || budget.displayName === `${account.name}${budgetNameSuffix.PUBSUB}`);
 
       await Promise.all(budgetsForUpdate.map(async (budget) => {
         await updateBudget(budget, account.budget);
@@ -88,7 +70,7 @@ const createAccount = async (event) => {
 // Instead of that, we activated budget notification (on budget threshold) to be sent to pubsub topic.
 // Lambda task: Fetching messages from topic and updating account/project 'spent amount' value in AWS Dynamodb Table
 // Lambda will retrigger new execution if there are more messages to be proceeded
-const syncBudgets = async (event) => {
+const syncBudgets = async () => {
   try {
     await accountSyncService.syncBudgets();
     return okResponse({ success: true, message: 'Budget sync is done' });
@@ -119,7 +101,6 @@ const syncAccounts = async () => {
 }
 
 module.exports = {
-  gcpAuth,
   createAccount,
   getAccount,
   getAccounts,

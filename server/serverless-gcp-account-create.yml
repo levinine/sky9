@@ -8,19 +8,8 @@ functions:
     handler: src/handler/gcp-account-flow-handler.validateAdGroup
   stepCreateGcpAccount:
     handler: src/handler/gcp-account-flow-handler.createGcpAccount
-    # TODO: Remove event http trigger when development is finished
-    # events:
-    #   - http:
-    #       path: gcp-accounts
-    #       method: post
-    #       cors: true
   stepAssignAdGroupAsProjectOwner:
     handler: src/handler/gcp-account-flow-handler.assignAdGroupAsProjectOwner
-    # events:
-    #   - http:
-    #       path: gcp-accounts
-    #       method: post
-    #       cors: true
   stepSetBillingAccount:
     handler: src/handler/gcp-account-flow-handler.setBillingAccount
   stepCreateNotificationChannel:

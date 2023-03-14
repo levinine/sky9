@@ -52,10 +52,6 @@ const validateAdGroup = async (account) => {
 
 const createGcpAccount = async (account) => {
   console.log(`Creating GCP account ${JSON.stringify(account)}`);
-  // FOR HTTP Trigger uncomment next 3 lines
-  // const httpTemp = JSON.parse(account.body);
-  // const account = httpTemp;
-
   try {
     const gcpClient = await getGcpAuthClient();
     const url = 'https://cloudresourcemanager.googleapis.com/v3/projects';
@@ -65,7 +61,6 @@ const createGcpAccount = async (account) => {
       "parent": `folders/${process.env.GCP_PARENT_FOLDER_VALUE}`
     }
     const createdAccount = await gcpClient.request({ method: 'POST', url: url, data: body });
-    // response from gcp -> { "name": "operations/cp.6791935560210989313" }
     account.gcpCreationResponse = createdAccount;
     account.gcpProjectId = account.name;
     account = await accountService.addAccountHistoryRecord(account.id, 'GCP account creation requested', { account }, account.tableName);
@@ -79,10 +74,6 @@ const createGcpAccount = async (account) => {
 
 const assignAdGroupAsProjectOwner = async (account) => {
   console.log(`Assign ad group as project owner ${JSON.stringify(account)}`);
-  // FOR HTTP Trigger uncomment next 2 lines
-  // const httpTemp = JSON.parse(account.body);
-  // const account = httpTemp;
-
   try {
     const gcpClient = await getGcpAuthClient();
     const getPolicyUrl = `https://cloudresourcemanager.googleapis.com/v3/projects/${account.name}:getIamPolicy`;

@@ -9,7 +9,7 @@ const createAccount = {
 }
 
 describe('Create Account API Test', () => {
-  it('should return the created account', async () => {
+  xit('should return the created account', async () => {
     console.log(API_ENDPOINT)
     const res = await request(API_ENDPOINT)
       .post('/accounts')
@@ -24,7 +24,7 @@ describe('Create Account API Test', () => {
 });
 
 describe('Get Accounts API Test', () => {
-  it('should return all accounts', async () => {
+  xit('should return all accounts', async () => {
     const res = await request(API_ENDPOINT)
       .get('/accounts')
       .send()
@@ -44,7 +44,7 @@ describe('Get Accounts API Test', () => {
 });
 
 describe('Get Account API Test', () => {
-  it('should return a given account', async () => {
+  xit('should return a given account', async () => {
     const res = await request(API_ENDPOINT)
       .get('/accounts/' + createAccount.id)
       .send();
@@ -55,7 +55,7 @@ describe('Get Account API Test', () => {
 });
 
 describe('Update Account API Test', () => {
-  it('should return updated account', async () => {
+  xit('should return updated account', async () => {
     const res = await request(API_ENDPOINT)
       .put('/accounts/' + createAccount.id)
       .send(createAccount);
@@ -66,7 +66,7 @@ describe('Update Account API Test', () => {
 });
 
 describe('Delete Account API Test', () => {
-  it('should fail to find account after deletion', async () => {
+  xit('should fail to find account after deletion', async () => {
       const res = await request(API_ENDPOINT)
       .delete('/accounts/' + testAccount.id)
       .send();

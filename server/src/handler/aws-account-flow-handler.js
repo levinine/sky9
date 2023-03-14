@@ -17,9 +17,9 @@ const createAccount = async (account) => {
   console.log(account);
   try {
     const tableName = process.env.ACCOUNT_TABLE;
+    account.tableName = tableName;
     account = await accountService.createAccount(account, clouds.AWS);
     account = await accountService.addAccountHistoryRecord(account.id, 'DynamoDB created', { account }, tableName);
-    account.tableName = tableName;
     return account;
   } catch (error) {
     console.log('Account creation step failed', error);

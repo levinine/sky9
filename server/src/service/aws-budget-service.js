@@ -94,7 +94,7 @@ const getBudgetsByAccountId = (accountId) => {
 }
 const deleteBudgetsByAccountId = async (accountId) => {
   const existingBudgets = await getBudgetsByAccountId(accountId);
-  for (budget of existingBudgets) {
+  for (const budget of existingBudgets) {
     await budgets.deleteBudget({ AccountId: await getMasterAccountId(), BudgetName: budget.BudgetName }).promise();
   }
   console.log(`Deleted ${existingBudgets.length} budgets for account ${accountId}`);
