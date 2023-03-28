@@ -17,7 +17,7 @@ const AwsAccountsListView = (props) => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredList, setFilteredList] = useState(accounts);
-  
+
   useEffect(() => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     const results = (accounts || []).filter(account => {
@@ -60,8 +60,8 @@ const AwsAccountsListView = (props) => {
     }, {
       Header: header('Budget $'),
       accessor: 'budget',
-      width: 90,
-      Cell: row => <div style={{ textAlign: 'left' }}><span style={{ width: '40px', display: 'inline-block'}}>{row.original.actualSpend === undefined ? '?' : row.original.actualSpend}</span><span> / {row.value}</span></div>
+      width: 95,
+      Cell: row => <div style={{ textAlign: 'left' }}><span style={{ width: '48px', display: 'inline-block'}}>{row.original.actualSpend === undefined ? '?' : row.original.actualSpend}</span><span> / {row.value}</span></div>
     }, {
       Header: header('Created time'),
       accessor: 'createdTime',
@@ -107,7 +107,8 @@ const AwsAccountsListView = (props) => {
       <ReactTable 
         data={filteredList}
         columns={columns}
-        showPagination={false}
+        showPagination={true}
+        defaultPageSize={100}
         minRows={0}
         getTrProps={(state, rowInfo, column) => {
           return {
