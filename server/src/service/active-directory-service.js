@@ -98,8 +98,14 @@ const execAdRunbook = async (accountName, owner, cloud) => {
   const data = {
     'GroupName': `${accountName}-Administrators`,
     'Owner': owner,
-    'Account_Email': `${accountName}@${organizationDomain}`, // AWS_Account_Email -> Account_Email
   };
+ 
+  if (cloud === clouds.AWS) {
+    data['AWS_Account_Email'] = `${accountName}@${organizationDomain}`;
+  } else if (cloud === clouds.GCP) {
+    data['GCP_Account_Email'] = `${accountName}@${organizationDomain}`;
+  }
+
   const config = {
     headers: {
       'content-type': 'application/json',

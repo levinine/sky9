@@ -6,6 +6,7 @@ const setBudgetForEmailNotification = async (account) => {
   console.log(`Setting GCP project budget for email notification ${JSON.stringify(account)}`);
   try {
     const gcpClient = await getGcpAuthClient();
+
     const url = `https://billingbudgets.googleapis.com/v1/billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}/budgets`;
     const body = {
       "displayName": `${account.name}${budgetNameSuffix.EMAIL}`,
@@ -18,7 +19,7 @@ const setBudgetForEmailNotification = async (account) => {
       },
       "amount": {
         "specifiedAmount": {
-          "currencyCode": "USD",
+          "currencyCode": "EUR",
           "units": `${account.budget}`
         }
       },
@@ -49,6 +50,7 @@ const setBudgetForPubSubNotification = async (account) => {
   try {
     const gcpClient = await getGcpAuthClient();
     const gcpAccountKeys = await getGcpAccountKeys();
+
     const url = `https://billingbudgets.googleapis.com/v1/billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}/budgets`;
     const body = {
       "displayName": `${account.name}${budgetNameSuffix.PUBSUB}`,
@@ -61,7 +63,7 @@ const setBudgetForPubSubNotification = async (account) => {
       },
       "amount": {
         "specifiedAmount": {
-          "currencyCode": "USD",
+          "currencyCode": "EUR",
           "units": `${account.budget}`
         }
       },
@@ -87,7 +89,7 @@ const setBudgetForPubSubNotification = async (account) => {
         { "thresholdPercent": 2.0, "spendBasis": "CURRENT_SPEND" },
       ],
       "notificationsRule": {
-        "pubsubTopic": `projects/${gcpAccountKeys.project_id}/topics/${process.env.GCP_PUBSUB_TOPIC_ID}`,
+        "pubsubTopic": `projects/${gcpAccountKeys.project_id}/topics/${process.env.GCP_BUDGET_PUBSUB_TOPIC_ID}`,
         "schemaVersion": "1.0",
       }
     };
@@ -99,7 +101,6 @@ const setBudgetForPubSubNotification = async (account) => {
     throw error;
   }
 }
-
 
 const getBudgetList = async () => {
   console.log('Getting GCP budget list');

@@ -82,7 +82,6 @@ const logout = async () => {
 const getUser = async () => {
   return Auth.currentAuthenticatedUser({ bypassCache: false })
     .then(user => {
-      // console.log('curent auth user', user);
       return user;
     })
     .catch(async () => {

@@ -92,7 +92,7 @@ const syncOwners = async () => {
 
 const syncAccounts = async () => {
   try {
-    const result = await accountSyncService.syncOwners();
+    const result = await accountSyncService.syncAccounts();
     return okResponse(result);
   } catch (error) {
     console.log('Owners sync failed', error);

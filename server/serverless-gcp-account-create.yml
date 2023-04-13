@@ -1,3 +1,4 @@
+# NOTE: This CF template is not in use anymore (merged into 'serverless-step-functions.yml') because of Serverless StepFunctions limits
 functions:
   stepCreateAccount:
     handler: src/handler/gcp-account-flow-handler.createAccount

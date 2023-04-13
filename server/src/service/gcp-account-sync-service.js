@@ -93,8 +93,10 @@ const syncBudgets = async () => {
 
   // purge processed messages
   const ackIds = rawMessages.map(message => message.ackId);
-  await pubSubService.acknowledgeMessages(ackIds);
-  console.log('acknowledge messages finished');
+  if (ackIds.length) {
+    await pubSubService.acknowledgeMessages(ackIds);
+    console.log('acknowledgement of messages finished', ackIds.length);
+  }
 
   // call for a new batch of messages
   if (messages.length) {

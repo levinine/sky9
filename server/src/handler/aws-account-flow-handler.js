@@ -14,7 +14,6 @@ NotReady.prototype = new Error();
 
 // Create account for dynamo for aws
 const createAccount = async (account) => {
-  console.log(account);
   try {
     const tableName = process.env.ACCOUNT_TABLE;
     account.tableName = tableName;
@@ -38,7 +37,7 @@ const createAdGroup = async (account) => {
 const validateAdGroup = async (account) => {
   let group;
   try {
-    group = await activeDirectoryService.findGroupByName(account.name);
+    group = await activeDirectoryService.findGroupByName(account.adGroupName);
   } catch (error) {
     console.log('AD Group validation failed', error);
   }

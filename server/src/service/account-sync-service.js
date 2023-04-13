@@ -154,6 +154,9 @@ const syncBudgets = async () => {
   }
 }
 
+
+// this one is used only for aws, for gcp sync owners handler is placed in 'gcp-account-handler -> syncOwners'
+
 // Checks:
 // - is owner active in AD?
 // - is owner in DynamoDB also the owner of AD group

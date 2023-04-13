@@ -41,22 +41,22 @@ const AwsAccountsListView = (props) => {
       Header: header('AWS account'),
       accessor: 'awsAccountId',
       width: utils.getColumnWidth(filteredList, 'awsAccountId', 'AWS account'),
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
+      Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.value}</div>
     }, {
       Header: header('Name'),
       accessor: 'name',
       width: utils.getColumnWidth(filteredList, 'name', 'Name'),
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
+      Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.value}</div>
     }, {
       Header: header('Owner'),
       accessor: 'owner',
       width: utils.getColumnWidth(filteredList, 'owner', 'Owner'),
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
+      Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.value}</div>
     }, {
       Header: header('Members'),
       accessor: 'members',
       width: utils.getColumnWidth(filteredList, null, 'Members'),
-      Cell: row => <div style={{ textAlign: 'left' }}><OverlayTrigger placement='right' delay={row.value && row.value.length > 0 ? 250 : 100000} overlay={(props) => <Tooltip {...props}>{row.value ? row.value.join(',\n') : ''}</Tooltip>}><span>{row.value ? row.value.length : 0}</span></OverlayTrigger></div>
+      Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}><OverlayTrigger placement='right' delay={row.value && row.value.length > 0 ? 250 : 100000} overlay={(props) => <Tooltip {...props}>{row.value ? row.value.join(',\n') : ''}</Tooltip>}><span>{row.value ? row.value.length : 0}</span></OverlayTrigger></div>
     }, {
       Header: header('Budget $'),
       accessor: 'budget',
@@ -101,6 +101,7 @@ const AwsAccountsListView = (props) => {
           <Button className='mr-2' variant='primary' onClick={() => syncBudgets()}>Sync Budgets</Button>
           <Button className='mr-2' variant='primary' onClick={() => syncOwners()}>Sync Owners</Button>
           <Button className='mr-2' variant='primary' onClick={() => newAccount()}>New Account</Button>
+          <Button className='mr-2' variant="outline-primary" onClick={() => refreshList()}><i className="fa fa-refresh"></i> Reload</Button>
         </FormGroup>
       </Form>
 
@@ -109,7 +110,7 @@ const AwsAccountsListView = (props) => {
         columns={columns}
         showPagination={true}
         defaultPageSize={100}
-        minRows={0}
+        minRows={10}
         getTrProps={(state, rowInfo, column) => {
           return {
             onClick: (e) => {

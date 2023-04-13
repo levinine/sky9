@@ -27,7 +27,7 @@
     "serverless-offline": "^5.12.0",
     "serverless-offline-scheduler": "^0.4.0",
     "serverless-pseudo-parameters": "^2.5.0",
-    "serverless-step-functions": "^2.17.1",
+    "serverless-step-functions": "^2.23.0",
     "supertest": "^4.0.2"
   },
   "dependencies": {

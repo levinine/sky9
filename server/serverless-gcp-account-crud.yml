@@ -27,7 +27,7 @@ functions:
           authorizer: ${self:custom.authorizer}
   gcpSyncBudgets:
     handler: src/handler/gcp-account-handler.syncBudgets
-    timeout: 900
+    timeout: 30 # TODO: check why 900 is not accepted (WARNING: Function gcpSyncBudgets has timeout of 900 seconds, however, it's attached to API Gateway so it's automatically limited to 30 seconds.)
     events:
       - http:
           path: gcp/sync-budgets
@@ -37,7 +37,7 @@ functions:
       - schedule: rate(1 hour)
   gcpSyncAccounts:
     handler: src/handler/gcp-account-handler.syncAccounts
-    timeout: 60
+    timeout: 30
     events:
       - http:
           path: gcp/sync-accounts
@@ -47,7 +47,7 @@ functions:
       - schedule: cron(0,30 8-18 * * ? *)
   gcpSyncOwners:
     handler: src/handler/gcp-account-handler.syncOwners
-    timeout: 60
+    timeout: 30
     events:
       - http:
           path: gcp/sync-owners

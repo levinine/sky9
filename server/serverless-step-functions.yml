@@ -1,5 +1,5 @@
-# NOTE: This CF template is not in use anymore (merged into 'serverless-step-functions.yml') because of Serverless StepFunctions limits
 functions:
+  # AWS
   stepCreateAccount:
     handler: src/handler/aws-account-flow-handler.createAccount
   stepCreateAdGroup:
@@ -18,9 +18,28 @@ functions:
     handler: src/handler/aws-account-flow-handler.validateSsoGroup
   stepAssignSsoGroup:
     handler: src/handler/aws-account-flow-handler.assignSsoGroup
+  # GCP
+  stepGCPCreateAccount:
+    handler: src/handler/gcp-account-flow-handler.createAccount
+  stepGCPCreateAdGroup:
+    handler: src/handler/gcp-account-flow-handler.createAdGroup
+    timeout: 30
+  stepGCPValidateAdGroup:
+    handler: src/handler/gcp-account-flow-handler.validateAdGroup
+  stepCreateGcpAccount:
+    handler: src/handler/gcp-account-flow-handler.createGcpAccount
+  stepAssignAdGroupAsProjectOwner:
+    handler: src/handler/gcp-account-flow-handler.assignAdGroupAsProjectOwner
+  stepSetBillingAccount:
+    handler: src/handler/gcp-account-flow-handler.setBillingAccount
+  stepCreateNotificationChannel:
+    handler: src/handler/gcp-account-flow-handler.createNotificationChannel
+  stepSetBudget:
+    handler: src/handler/gcp-account-flow-handler.setBudget
 
 stepFunctions:
   stateMachines:
+    # AWS
     createAccount:
       events:
         - http:
@@ -103,4 +122,76 @@ stepFunctions:
             Resource:
               Fn::GetAtt: [stepAssignSsoGroup, Arn]
             TimeoutSeconds: 60
+            End: true
+    # GCP
+    createGCPAccount:
+      events:
+        - http:
+            path: gcp/accounts
+            method: post
+            cors: true
+            authorizer: ${self:custom.authorizer}
+      name: createGCPAccount-${self:provider.stage}
+      definition:
+        StartAt: Store account in DB
+        States:
+          Store account in DB:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepGCPCreateAccount, Arn]
+            TimeoutSeconds: 60
+            Next: Create AD group
+          Create AD group:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepGCPCreateAdGroup, Arn]
+            TimeoutSeconds: 60
+            Next: Validate AD group created
+          Validate AD group created:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepGCPValidateAdGroup, Arn]
+            TimeoutSeconds: 60
+            Retry:
+              - ErrorEquals:
+                  - NOT_READY
+                IntervalSeconds: 10
+                MaxAttempts: 20
+                BackoffRate: 1
+            Next: Create account in GCP
+          Create account in GCP:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateGcpAccount, Arn]
+            TimeoutSeconds: 60
+            Next: Set billing account
+          Set billing account:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepSetBillingAccount, Arn]
+            TimeoutSeconds: 60
+            Next: Create notification channel
+          Create notification channel:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepCreateNotificationChannel, Arn]
+            TimeoutSeconds: 60
+            Next: Set budget
+          Set budget:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepSetBudget, Arn]
+            TimeoutSeconds: 60
+            Next: Assign AD group as project owner
+          Assign AD group as project owner:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepAssignAdGroupAsProjectOwner, Arn]
+            TimeoutSeconds: 60
+            Retry:
+              - ErrorEquals:
+                  - NOT_READY
+                IntervalSeconds: 600
+                MaxAttempts: 10
+                BackoffRate: 1
             End: true

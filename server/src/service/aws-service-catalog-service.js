@@ -91,8 +91,9 @@ const provisionAccount = async (account) => {
       { 'Key': 'AccountEmail', 'Value': `${account.name}@${organizationDomain}` },
       { 'Key': 'SSOUserFirstName', 'Value': account.ownerFirstName },
       { 'Key': 'SSOUserLastName', 'Value': account.ownerLastName },
-      { 'Key': 'ManagedOrganizationalUnit', 'Value': 'Custom' },
+      // { 'Key': 'ManagedOrganizationalUnit', 'Value': 'Custom' },
       // { 'Key': 'ManagedOrganizationalUnit', 'Value': 'Sandbox' }, // only for aws-srb-recruitment
+      { 'Key': 'ManagedOrganizationalUnit', 'Value': account.name.includes('AWS-SRB-Recruitment') ? 'Sandbox' : 'Custom' },
       { 'Key': 'AccountName', 'Value': account.name }
     ],
     PathId: launchPathId,
