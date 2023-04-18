@@ -12,7 +12,15 @@ class Menu extends React.Component {
   }
   componentDidMount() {
     getUser().then(user => {
-      this.setState({ user: user ? user.signInUserSession.idToken.payload.email : null });
+      let email = null;
+      if (user) {
+        if (user.signInUserSession.idToken.payload.email) {
+          email = user.signInUserSession.idToken.payload.email;
+        } else {
+          email = 'CA User';
+        }
+      }
+      this.setState({ user: email });
     });
   }
 
