@@ -114,8 +114,9 @@ const AccountsListView = (props) => {
       <ReactTable 
         data={filteredList}
         columns={columns}
-        showPagination={false}
-        minRows={0}
+        showPagination={true}
+        defaultPageSize={100}
+        minRows={10}
         getTrProps={(state, rowInfo, column) => {
           return {
             onClick: (e) => {
