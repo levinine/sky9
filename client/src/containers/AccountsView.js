@@ -36,7 +36,6 @@ const AccountsView = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect( () => {
-    console.log(user);
     fetchAccounts();
     getUser().then(user => {
       let email = null;
@@ -85,7 +84,7 @@ const AccountsView = () => {
 
     return (
       <>
-      { !user ? (
+      { user ? (
         <div className='container-fluid'>
           <div className='row'>
             <div className='col-2'>
