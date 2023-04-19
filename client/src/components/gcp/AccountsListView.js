@@ -17,7 +17,10 @@ const GcpAccountsListView = (props) => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredList, setFilteredList] = useState(accounts);
-  
+  const [syncAccountsLoader, setSyncAccountsLoader] = useState(false);
+  const [syncBudgetsLoader, setSyncBudgetsLoader] = useState(false);
+  const [syncOwnersLoader, setSyncOwnersLoader] = useState(false);
+
   useEffect(() => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     const results = (accounts || []).filter(account => {
@@ -75,11 +78,15 @@ const GcpAccountsListView = (props) => {
   ];
 
   const syncAccounts = async () => {
+    setSyncAccountsLoader(true);
     await accountService.syncAccounts();
+    setSyncAccountsLoader(false);
     refreshList();
   }
   const syncOwners = async () => {
+    setSyncOwnersLoader(true);
     await accountService.syncOwners();
+    setSyncOwnersLoader(false);
     refreshList();
   }
 
@@ -87,7 +94,9 @@ const GcpAccountsListView = (props) => {
     handleViewChange('Create new GCP account', null);
   }
   const syncBudgets = async () => {
+    setSyncBudgetsLoader(true);
     await accountService.syncBudgets();
+    setSyncBudgetsLoader(false);
     refreshList();
   }
   return (
@@ -95,10 +104,25 @@ const GcpAccountsListView = (props) => {
       <SearchField onChange={handleChange} searchTerm={searchTerm} />
       <Form>
         <FormGroup>
-          <Button className='mr-2' variant='primary' onClick={() => syncAccounts()}>Sync Accounts</Button>
-          <Button className='mr-2' variant='primary' onClick={() => syncBudgets()}>Sync Budgets</Button>
-          <Button className='mr-2' variant='primary' onClick={() => syncOwners()}>Sync Owners</Button>
-          <Button className='mr-2' variant='primary' onClick={() => newAccount()}>New Account</Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncAccounts()}>
+            {'Sync Accounts '}
+            { syncAccountsLoader && (
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            )}
+          </Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncBudgets()}>
+            {'Sync Budgets '}
+            { syncBudgetsLoader && (
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            )}
+          </Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncOwners()}>
+            {'Sync Owners '}
+            { syncOwnersLoader && (
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            )}
+          </Button>
+          <Button className='mr-2' variant='primary' onClick={() => newAccount()}><i className="fa fa-plus"></i> New Account</Button>
           <Button className='mr-2' variant="outline-primary" onClick={() => refreshList()}><i className="fa fa-refresh"></i> Reload</Button>
         </FormGroup>
       </Form>

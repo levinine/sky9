@@ -69,6 +69,7 @@ const syncBudgets = async () => {
 
   // sort budget per name and costAmount (possible duplicates)
   const sortedBudgets = mapValues(groupBy(messages, message => message.budgetDisplayName), object => orderBy(object, 'costAmount', 'desc'));
+  console.log('Sorted budgets from topic', sortedBudgets);
 
   // get existing accounts from dynamodb
   const accounts = await accountService.getAccounts(tableName);
@@ -95,7 +96,7 @@ const syncBudgets = async () => {
   const ackIds = rawMessages.map(message => message.ackId);
   if (ackIds.length) {
     await pubSubService.acknowledgeMessages(ackIds);
-    console.log('acknowledgement of messages finished', ackIds.length);
+    console.log(`acknowledgement of ${ackIds.length} messages finished`);
   }
 
   // call for a new batch of messages
