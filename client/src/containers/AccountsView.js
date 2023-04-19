@@ -67,7 +67,7 @@ const AccountsView = () => {
 
   const fetchAccounts = async () => {
     setLoading(true);
-    const accounts = await await serviceHandler.getAccounts();
+    const accounts = await serviceHandler.getAccounts();
     setAccounts(accounts || []);
     setLoading(false);
   }
