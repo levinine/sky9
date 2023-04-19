@@ -17,7 +17,10 @@ const GcpAccountsListView = (props) => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredList, setFilteredList] = useState(accounts);
-  
+  const [syncAccountsLoader, setSyncAccountsLoader] = useState(false);
+  const [syncBudgetsLoader, setSyncBudgetsLoader] = useState(false);
+  const [syncOwnersLoader, setSyncOwnersLoader] = useState(false);
+
   useEffect(() => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     const results = (accounts || []).filter(account => {
@@ -40,27 +43,27 @@ const GcpAccountsListView = (props) => {
       Header: header('GCP project'),
       accessor: 'gcpProjectId',
       width: utils.getColumnWidth(filteredList, 'gcpProjectId', 'GCP Project'),
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
+      Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.value}</div>
     }, {
       Header: header('Name'),
       accessor: 'name',
       width: utils.getColumnWidth(filteredList, 'name', 'Name'),
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
+      Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.value}</div>
     }, {
       Header: header('Owner'),
       accessor: 'owner',
       width: utils.getColumnWidth(filteredList, 'owner', 'Owner'),
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
+      Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.value}</div>
     }, {
       Header: header('Members'),
       accessor: 'members',
       width: utils.getColumnWidth(filteredList, null, 'Members'),
-      Cell: row => <div style={{ textAlign: 'left' }}><OverlayTrigger placement='right' delay={row.value && row.value.length > 0 ? 250 : 100000} overlay={(props) => <Tooltip {...props}>{row.value ? row.value.join(',\n') : ''}</Tooltip>}><span>{row.value ? row.value.length : 0}</span></OverlayTrigger></div>
+      Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}><OverlayTrigger placement='right' delay={row.value && row.value.length > 0 ? 250 : 100000} overlay={(props) => <Tooltip {...props}>{row.value ? row.value.join(',\n') : ''}</Tooltip>}><span>{row.value ? row.value.length : 0}</span></OverlayTrigger></div>
     }, {
       Header: header('Budget $'),
       accessor: 'budget',
-      width: 90,
-      Cell: row => <div style={{ textAlign: 'left' }}><span style={{ width: '40px', display: 'inline-block'}}>{row.original.actualSpend === undefined ? '?' : row.original.actualSpend}</span><span> / {row.value}</span></div>
+      width: 95,
+      Cell: row => <div style={{ textAlign: 'left' }}><span style={{ width: '48px', display: 'inline-block'}}>{row.original.actualSpend === undefined ? '?' : row.original.actualSpend}</span><span> / {row.value}</span></div>
     }, {
       Header: header('Created time'),
       accessor: 'createdTime',
@@ -75,11 +78,15 @@ const GcpAccountsListView = (props) => {
   ];
 
   const syncAccounts = async () => {
+    setSyncAccountsLoader(true);
     await accountService.syncAccounts();
+    setSyncAccountsLoader(false);
     refreshList();
   }
   const syncOwners = async () => {
+    setSyncOwnersLoader(true);
     await accountService.syncOwners();
+    setSyncOwnersLoader(false);
     refreshList();
   }
 
@@ -87,7 +94,9 @@ const GcpAccountsListView = (props) => {
     handleViewChange('Create new GCP account', null);
   }
   const syncBudgets = async () => {
+    setSyncBudgetsLoader(true);
     await accountService.syncBudgets();
+    setSyncBudgetsLoader(false);
     refreshList();
   }
   return (
@@ -95,18 +104,35 @@ const GcpAccountsListView = (props) => {
       <SearchField onChange={handleChange} searchTerm={searchTerm} />
       <Form>
         <FormGroup>
-          <Button className='mr-2' variant='primary' onClick={() => syncAccounts()}>Sync Accounts</Button>
-          <Button className='mr-2' variant='primary' onClick={() => syncBudgets()}>Sync Budgets</Button>
-          <Button className='mr-2' variant='primary' onClick={() => syncOwners()}>Sync Owners</Button>
-          <Button className='mr-2' variant='primary' onClick={() => newAccount()}>New Account</Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncAccounts()}>
+            {'Sync Accounts '}
+            { syncAccountsLoader && (
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            )}
+          </Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncBudgets()}>
+            {'Sync Budgets '}
+            { syncBudgetsLoader && (
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            )}
+          </Button>
+          <Button className='mr-2' variant='primary' onClick={() => syncOwners()}>
+            {'Sync Owners '}
+            { syncOwnersLoader && (
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            )}
+          </Button>
+          <Button className='mr-2' variant='primary' onClick={() => newAccount()}><i className="fa fa-plus"></i> New Account</Button>
+          <Button className='mr-2' variant="outline-primary" onClick={() => refreshList()}><i className="fa fa-refresh"></i> Reload</Button>
         </FormGroup>
       </Form>
 
       <ReactTable 
         data={filteredList}
         columns={columns}
-        showPagination={false}
-        minRows={0}
+        showPagination={true}
+        defaultPageSize={100}
+        minRows={10}
         getTrProps={(state, rowInfo, column) => {
           return {
             onClick: (e) => {

@@ -1,4 +1,3 @@
-const AWS = require('aws-sdk');
 const { JWT } = require('google-auth-library');
 
 let client = null;

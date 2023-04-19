@@ -50,15 +50,14 @@ const configureAmplify = () => {
       },{
         name: 'gcp-accounts',
         endpoint: config.apiUrl,
-        // TODO: add custom header when development is finished
-        // custom_header: async () => {
-        //   let user = await getUser();
-        //   if (user) {
-        //     return { Authorization : user.signInUserSession.idToken.jwtToken };
-        //   } else {
-        //     history.push('login');
-        //   }
-        // }
+        custom_header: async () => {
+          let user = await getUser();
+          if (user) {
+            return { Authorization : user.signInUserSession.idToken.jwtToken };
+          } else {
+            history.push('login');
+          }
+        }
       }]
     });
   } catch (err) {
@@ -83,7 +82,6 @@ const logout = async () => {
 const getUser = async () => {
   return Auth.currentAuthenticatedUser({ bypassCache: false })
     .then(user => {
-      // console.log('curent auth user', user);
       return user;
     })
     .catch(async () => {

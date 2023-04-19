@@ -9,7 +9,7 @@ const tableName = process.env.ACCOUNT_GCP_TABLE;
 
 const syncAccountsMembers = async () => {
   const accounts = await accountService.getAccounts(tableName);
-  for (account of accounts) {
+  for (const account of accounts) {
     const members = await activeDirectoryService.findGroupMemberEmails(account.adGroupName);
     console.log('syncAccountsMembers: ', account.adGroupName, members);
     await accountService.updateAccount({ id: account.id, members }, tableName);
@@ -69,6 +69,7 @@ const syncBudgets = async () => {
 
   // sort budget per name and costAmount (possible duplicates)
   const sortedBudgets = mapValues(groupBy(messages, message => message.budgetDisplayName), object => orderBy(object, 'costAmount', 'desc'));
+  console.log('Sorted budgets from topic', sortedBudgets);
 
   // get existing accounts from dynamodb
   const accounts = await accountService.getAccounts(tableName);
@@ -84,18 +85,19 @@ const syncBudgets = async () => {
     // if condition is true, call dynamodb and update account actualSpend value
     if (accountForUpdate && Number(accountForUpdate.actualSpend) < Number(sortedBudgets[budgetName][0].costAmount)) {
       console.log(`Update budget for: ${accountForUpdate.id} - ${accountForUpdate.name}, old cost ${accountForUpdate.actualSpend}, new cost ${sortedBudgets[budgetName][0].costAmount}`)
-      // TODO call dynamo for item update, uncomment real call to dynamoDB
+      // call dynamo for item update
       // get the biggest sorted value for actualSpend (because of message duplicates)
-      // events.push(accountService.updateAccount({ id: accountForUpdate.id, actualSpend: `${sortedBudgets[name][0].costAmount}` }, tableName));
-      events.push(Promise.resolve(accountForUpdate.name));
+      events.push(accountService.updateAccount({ id: accountForUpdate.id, actualSpend: `${sortedBudgets[budgetName][0].costAmount}` }, tableName));
     }
   })
   await Promise.all(events);
 
   // purge processed messages
   const ackIds = rawMessages.map(message => message.ackId);
-  await pubSubService.acknowledgeMessages(ackIds);
-  console.log('acknowledge messages finished');
+  if (ackIds.length) {
+    await pubSubService.acknowledgeMessages(ackIds);
+    console.log(`acknowledgement of ${ackIds.length} messages finished`);
+  }
 
   // call for a new batch of messages
   if (messages.length) {

@@ -35,8 +35,8 @@ const createAccount = async (account, cloud) => {
     throw new Error('Missing one or more of: name, owner, ownerFirstName, ownerLastName');
   }
   if (cloud === clouds.AWS && !account.name.startsWith(process.env.ORGANIZATION)) {
-    account.name = `${process.env.ORGANIZATION}-${account.name}`; 
-    account.adGroupName = `${process.env.ORGANIZATION}-${account.name}`; 
+    account.name = `${process.env.ORGANIZATION}-${account.name}`; // TODO: check if organization can be excluded, or add new env var per country
+    account.adGroupName = account.name;
   }
   if (cloud === clouds.GCP && !account.name.startsWith(process.env.GCP_ORGANIZATION)) {
     // do not use 'name' property, because GCP allows less characters for project name

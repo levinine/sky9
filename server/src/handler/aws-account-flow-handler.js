@@ -14,12 +14,11 @@ NotReady.prototype = new Error();
 
 // Create account for dynamo for aws
 const createAccount = async (account) => {
-  console.log(account);
   try {
     const tableName = process.env.ACCOUNT_TABLE;
+    account.tableName = tableName;
     account = await accountService.createAccount(account, clouds.AWS);
     account = await accountService.addAccountHistoryRecord(account.id, 'DynamoDB created', { account }, tableName);
-    account.tableName = tableName;
     return account;
   } catch (error) {
     console.log('Account creation step failed', error);
@@ -38,7 +37,7 @@ const createAdGroup = async (account) => {
 const validateAdGroup = async (account) => {
   let group;
   try {
-    group = await activeDirectoryService.findGroupByName(account.name);
+    group = await activeDirectoryService.findGroupByName(account.adGroupName);
   } catch (error) {
     console.log('AD Group validation failed', error);
   }

@@ -12,14 +12,14 @@ function NotReady(message) {
 }
 NotReady.prototype = new Error();
 
+const tableName = process.env.ACCOUNT_GCP_TABLE;
+
 // Create account for gcp in dynamo
 const createAccount = async (account) => {
-    console.log(account);
     try {
-      const tableName = process.env.ACCOUNT_GCP_TABLE;
       account = await accountService.createAccount(account, clouds.GCP);
-      account = await accountService.addAccountHistoryRecord(account.id, 'DynamoDB created', { account }, tableName);
       account.tableName = tableName;
+      account = await accountService.addAccountHistoryRecord(account.id, 'DynamoDB created', { account }, tableName);
       return account;
     } catch (error) {
       console.log('Account creation step failed', error);
@@ -30,7 +30,7 @@ const createAccount = async (account) => {
 const createAdGroup = async (account) => {
   console.log('Create AD group step', account);
   const result = await activeDirectoryService.execAdRunbook(account.adGroupName, account.owner, clouds.GCP);
-  account = await accountService.addAccountHistoryRecord(account.id, 'AD Group creation requested', {}, account.tableName);
+  account = await accountService.addAccountHistoryRecord(account.id, 'AD Group creation requested', {}, account.tableName || tableName);
   console.log('Create AD group step finished', result);
   return account;
 }
@@ -38,24 +38,20 @@ const createAdGroup = async (account) => {
 const validateAdGroup = async (account) => {
   let group;
   try {
-    group = await activeDirectoryService.findGroupByName(account.name);
+    group = await activeDirectoryService.findGroupByName(account.adGroupName);
   } catch (error) {
     console.log('AD Group validation failed', error);
   }
   if (!group) {
     throw new NotReady();
   } else {
-    account = await accountService.addAccountHistoryRecord(account.id, 'AD Group creation verified', {}, account.tableName);
+    account = await accountService.addAccountHistoryRecord(account.id, 'AD Group creation verified', {}, account.tableName || tableName);
     return account;
   }
 }
 
 const createGcpAccount = async (account) => {
   console.log(`Creating GCP account ${JSON.stringify(account)}`);
-  // FOR HTTP Trigger uncomment next 3 lines
-  // const httpTemp = JSON.parse(account.body);
-  // const account = httpTemp;
-
   try {
     const gcpClient = await getGcpAuthClient();
     const url = 'https://cloudresourcemanager.googleapis.com/v3/projects';
@@ -65,10 +61,9 @@ const createGcpAccount = async (account) => {
       "parent": `folders/${process.env.GCP_PARENT_FOLDER_VALUE}`
     }
     const createdAccount = await gcpClient.request({ method: 'POST', url: url, data: body });
-    // response from gcp -> { "name": "operations/cp.6791935560210989313" }
-    account.gcpCreationResponse = createdAccount;
     account.gcpProjectId = account.name;
-    account = await accountService.addAccountHistoryRecord(account.id, 'GCP account creation requested', { account }, account.tableName);
+    await accountService.updateAccount({ id: account.id, gcpProjectId: account.name }, tableName);
+    account = await accountService.addAccountHistoryRecord(account.id, 'GCP account creation requested', { account }, account.tableName || tableName);
     console.log(`Finished creating GCP account`, createdAccount);
     return account;
   } catch (error) {
@@ -79,16 +74,18 @@ const createGcpAccount = async (account) => {
 
 const assignAdGroupAsProjectOwner = async (account) => {
   console.log(`Assign ad group as project owner ${JSON.stringify(account)}`);
-  // FOR HTTP Trigger uncomment next 2 lines
-  // const httpTemp = JSON.parse(account.body);
-  // const account = httpTemp;
-
   try {
     const gcpClient = await getGcpAuthClient();
     const getPolicyUrl = `https://cloudresourcemanager.googleapis.com/v3/projects/${account.name}:getIamPolicy`;
     const previousPolicyResponse = await gcpClient.request({ method: 'POST', url: getPolicyUrl });
     let previousPolicy = previousPolicyResponse.data;
-    previousPolicy.bindings[0].members.push(`group:${account.email}`);
+    const editorPolicy = [{
+      'role': 'roles/editor',
+      'members': [
+        `group:${account.adGroupName}-Administrators@levi9.com` // ad group email (ad group name + @levi9.com)
+      ]
+    }];
+    previousPolicy.bindings = previousPolicy.bindings.concat(editorPolicy);
 
     const setPolicyUrl = `https://cloudresourcemanager.googleapis.com/v3/projects/${account.name}:setIamPolicy`;
     const updatedPolicy = {
@@ -96,11 +93,15 @@ const assignAdGroupAsProjectOwner = async (account) => {
       updateMask: "bindings"
     }
     await gcpClient.request({ method: 'POST', url: setPolicyUrl, data: updatedPolicy });
-    account = await accountService.addAccountHistoryRecord(account.id, 'AD Group assigned as a project owner', { account }, account.tableName);
+    account = await accountService.addAccountHistoryRecord(account.id, 'AD Group assigned as a project owner', { account }, account.tableName || tableName);
     console.log(`Finished assigning ad group as a project owner`);
     return account;
   } catch (error) {
     console.log('Assigning ad group as a project owner failed', error);
+    if (error.code === 400) {
+      // ad group is still not propagate to gcp
+      throw new NotReady();
+    }
     throw error;
   }
 }
@@ -109,12 +110,17 @@ const setBillingAccount = async (account) => {
   console.log(`Setting GCP billing account ${JSON.stringify(account)}`);
   try {
     const gcpClient = await getGcpAuthClient();
+
+    // This call is not needed, but for some reason, without this additional call 'billing api' (line #123) is failing due to 'lack of permissions'
+    const tempUrl = `https://cloudresourcemanager.googleapis.com/v3/projects/${account.name}`;
+    await gcpClient.request({ method: 'GET', url: tempUrl });
+
     const url = `https://cloudbilling.googleapis.com/v1/projects/${account.name}/billingInfo`; // name = PROJECT_ID
     const body = {
       "billingAccountName": `billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}`
     }
     await gcpClient.request({ method: 'PUT', url: url, data: body });
-    account = await accountService.addAccountHistoryRecord(account.id, 'GCP set billing account', { account }, account.tableName);
+    account = await accountService.addAccountHistoryRecord(account.id, 'GCP set billing account', { account }, account.tableName || tableName);
     console.log(`Finished setting GCP billing account`);
     return account;
   } catch (error) {
@@ -139,9 +145,11 @@ const createNotificationChannel = async (account) => {
     };
   
     const createdNotification = await gcpClient.request({ method: 'POST', url, data: body });
+    // add for history
     account.notificationChannelId = createdNotification.data.name;
-    
-    account = await accountService.addAccountHistoryRecord(account.id, 'GCP create notification channel', { account }, account.tableName);
+    account = await accountService.addAccountHistoryRecord(account.id, 'GCP create notification channel', { account }, account.tableName || tableName);
+    // add for next step on higher object level
+    account.notificationChannelId = createdNotification.data.name;
     console.log(`Finished creation of notification channel`);
     return account;
   } catch (error) {
@@ -153,9 +161,9 @@ const createNotificationChannel = async (account) => {
 const setBudget = async (account) => {
   try {
     await setBudgetForEmailNotification(account);
-    account = await accountService.addAccountHistoryRecord(account.id, 'GCP set project budget for email notification', { account }, account.tableName);
+    account = await accountService.addAccountHistoryRecord(account.id, 'GCP set project budget for email notification', { account }, account.tableName || tableName);
     await setBudgetForPubSubNotification(account);
-    account = await accountService.addAccountHistoryRecord(account.id, 'GCP set project budget for pubsub notiffication', { account }, account.tableName);
+    account = await accountService.addAccountHistoryRecord(account.id, 'GCP set project budget for pubsub notiffication', { account }, account.tableName || tableName);
     return account;
   } catch (error) {
     console.log('Setting of project budgets failed', error);

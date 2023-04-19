@@ -111,6 +111,7 @@ const AwsAccountForm = (props) => {
       };
       const executionId = await apiFunction(a);
       console.log('submit account executionId', executionId);
+      handleViewChange(stage, null);
       refreshList();
       if (stage === 'Update account') {
         const message = 'You have successfully updated account ' + account.name;
@@ -144,7 +145,7 @@ const AwsAccountForm = (props) => {
         }}>
         <FormGroup controlId='name'>
           <FormLabel>Name:</FormLabel>
-          <FormControl type='text' value={name} disabled placeholder='Enter name' />
+          <FormControl type='text' value={name} onChange={event => setName(event.target.value)} placeholder='Enter name' />
           <Alert
             variant='danger'
             show={nameError !== null}

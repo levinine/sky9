@@ -1,12 +1,8 @@
 import { API } from 'aws-amplify';
-import * as utils from '../components/utils';
 
 const getAccounts = async () => {
   try {
-    console.log('AWS GET ACCOUNTS');
-    // TODO: uncomment before deployment
-    // return await API.get('accounts', '/accounts');
-    return utils.awsMocksAccounts; 
+    return await API.get('accounts', '/accounts');
   } catch (error) {
     console.log(error);
   }
@@ -14,9 +10,7 @@ const getAccounts = async () => {
 
 const getAccount = async id => {
   try {
-    // TODO: uncomment before deployment
-    // return = await API.get('accounts', '/accounts/' + id);
-    return utils.awsMocksAccounts[0]; 
+    return await API.get('accounts', '/accounts/' + id);
   } catch (error) {
     console.log(error);
   }

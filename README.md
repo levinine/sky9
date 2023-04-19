@@ -12,7 +12,6 @@ Here are the steps to deploy everything for the first time and configure both SS
 
 1. Start adding configuration for new deployment to AWS Parameter Store.
   At this point you should prepare the following configuration properties: `organization`, `organizationDomain`, `cognitoDomain`, `adTenantId`. If available these two as well: `adRunbookUrl` and `adRunbookKey`.
-  For GCP creation flow prepare `gcpAccountKeys` as well.
 
   ```Bash
   # expected values are prod and test
@@ -30,7 +29,7 @@ Here are the steps to deploy everything for the first time and configure both SS
   aws ssm put-parameter --type String --name " /sky9/$stage/gcpOrganization" --value '<gcpOrganization>'
   aws ssm put-parameter --type String --name " /sky9/$stage/gcpBillingAccountId" --value '<gcpBillingAccountId>'
   aws ssm put-parameter --type String --name " /sky9/$stage/gcpBudgetPubSubSubscriptionId" --value '<gcpBudgetPubSubSubscriptionId>'
-  aws ssm put-parameter --type String --name " /sky9/$stage/gcpPubSubTopicId" --value '<gcpPubSubTopicId>'
+  aws ssm put-parameter --type String --name " /sky9/$stage/gcpBudgetPubSubTopicId" --value '<gcpBudgetPubSubTopicId>'
   ```
 
 2. Deploy infrastructure for the client. This will create S3 bucket and CloudFront distribution. Interesting values to pick-up here is CloudFront distribution public URL, which will be used to configure client build, Cognito's redirectURL config parameter, and AD application Home page URL.

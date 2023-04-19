@@ -21,14 +21,6 @@ const getMessages = async () => {
   const body = {
     maxMessages: 1000
   };
-  // const response = await gcpClient.request({ method: 'POST', url, data: body});
-  // TODO - remove (used for testing purpose)
-  // const response = {
-  //   data: {
-  //     receivedMessages: mockedRawMessages
-  //   }
-  // }
-  // return response;
   return await gcpClient.request({ method: 'POST', url, data: body});
 }
 

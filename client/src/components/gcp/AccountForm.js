@@ -102,7 +102,7 @@ const GcpAccountForm = (props) => {
     if (!validateForm()) return;
     try {
       const a = {
-        name: name,
+        name: name.toLowerCase(),
         owner: owner,
         ownerFirstName: ownerFirstName,
         ownerLastName: ownerLastName,
@@ -111,6 +111,7 @@ const GcpAccountForm = (props) => {
       };
       const executionId = await apiFunction(a);
       console.log('submit account executionId', executionId);
+      handleViewChange(stage, null);
       refreshList();
       if (stage === 'Update account') {
         const message = 'You have successfully updated account ' + account.name;
@@ -144,7 +145,7 @@ const GcpAccountForm = (props) => {
         }}>
         <FormGroup controlId='name'>
           <FormLabel>Name:</FormLabel>
-          <FormControl type='text' value={name} disabled placeholder='Enter name' />
+          <FormControl type='text' value={name} onChange={event => setName(event.target.value)} placeholder='Enter name' /> {/* disable input field for edit action */}
           <Alert
             variant='danger'
             show={nameError !== null}

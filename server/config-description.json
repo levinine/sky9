@@ -9,10 +9,10 @@
   "adAppClientId": "AD registered application: clientId",
   "adRunbookUrl": "URL of Runbook which creates AD group and assigns owner. This group gets propagated to AWS SSO",
   "adRunbookKey": "API key for Runbook",
-  "gcpAccountKeys": "JSON for Service account access, it contains privete key for auth and other service values",
+  "gcpAccountKeys": "JSON for Service account access, it contains private key for auth and other account service values",
   "gcpParentFolderValue": "Value of gcp parent project",
   "gcpOrganization": "Name of gcp organization",
   "gcpBillingAccountId": "Value of billing account id",
   "gcpBudgetPubSubSubscriptionId": "Subscription ID for pulling 'budget update messages' from gcp pubsub. Using for syncing budgets between GCP and AWS DynamoDB",
-  "gcpPubSubTopicId": "PubSub Topic id that is used for pulling messages from budget threshold notification"
+  "gcpBudgetPubSubTopicId": "PubSub Topic id that is used for pulling messages from budget threshold notification"
 }
