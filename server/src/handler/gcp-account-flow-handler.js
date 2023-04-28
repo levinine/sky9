@@ -84,6 +84,12 @@ const assignAdGroupAsProjectOwner = async (account) => {
       'members': [
         `group:${account.adGroupName}-Administrators@levi9.com` // ad group email (ad group name + @levi9.com)
       ]
+    },
+    {
+      "role": "roles/resourcemanager.projectIamAdmin",
+      "members": [
+        `group:${account.adGroupName}-Administrators@levi9.com`
+      ]
     }];
     previousPolicy.bindings = previousPolicy.bindings.concat(editorPolicy);
 
