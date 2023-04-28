@@ -29,6 +29,7 @@ functions:
     handler: src/handler/aws-account-handler.deleteAccount
   SyncAccounts:
     handler: src/handler/aws-account-handler.syncAccounts
+    timeout: 90
     events:
       - http:
           path: sync-accounts
@@ -38,6 +39,7 @@ functions:
       - schedule: cron(0,30 8-18 * * ? *)
   SyncBudgets:
     handler: src/handler/aws-account-handler.syncBudgets
+    timeout: 90
     events:
       - http:
           path: sync-budgets
@@ -47,6 +49,7 @@ functions:
       - schedule: cron(1,31 8-18 * * ? *)
   SyncOwners:
     handler: src/handler/aws-account-handler.syncOwners
+    timeout: 90
     events:
       - http:
           path: sync-owners
