@@ -83,7 +83,8 @@ const syncBudgets = async () => {
     const accountName = budgetName.replace(budgetNameSuffix.PUBSUB, '');
     const accountForUpdate = accounts.find(account => account.name === accountName);
     // if condition is true, call dynamodb and update account actualSpend value
-    if (accountForUpdate && Number(accountForUpdate.actualSpend) < Number(sortedBudgets[budgetName][0].costAmount)) {
+    if (accountForUpdate && 
+      (!accountForUpdate.actualSpend || (accountForUpdate.actualSpend && Number(accountForUpdate.actualSpend) < Number(sortedBudgets[budgetName][0].costAmount)))) {
       console.log(`Update budget for: ${accountForUpdate.id} - ${accountForUpdate.name}, old cost ${accountForUpdate.actualSpend}, new cost ${sortedBudgets[budgetName][0].costAmount}`)
       // call dynamo for item update
       // get the biggest sorted value for actualSpend (because of message duplicates)
