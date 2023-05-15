@@ -112,15 +112,18 @@ const assignAdGroupAsProjectOwner = async (account) => {
   }
 }
 
+const wait = async (seconds) => {
+  return new Promise(resolve => {
+     setTimeout(resolve, seconds * 1000);
+  });
+} 
+
 const setBillingAccount = async (account) => {
   console.log(`Setting GCP billing account ${JSON.stringify(account)}`);
   try {
     const gcpClient = await getGcpAuthClient();
-
-    // This call is not needed, but for some reason, without this additional call 'billing api' (line #123) is failing due to 'lack of permissions'
-    const tempUrl = `https://cloudresourcemanager.googleapis.com/v3/projects/${account.name}`;
-    await gcpClient.request({ method: 'GET', url: tempUrl });
-
+    // the previous step was to create GCP project, wait 10 seconds to be sure that GCP propagate all resorces otherwise 403 error is thrown by GCP API
+    await wait(10);
     const url = `https://cloudbilling.googleapis.com/v1/projects/${account.name}/billingInfo`; // name = PROJECT_ID
     const body = {
       "billingAccountName": `billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}`

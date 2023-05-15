@@ -93,18 +93,23 @@ const syncAccountsCreatedTime = async () => {
   accounts.forEach(async account => {
     console.log(`\nAccount: ${account.awsAccountId}, createdTime: ${JSON.stringify(account.createdTime)}`);
     if (account.history) {
-      const oldSync = account.history.find(item => item.type === 'Sync ServiceCatalog');
-      if (oldSync) {
-        const newSync = serviceCatalogAccounts.find(scAccount => scAccount.Id === oldSync.record.Id);
-        console.log(`Found this in ServiceCatalog: ${JSON.stringify(newSync.CreatedTime)}, updating`);
-        await accountService.updateAccount({ id: account.id, createdTime: JSON.stringify(newSync.CreatedTime).replace(/"/g, '') }, tableName);
-      } else {
-        console.log('Couldn\'t find old sync record');
-      }
+        const newSync = serviceCatalogAccounts.find(scAccount => scAccount.Name === account.name);
+        if (newSync) {
+          console.log(`Found this in ServiceCatalog: ${JSON.stringify(newSync.CreatedTime)}, updating`);
+          await accountService.updateAccount({ id: account.id, createdTime: JSON.stringify(newSync.CreatedTime).replace(/"/g, '') }, tableName);
+        } else {
+          console.log('Couldn\'t find new sync record');
+        }
     } else {
       console.log(`Empty account history.`)
     }
   });
+  // not needed to fetch creator from cloudtrail, from there we get 'sky9 app (state machine)' as a creator, not the real person
+  // const cloudtrailAccounts = await awsCloudtrailService.findProvisionedAccounts();
+  // for (const scAccount of serviceCatalogAccounts) {
+  //   const ctAccount = cloudtrailAccounts.find(cta => cta.provisionToken === scAccount.IdempotencyToken);
+  //   console.log('ctAccount', ctAccount, ctAccount.createdBy);
+  // }
 }
 
 const syncAccountsMembers = async () => {

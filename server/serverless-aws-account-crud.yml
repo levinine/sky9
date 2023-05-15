@@ -59,3 +59,12 @@ functions:
       - schedule: cron(2,32 8-18 * * ? *)
   CreateBudget:
     handler: src/handler/aws-account-handler.createBudget
+  SyncCreatedTime:
+    handler: src/handler/aws-account-handler.syncAccountsCreatedTime
+    timeout: 90
+    events:
+      - http:
+          path: sync-accounts-created-time
+          method: post
+          cors: true
+          authorizer: ${self:custom.authorizer}

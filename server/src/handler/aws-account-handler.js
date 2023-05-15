@@ -86,6 +86,16 @@ const syncOwners = async () => {
   }
 }
 
+const syncAccountsCreatedTime = async () => {
+  try {
+    const result = await accountSyncService.syncAccountsCreatedTime();
+    return okResponse(result);
+  } catch (error) {
+    console.log('Account sync created time failed', error);
+    return errorResponse(error);
+  }
+}
+
 const createBudget = async () => {
   const accountId = process.env.accountId;
   const budget = process.env.budget;
@@ -102,5 +112,6 @@ module.exports = {
   syncAccounts,
   syncBudgets,
   syncOwners,
-  createBudget
+  createBudget,
+  syncAccountsCreatedTime
 };

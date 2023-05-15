@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, FormGroup, FormLabel, FormControl, Button, Alert } from 'react-bootstrap';
 import lodash from 'lodash';
+import { getUser } from '../../service/authenticationService';
 
 
 const AwsAccountForm = (props) => {
@@ -109,6 +110,11 @@ const AwsAccountForm = (props) => {
         budget: budget,
         id: account.id
       };
+      if (stage === 'Create new AWS account' || stage === 'Create new GCP account') {
+        const user = await getUser();
+        const userEmail = user.signInUserSession.idToken.payload.email || 'Anonymous';
+        a.createdBy = userEmail;
+      }
       const executionId = await apiFunction(a);
       console.log('submit account executionId', executionId);
       handleViewChange(stage, null);
