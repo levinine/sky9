@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, FormGroup, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
+import moment from 'moment';
 import SearchField from '../common/SearchField';
 import * as accountService from '../../service/awsAccountService';
 import * as utils from '../utils';
@@ -41,9 +42,14 @@ const AwsAccountsListView = (props) => {
   }
 
   const columns = [{
-      Header: header('AWS account'),
+      Header: header('#'),
+      width: 30,
+      Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.index+1}</div>
+    },
+    {
+      Header: header('Account ID'),
       accessor: 'awsAccountId',
-      width: utils.getColumnWidth(filteredList, 'awsAccountId', 'AWS account'),
+      width: utils.getColumnWidth(filteredList, 'awsAccountId', 'Account ID'),
       Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.value}</div>
     }, {
       Header: header('Name'),
@@ -63,18 +69,18 @@ const AwsAccountsListView = (props) => {
     }, {
       Header: header('Budget $'),
       accessor: 'budget',
-      width: 95,
-      Cell: row => <div style={{ textAlign: 'left' }}><span style={{ width: '48px', display: 'inline-block'}}>{row.original.actualSpend === undefined ? '?' : row.original.actualSpend}</span><span> / {row.value}</span></div>
+      width: 105,
+      Cell: row => <div style={{ textAlign: 'left' }}><span style={{ width: '48px', display: 'inline-block', color: row.original.actualSpend && row.original.actualSpend/row.value >= 0.8 ? 'red' : 'inherit' }}>{row.original.actualSpend === undefined ? '?' : row.original.actualSpend}</span><span> / {row.value}</span></div>
     }, {
       Header: header('Created time'),
       accessor: 'createdTime',
-      width: utils.getColumnWidth(filteredList, 'createdTime', 'Created time'),
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
+      width: 180,
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value ? moment(row.value).format('DD-MM-YYYY h:mm:ss') : ''}</div>
     }, {
       Header: header('Created by'),
       accessor: 'createdBy',
-      width: utils.getColumnWidth(filteredList, 'createdBy', 'Created by'),
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value}</div>
+      width: '100%',
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value ? `Sky9 - ${row.value}` : 'Sky9 - Anonymous'}</div>
     }
   ];
 

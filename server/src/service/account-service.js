@@ -45,6 +45,7 @@ const createAccount = async (account, cloud) => {
 
   account.id = `${new Date().getTime()}`;
   account.email = `${account.name}@${process.env.ORGANIZATION_DOMAIN}`;
+  account.createdTime = `${new Date()}`;
   const params = {
     TableName: cloud === clouds.AWS ? process.env.ACCOUNT_TABLE : process.env.ACCOUNT_GCP_TABLE,
     Item: account

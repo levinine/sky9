@@ -23,7 +23,8 @@ const AccountsView = () => {
       owner: '',
       ownerFirstName: '',
       ownerLastName: '',
-      budget: ''
+      budget: '',
+      createdBy: '',
     }
   }
 
