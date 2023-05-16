@@ -47,9 +47,9 @@ const AwsAccountsListView = (props) => {
       Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.index+1}</div>
     },
     {
-      Header: header('AWS account'),
+      Header: header('Account ID'),
       accessor: 'awsAccountId',
-      width: utils.getColumnWidth(filteredList, 'awsAccountId', 'AWS account'),
+      width: utils.getColumnWidth(filteredList, 'awsAccountId', 'Account ID'),
       Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.value}</div>
     }, {
       Header: header('Name'),
@@ -75,12 +75,12 @@ const AwsAccountsListView = (props) => {
       Header: header('Created time'),
       accessor: 'createdTime',
       width: 180,
-      Cell: row => <div style={{ textAlign: 'left' }}>{moment(row.value).format('DD-MM-YYYY h:mm:ss')}</div>
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value ? moment(row.value).format('DD-MM-YYYY h:mm:ss') : ''}</div>
     }, {
       Header: header('Created by'),
       accessor: 'createdBy',
       width: '100%',
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value ? row.value : 'Sky9 Anonymous'}</div>
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value ? `Sky9 - ${row.value}` : 'Sky9 - Anonymous'}</div>
     }
   ];
 

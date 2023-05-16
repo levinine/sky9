@@ -46,9 +46,9 @@ const GcpAccountsListView = (props) => {
       Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.index+1}</div>
     },
     {
-      Header: header('GCP project'),
+      Header: header('Project ID'),
       accessor: 'gcpProjectId',
-      width: utils.getColumnWidth(filteredList, 'gcpProjectId', 'GCP Project'),
+      width: utils.getColumnWidth(filteredList, 'gcpProjectId', 'Project ID'),
       Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.value}</div>
     }, {
       Header: header('Name'),
@@ -74,12 +74,12 @@ const GcpAccountsListView = (props) => {
       Header: header('Created time'),
       accessor: 'createdTime',
       width: 180,
-      Cell: row => <div style={{ textAlign: 'left' }}>{moment(row.value).format('DD-MM-YYYY h:mm:ss')}</div>
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value ? moment(row.value).format('DD-MM-YYYY h:mm:ss') : ''}</div>
     }, {
       Header: header('Created by'),
       accessor: 'createdBy',
       width: '100%',
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value ? row.value : 'Anonymous'}</div>
+      Cell: row => <div style={{ textAlign: 'left' }}>{row.value ? `Sky9 - ${row.value}` : 'Sky9 - Anonymous'}</div>
     }
   ];
 
