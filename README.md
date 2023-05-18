@@ -105,6 +105,7 @@ Here are the steps to deploy everything for the first time and configure both SS
 ## Non-First time deployment procedure
 According to deployed instances, atm we have 6 accounts where Sky9 app is deployed (AWS SRB, AWS UKR, AWS ROU, AWS ThoughtLeadership, AWS Levi9, AWS Recruitment).
 For any of it, you should fetch access token for particular AWS account and then you can proceed with further instructions.
+
 # Backend
 
   ```Bash
