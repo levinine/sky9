@@ -103,10 +103,10 @@ Here are the steps to deploy everything for the first time and configure both SS
 6. One SNS topic for alerts is created as part of the backend, without any subscribers. Any interested parties should be manually added to listen for alerts Sky9 application emits.
 
 ## Non-First time deployment procedure
-According to deployed instances, atm we have 6 accounts where Sky9 app is deployed (AWS SRB, AWS UKR, AWS ROU, AWS ThoughtLeadership, AWS Levi9, AWS Recruitment).
+According to deployed instances, atm we have 6 accounts where Sky9 app is deployed (AWS Serbia, AWS Ukraine, AWS Romania, AWS ThoughtLeadership, AWS Levi9, AWS Recruitment).
 For any of it, you should fetch access token for particular AWS account and then you can proceed with further instructions.
 
-# Backend
+### Backend
 
   ```Bash
   cd server
@@ -115,13 +115,13 @@ For any of it, you should fetch access token for particular AWS account and then
   cd -
   ```
 
-# Frontend
+### Frontend
 
-* First Step
+#### First Step
 Go to `client/src/config` and choose which configuration should be used during deployment. There are 6 different configuration according to different AWS accounts and their deployment parameters
 
-* Second Step
-After Step #1 is configured, proceed futher with these following calls according to desired AWS account
+#### Second Step
+After Step #1, proceed futher with these following calls according to desired AWS account
 
 AWS Serbia
   ```Bash
