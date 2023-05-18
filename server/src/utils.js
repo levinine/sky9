@@ -8,7 +8,14 @@ const budgetNameSuffix = {
   PUBSUB: '-budget-pubsub'
 }
 
+const creationStatuses = {
+  DONE: 'Done',
+  INPROGRESS: 'In progress',
+  FAILED: 'Failed'
+}
+
 module.exports = {
   clouds,
-  budgetNameSuffix
+  budgetNameSuffix,
+  creationStatuses
 }

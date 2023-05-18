@@ -12,3 +12,9 @@ export const budgetNameSuffix = {
   EMAIL: '-budget-email',
   PUBSUB: '-budget-pubsub'
 }
+
+export const creationStatuses = {
+  DONE: 'Done',
+  INPROGRESS: 'In progress',
+  FAILED: 'Failed'
+}

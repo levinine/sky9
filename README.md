@@ -1,6 +1,6 @@
 # Sky9
 
-AWS accounts and users management.
+AWS/GCP accounts/projects and users management.
 
 ## First time deployment procedure
 
@@ -101,3 +101,69 @@ Here are the steps to deploy everything for the first time and configure both SS
   ```
 
 6. One SNS topic for alerts is created as part of the backend, without any subscribers. Any interested parties should be manually added to listen for alerts Sky9 application emits.
+
+## Non-First time deployment procedure
+According to deployed instances, atm we have 6 accounts where Sky9 app is deployed (AWS Serbia, AWS Ukraine, AWS Romania, AWS ThoughtLeadership, AWS Levi9, AWS Recruitment).
+For any of it, you should fetch access token for particular AWS account and then you can proceed with further instructions.
+
+### Backend
+
+  ```Bash
+  cd server
+  npm install
+  sls deploy --stage $stage
+  cd -
+  ```
+
+### Frontend
+
+#### First Step
+Go to `client/src/config` and choose which configuration should be used during deployment. There are 6 different configuration according to different AWS accounts and their deployment parameters
+
+#### Second Step
+After Step #1, proceed futher with these following calls according to desired AWS account
+
+AWS Serbia
+  ```Bash
+  cd client
+  npm run build
+  aws s3 sync build s3://sky9-website-test --delete
+  aws cloudfront create-invalidation --distribution-id EB6AE5K4KLR16 --paths "/*"
+  ```
+
+AWS Ukraine
+  ```Bash
+  cd client
+  npm run build
+  aws s3 sync build s3://sky9-website-prod-b141fb50 --delete
+  aws cloudfront create-invalidation --distribution-id E1LRFWN7MA2OXD --paths "/*"
+  ```
+
+AWS Romania
+
+  ```Bash
+  cd client
+  npm run build
+  aws s3 sync build s3://sky9-website-prod-5f159470 --delete
+  aws cloudfront create-invalidation --distribution-id E2RV99PYZ38HX --paths "/*"
+  ```
+
+AWS ThoughtLeadership
+
+  ```Bash
+  cd client
+  npm run build
+  aws s3 sync build s3://sky9-website-prod-67cbb2b0 --delete
+  aws cloudfront create-invalidation --distribution-id E2X4HZ6EFKE93J --paths "/*"
+  ```
+
+AWS Recruitment
+
+  ```Bash
+  cd client
+  npm run build
+  aws s3 sync build s3://sky9-website-test-47f069b0 --delete
+  aws cloudfront create-invalidation --distribution-id E1OXLHXIJM9QF0 --paths "/*"
+  ```
+
+AWS Levi9 (should not be redeployed, it stays on the previous version without GCP creation possibility)

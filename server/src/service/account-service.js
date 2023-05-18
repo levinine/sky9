@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const { omit } = require('lodash');
-const { clouds } = require('../utils');
+const { clouds, creationStatuses } = require('../utils');
 
 // COMMON Service for DynamoDB handling
 
@@ -46,6 +46,7 @@ const createAccount = async (account, cloud) => {
   account.id = `${new Date().getTime()}`;
   account.email = `${account.name}@${process.env.ORGANIZATION_DOMAIN}`;
   account.createdTime = `${new Date()}`;
+  account.status = creationStatuses.INPROGRESS;
   const params = {
     TableName: cloud === clouds.AWS ? process.env.ACCOUNT_TABLE : process.env.ACCOUNT_GCP_TABLE,
     Item: account
@@ -54,7 +55,7 @@ const createAccount = async (account, cloud) => {
   return account;
 };
 
-const accountAttributes = ['name', 'email', 'owner', 'ownerFirstName', 'ownerLastName', 'budget', 'actualSpend', 'forecastedSpend', 'history', 'awsAccountId', 'gcpProjectId', 'adGroupName', 'createdTime', 'createdBy', 'members'];
+const accountAttributes = ['name', 'email', 'owner', 'ownerFirstName', 'ownerLastName', 'budget', 'actualSpend', 'forecastedSpend', 'history', 'awsAccountId', 'gcpProjectId', 'adGroupName', 'createdTime', 'createdBy', 'members', 'status'];
 const updateAccount = async (account, tableName) => {
   if (!account.id) {
     throw new Error('Missing account.id');

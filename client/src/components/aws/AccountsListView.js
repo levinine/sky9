@@ -57,6 +57,40 @@ const AwsAccountsListView = (props) => {
       width: utils.getColumnWidth(filteredList, 'name', 'Name'),
       Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}>{row.value}</div>
     }, {
+      Header: header('Status'),
+      accessor: 'status',
+      width: utils.getColumnWidth([], 'status', 'Status'),
+      Cell: row => {
+        let icon = null;
+        let tooltipText = null;
+        switch (row.value) {
+          case utils.creationStatuses.DONE:
+            icon = <i className="fa fa-check-circle fa-lg" style={{'color':'#198754'}}></i>;
+            tooltipText = `Creation is "${row.value}"`;
+            break;
+          case utils.creationStatuses.INPROGRESS:
+            icon = <i className="fa fa-spinner fa-lg" style={{'color':'#007bff'}}></i>;
+            tooltipText = `Creation is "${row.value}"`;
+            break;
+          case utils.creationStatuses.FAILED:
+            icon = <i className="fa fa-times-circle fa-lg" style={{'color':'#dc3545'}}></i>;
+            tooltipText = `Creation is "${row.value}"`;
+            break;
+          default:
+            icon = <i className="fa fa-question-circle fa-lg" style={{'color':'#ffc107'}}></i>;
+            tooltipText = `Creation is in "Unknown" status`;
+        }
+        return (
+          <OverlayTrigger
+            placement='right'
+            overlay={
+              (props) => <Tooltip {...props}>{tooltipText}</Tooltip>
+          }>
+            <div style={{ textAlign: 'center', cursor: 'pointer' }}>{icon}</div>
+          </OverlayTrigger>
+        )
+      }
+    }, {
       Header: header('Owner'),
       accessor: 'owner',
       width: utils.getColumnWidth(filteredList, 'owner', 'Owner'),
@@ -79,8 +113,20 @@ const AwsAccountsListView = (props) => {
     }, {
       Header: header('Created by'),
       accessor: 'createdBy',
-      width: '100%',
-      Cell: row => <div style={{ textAlign: 'left' }}>{row.value ? `Sky9 - ${row.value}` : 'Sky9 - Anonymous'}</div>
+      width: utils.getColumnWidth(filteredList, 'createdBy', 'Created by'),
+      Cell: row => {
+        return (
+          <div style={{ textAlign: 'left' }}>
+            <OverlayTrigger
+              placement='right'
+              overlay={
+                (props) => <Tooltip {...props}>{row.value ? row.value : 'Anonymous'}</Tooltip>
+            }>
+              <span>{row.value ? row.value : 'Anonymous'}</span>
+            </OverlayTrigger>
+          </div>
+        )
+      }
     }
   ];
 

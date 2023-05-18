@@ -2,7 +2,7 @@ const { okResponse, errorResponse } = require('./responses');
 const accountService = require('../service/account-service');
 const accountSyncService = require('../service/account-sync-service');
 const awsBudgetService = require('../service/aws-budget-service');
-const { clouds } = require('../utils');
+const { clouds, creationStatuses } = require('../utils');
 
 const tableName = process.env.ACCOUNT_TABLE;
 
@@ -103,6 +103,18 @@ const createBudget = async () => {
   await awsBudgetService.createBudget(accountId, accountId, owner, budget);
 }
 
+const updateAccountsToDone = async () => {
+  const accounts = await accountService.getAccounts(tableName);
+  for (const account of accounts) {
+    if (!account.status) {
+      const response = await accountService.updateAccount({ id: account.id, status: creationStatuses.DONE }, tableName);
+      console.log('account update response', response);
+    }
+  }
+  return okResponse({ success: true });
+}
+
+
 module.exports = {
   getAccount,
   getAccounts,
@@ -113,5 +125,6 @@ module.exports = {
   syncBudgets,
   syncOwners,
   createBudget,
-  syncAccountsCreatedTime
+  syncAccountsCreatedTime,
+  updateAccountsToDone
 };

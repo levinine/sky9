@@ -173,7 +173,7 @@ const AccountsView = () => {
             <div className="jumbotron">
                 <h1 className="display-4">Welcome to Sky9 app!</h1>
                 <p className="lead">You could create new or manage existing AWS and GCP accounts.</p>
-                <p>if you want to start experiencing, please log in.</p>
+                <p>If you want to start experiencing, please log in.</p>
                 <p className="lead">
                 <button className="btn btn-primary btn-lg" onClick={login}>Login</button>
                 </p>
