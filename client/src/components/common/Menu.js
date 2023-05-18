@@ -21,7 +21,7 @@ const Menu = () => {
 
   return (
     <Navbar bg='dark' variant='dark' className='justify-content-between'>
-      <Navbar.Brand href='/'>Sky9 {config.appName}</Navbar.Brand>
+      <Navbar.Brand href='/'>Sky9 - {config.appName}</Navbar.Brand>
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       {user === null && <Button variant='primary' className='pull-right' onClick={login}>Login</Button>}
       {user !== null && <Button variant='primary' className='pull-right' onClick={logout}>Logout ({user})</Button>}

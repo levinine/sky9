@@ -4,13 +4,20 @@ const activeDirectoryService = require('../service/active-directory-service');
 const { getGcpAuthClient, getGcpAccountKeys } = require('../service/gcp-auth-client-service');
 const { setBudgetForEmailNotification, setBudgetForPubSubNotification } = require('../service/gcp-budget-service');
 
-const { clouds } = require('../utils');
+const { clouds, creationStatuses } = require('../utils');
 
 function NotReady(message) {
   this.name = 'NOT_READY';
   this.message = message || 'Not yet';
 }
 NotReady.prototype = new Error();
+
+function CreationFailed(message, id) {
+  this.name = 'CREATION_FAILED';
+  this.message = message || 'Creation failed';
+  this.stack = JSON.stringify({ account: { id: id }});
+}
+CreationFailed.prototype = new Error();
 
 const tableName = process.env.ACCOUNT_GCP_TABLE;
 
@@ -23,16 +30,21 @@ const createAccount = async (account) => {
       return account;
     } catch (error) {
       console.log('Account creation step failed', error);
-      throw error;
+      throw new CreationFailed(error.message ? error.message : `${error}`, account.id);
     }
   };
 
 const createAdGroup = async (account) => {
-  console.log('Create AD group step', account);
-  const result = await activeDirectoryService.execAdRunbook(account.adGroupName, account.owner, clouds.GCP);
-  account = await accountService.addAccountHistoryRecord(account.id, 'AD Group creation requested', {}, account.tableName || tableName);
-  console.log('Create AD group step finished', result);
-  return account;
+  try {
+    console.log('Create AD group step', account);
+    const result = await activeDirectoryService.execAdRunbook(account.adGroupName, account.owner, clouds.GCP);
+    account = await accountService.addAccountHistoryRecord(account.id, 'AD Group creation requested', {}, account.tableName || tableName);
+    console.log('Create AD group step finished', result);
+    return account;
+  } catch (error) {
+    console.log('Create AD group step failed', error);
+    throw new CreationFailed(error.message ? error.message : `${error}`, account.id);
+  }
 }
 
 const validateAdGroup = async (account) => {
@@ -41,6 +53,7 @@ const validateAdGroup = async (account) => {
     group = await activeDirectoryService.findGroupByName(account.adGroupName);
   } catch (error) {
     console.log('AD Group validation failed', error);
+    throw new CreationFailed(error.message ? error.message : `${error}`, account.id);
   }
   if (!group) {
     throw new NotReady();
@@ -68,7 +81,7 @@ const createGcpAccount = async (account) => {
     return account;
   } catch (error) {
     console.log('GCP account creation step failed', error);
-    throw error;
+    throw new CreationFailed(error.message ? error.message : `${error}`, account.id);
   }
 }
 
@@ -108,7 +121,7 @@ const assignAdGroupAsProjectOwner = async (account) => {
       // ad group is still not propagate to gcp
       throw new NotReady();
     }
-    throw error;
+    throw new CreationFailed(error.message ? error.message : `${error}`, account.id);
   }
 }
 
@@ -134,7 +147,7 @@ const setBillingAccount = async (account) => {
     return account;
   } catch (error) {
     console.log('Setting GCP billing account failed', error);
-    throw error;
+    throw new CreationFailed(error.message ? error.message : `${error}`, account.id);
   }
 }
 
@@ -163,7 +176,7 @@ const createNotificationChannel = async (account) => {
     return account;
   } catch (error) {
     console.log('Creation of notification channel failed', error);
-    throw error;
+    throw new CreationFailed(error.message ? error.message : `${error}`, account.id);
   }
 }
 
@@ -176,8 +189,25 @@ const setBudget = async (account) => {
     return account;
   } catch (error) {
     console.log('Setting of project budgets failed', error);
-    throw error;
+    throw new CreationFailed(error.message ? error.message : `${error}`, account.id);
   }
+}
+
+const setCreationAsDone = async (account) => {
+  account.status = creationStatuses.DONE;
+  account = await accountService.updateAccount({ id: account.id, status: account.status }, account.tableName || tableName);
+  account = await accountService.addAccountHistoryRecord(account.id, 'Mark GCP creation as done', {}, account.tableName || tableName);
+  return account;
+}
+
+const setCreationAsFailed = async (errorInput) => {
+  const errorCause = errorInput.Cause;
+  const parsedCause = JSON.parse(errorCause);
+  const parsedTrace = JSON.parse(parsedCause.trace[0]);
+  const accountId = parsedTrace.account.id;
+  let account = await accountService.updateAccount({ id: accountId, status: creationStatuses.FAILED }, tableName);
+  account = await accountService.addAccountHistoryRecord(accountId, 'Mark GCP creation as failed', {}, tableName);
+  return account;
 }
 
 module.exports = {
@@ -188,5 +218,7 @@ module.exports = {
   assignAdGroupAsProjectOwner,
   setBillingAccount,
   createNotificationChannel,
-  setBudget
+  setBudget,
+  setCreationAsDone,
+  setCreationAsFailed
 };

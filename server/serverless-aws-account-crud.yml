@@ -68,3 +68,13 @@ functions:
           method: post
           cors: true
           authorizer: ${self:custom.authorizer}
+# Update existing accounts to status Done when Statuses are introduced
+  UpdateAccountsToDone:
+    handler: src/handler/aws-account-handler.updateAccountsToDone
+    timeout: 90
+    events:
+      - http:
+          path: accounts/done
+          method: post
+          cors: true
+          authorizer: ${self:custom.authorizer}

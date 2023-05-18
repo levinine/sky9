@@ -18,6 +18,10 @@ functions:
     handler: src/handler/aws-account-flow-handler.validateSsoGroup
   stepAssignSsoGroup:
     handler: src/handler/aws-account-flow-handler.assignSsoGroup
+  stepDoneCreation:
+    handler: src/handler/aws-account-flow-handler.setCreationAsDone
+  stepFailedCreation:
+    handler: src/handler/aws-account-flow-handler.setCreationAsFailed
   # GCP
   stepGCPCreateAccount:
     handler: src/handler/gcp-account-flow-handler.createAccount
@@ -37,6 +41,10 @@ functions:
     handler: src/handler/gcp-account-flow-handler.createNotificationChannel
   stepSetBudget:
     handler: src/handler/gcp-account-flow-handler.setBudget
+  stepGCPDoneCreation:
+    handler: src/handler/gcp-account-flow-handler.setCreationAsDone
+  stepGCPFailedCreation:
+    handler: src/handler/gcp-account-flow-handler.setCreationAsFailed
 
 stepFunctions:
   stateMachines:
@@ -57,6 +65,10 @@ stepFunctions:
             Resource:
               Fn::GetAtt: [stepCreateAccount, Arn]
             TimeoutSeconds: 60
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Create account in AWS
           Create account in AWS:
             Type: Task
@@ -69,6 +81,10 @@ stepFunctions:
                 IntervalSeconds: 10
                 MaxAttempts: 1
                 BackoffRate: 1
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Validate AWS account created
           Validate AWS account created:
             Type: Task
@@ -81,18 +97,30 @@ stepFunctions:
                 IntervalSeconds: 180
                 MaxAttempts: 30
                 BackoffRate: 1
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Create AWS Budget
           Create AWS Budget:
             Type: Task
             Resource:
               Fn::GetAtt: [stepCreateBudget, Arn]
             TimeoutSeconds: 60
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Create AD group
           Create AD group:
             Type: Task
             Resource:
               Fn::GetAtt: [stepCreateAdGroup, Arn]
             TimeoutSeconds: 60
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Validate AD group created
           Validate AD group created:
             Type: Task
@@ -105,6 +133,10 @@ stepFunctions:
                 IntervalSeconds: 10
                 MaxAttempts: 20
                 BackoffRate: 1
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Validate AD group is propagated to AWS SSO
           Validate AD group is propagated to AWS SSO:
             Type: Task
@@ -117,11 +149,31 @@ stepFunctions:
                 IntervalSeconds: 600
                 MaxAttempts: 10
                 BackoffRate: 1
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: AWS SSO assign group
           AWS SSO assign group:
             Type: Task
             Resource:
               Fn::GetAtt: [stepAssignSsoGroup, Arn]
+            TimeoutSeconds: 60
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
+            Next: Done Creation
+          Done Creation:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepDoneCreation, Arn]
+            TimeoutSeconds: 60
+            End: true
+          Failed Creation:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepFailedCreation, Arn]
             TimeoutSeconds: 60
             End: true
     # GCP
@@ -141,12 +193,20 @@ stepFunctions:
             Resource:
               Fn::GetAtt: [stepGCPCreateAccount, Arn]
             TimeoutSeconds: 60
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Create AD group
           Create AD group:
             Type: Task
             Resource:
               Fn::GetAtt: [stepGCPCreateAdGroup, Arn]
             TimeoutSeconds: 60
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Validate AD group created
           Validate AD group created:
             Type: Task
@@ -159,30 +219,50 @@ stepFunctions:
                 IntervalSeconds: 10
                 MaxAttempts: 20
                 BackoffRate: 1
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Create account in GCP
           Create account in GCP:
             Type: Task
             Resource:
               Fn::GetAtt: [stepCreateGcpAccount, Arn]
             TimeoutSeconds: 60
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Set billing account
           Set billing account:
             Type: Task
             Resource:
               Fn::GetAtt: [stepSetBillingAccount, Arn]
             TimeoutSeconds: 60
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Create notification channel
           Create notification channel:
             Type: Task
             Resource:
               Fn::GetAtt: [stepCreateNotificationChannel, Arn]
             TimeoutSeconds: 60
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Set budget
           Set budget:
             Type: Task
             Resource:
               Fn::GetAtt: [stepSetBudget, Arn]
             TimeoutSeconds: 60
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
             Next: Assign AD group as project owner
           Assign AD group as project owner:
             Type: Task
@@ -195,4 +275,20 @@ stepFunctions:
                 IntervalSeconds: 600
                 MaxAttempts: 10
                 BackoffRate: 1
+            Catch:
+              - ErrorEquals:
+                  - CREATION_FAILED
+                Next: Failed Creation
+            Next: Done Creation
+          Done Creation:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepGCPDoneCreation, Arn]
+            TimeoutSeconds: 60
+            End: true
+          Failed Creation:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [stepGCPFailedCreation, Arn]
+            TimeoutSeconds: 60
             End: true
