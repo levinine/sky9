@@ -2,6 +2,7 @@ const { okResponse, errorResponse } = require('./responses');
 const accountService = require('../service/account-service');
 const accountSyncService = require('../service/account-sync-service');
 const awsBudgetService = require('../service/aws-budget-service');
+const awsServiceCatalogService = require('../service/aws-service-catalog-service');
 const { clouds, creationStatuses } = require('../utils');
 
 const tableName = process.env.ACCOUNT_TABLE;
@@ -114,6 +115,10 @@ const updateAccountsToDone = async () => {
   return okResponse({ success: true });
 }
 
+const getProvisionedAcounts = async () => {
+  const provisionedAccounts = await awsServiceCatalogService.listProvisionedAccounts();
+  return okResponse({ provisionedAccounts: provisionedAccounts });
+}
 
 module.exports = {
   getAccount,
@@ -126,5 +131,6 @@ module.exports = {
   syncOwners,
   createBudget,
   syncAccountsCreatedTime,
-  updateAccountsToDone
+  updateAccountsToDone,
+  getProvisionedAcounts
 };

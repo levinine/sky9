@@ -4,14 +4,14 @@ functions:
     handler: src/handler/aws-account-flow-handler.createAccount
   stepCreateAdGroup:
     handler: src/handler/aws-account-flow-handler.createAdGroup
-    timeout: 30
+    timeout: 60
   stepValidateAdGroup:
     handler: src/handler/aws-account-flow-handler.validateAdGroup
   stepCreateAwsAccount:
     handler: src/handler/aws-account-flow-handler.createAwsAccount
   stepValidateAwsAccount:
     handler: src/handler/aws-account-flow-handler.validateAwsAccount
-    timeout: 30
+    timeout: 60
   stepCreateBudget:
     handler: src/handler/aws-account-flow-handler.createBudget
   stepValidateSsoGroup:
@@ -27,7 +27,7 @@ functions:
     handler: src/handler/gcp-account-flow-handler.createAccount
   stepGCPCreateAdGroup:
     handler: src/handler/gcp-account-flow-handler.createAdGroup
-    timeout: 30
+    timeout: 60
   stepGCPValidateAdGroup:
     handler: src/handler/gcp-account-flow-handler.validateAdGroup
   stepCreateGcpAccount:
@@ -36,7 +36,7 @@ functions:
     handler: src/handler/gcp-account-flow-handler.assignAdGroupAsProjectOwner
   stepSetBillingAccount:
     handler: src/handler/gcp-account-flow-handler.setBillingAccount
-    timeout: 30
+    timeout: 60
   stepCreateNotificationChannel:
     handler: src/handler/gcp-account-flow-handler.createNotificationChannel
   stepSetBudget:
@@ -121,6 +121,12 @@ stepFunctions:
               - ErrorEquals:
                   - CREATION_FAILED
                 Next: Failed Creation
+              - ErrorEquals:
+                  - "States.Timeout"
+                Next: Failed Creation
+              - ErrorEquals:
+                  - "States.TaskFailed"
+                Next: Failed Creation
             Next: Validate AD group created
           Validate AD group created:
             Type: Task
@@ -136,6 +142,9 @@ stepFunctions:
             Catch:
               - ErrorEquals:
                   - CREATION_FAILED
+                Next: Failed Creation
+              - ErrorEquals:
+                  - "States.TaskFailed"
                 Next: Failed Creation
             Next: Validate AD group is propagated to AWS SSO
           Validate AD group is propagated to AWS SSO:
@@ -207,6 +216,12 @@ stepFunctions:
               - ErrorEquals:
                   - CREATION_FAILED
                 Next: Failed Creation
+              - ErrorEquals:
+                  - "States.Timeout"
+                Next: Failed Creation
+              - ErrorEquals:
+                  - "States.TaskFailed"
+                Next: Failed Creation
             Next: Validate AD group created
           Validate AD group created:
             Type: Task
@@ -222,6 +237,9 @@ stepFunctions:
             Catch:
               - ErrorEquals:
                   - CREATION_FAILED
+                Next: Failed Creation
+              - ErrorEquals:
+                  - "States.TaskFailed"
                 Next: Failed Creation
             Next: Create account in GCP
           Create account in GCP:

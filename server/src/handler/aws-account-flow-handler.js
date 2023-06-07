@@ -138,10 +138,24 @@ const setCreationAsDone = async (account) => {
 }
 
 const setCreationAsFailed = async (errorInput) => {
-  const errorCause = errorInput.Cause;
-  const parsedCause = JSON.parse(errorCause);
-  const parsedTrace = JSON.parse(parsedCause.trace[0]);
-  const accountId = parsedTrace.account.id;
+  let accountId = null;
+  if (errorInput.Cause) {
+    try {
+      const errorCause = errorInput.Cause;
+      const parsedCause = JSON.parse(errorCause);
+      const parsedTrace = JSON.parse(parsedCause.trace[0]);
+      accountId = parsedTrace.account.id;
+    } catch (e) {
+      const latestAccount = await accountService.getTheLatestAccount(tableName);
+      accountId = latestAccount ? latestAccount.id : null;
+    }
+  } else {
+    // if error does not contain account id, get the last one account that is tried to be created
+    // this one would not be applicable if we are creating multiple aws accounts at once
+    // for now, aws has limits and our devops do not trigger multiple creation at once
+    const latestAccount = await accountService.getTheLatestAccount(tableName);
+    accountId = latestAccount ? latestAccount.id : null;
+  }
   let account = await accountService.updateAccount({ id: accountId, status: creationStatuses.FAILED }, tableName);
   account = await accountService.addAccountHistoryRecord(accountId, 'Mark AWS creation as failed', {}, tableName);
   return account;

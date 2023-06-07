@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, FormGroup, FormLabel, FormControl, Button, Alert } from 'react-bootstrap';
 import lodash from 'lodash';
 import { getUser } from '../../service/authenticationService';
+import config from '../../config';
 
 
 const AwsAccountForm = (props) => {
@@ -29,6 +30,8 @@ const AwsAccountForm = (props) => {
   const [ownerLastNameError, setOwnerLastNameError] = useState(null);
   const [budgetError, setBudgetError] = useState(null);
 
+  const organizationName = config.organization;
+  const awsAccountNameLimit = 50;
 
   useEffect(() => {
     if (stage === 'Update account') {
@@ -61,8 +64,10 @@ const AwsAccountForm = (props) => {
 
   const validateForm = () => {
     let valid = true;
-    if (!name.length > 0) {
-      displayMessage(setNameError, 'Name is required!');
+
+    const allowedMaxNameChars = name.startsWith(organizationName) ? awsAccountNameLimit : awsAccountNameLimit - (organizationName.length + 1);
+    if (!validateName(name, allowedMaxNameChars)) {
+      displayMessage(setNameError, `Name must be 1 to ${allowedMaxNameChars} characters`);
       valid = false;
     }
     if (!validateEmail(owner)) {
@@ -112,7 +117,7 @@ const AwsAccountForm = (props) => {
       };
       if (stage === 'Create new AWS account' || stage === 'Create new GCP account') {
         const user = await getUser();
-        const userEmail = user.signInUserSession.idToken.payload.email || 'Anonymous';
+        const userEmail = user.signInUserSession.idToken.payload.email || 'CA User';
         a.createdBy = userEmail;
       }
       const executionId = await apiFunction(a);
@@ -138,6 +143,12 @@ const AwsAccountForm = (props) => {
   const validateEmail = (email) => {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
+  }
+
+  const validateName = (name, allowedMaxNameChars) => {
+    const regNameString = `^[\\s\\S]{1,${allowedMaxNameChars}}$`;
+    const regexName = new RegExp(regNameString, 'g');
+    return regexName.test(name);
   }
 
   return (

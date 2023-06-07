@@ -2,6 +2,7 @@ service: sky9
 
 provider:
   name: aws
+  versionFunctions: false
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -54,6 +55,7 @@ plugins:
   - serverless-offline-scheduler
   - serverless-pseudo-parameters
   - serverless-dynamodb-local
+  - serverless-prune-plugin
   - serverless-offline
   - serverless-step-functions
   - serverless-dashboard
@@ -78,6 +80,9 @@ custom:
       port: 8000
   serverless-offline:
       port: 4000
+  prune:
+    automatic: true
+    number: 3
 
 resources:
   - ${file(./resources/dynamoDB.yml)}

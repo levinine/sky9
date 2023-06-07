@@ -112,7 +112,7 @@ const GcpAccountForm = (props) => {
       };
       if (stage === 'Create new AWS account' || stage === 'Create new GCP account') {
         const user = await getUser();
-        const userEmail = user.signInUserSession.idToken.payload.email || 'Anonymous';
+        const userEmail = user.signInUserSession.idToken.payload.email || 'CA User';
         a.createdBy = userEmail;
       }
       const executionId = await apiFunction(a);
