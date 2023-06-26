@@ -100,7 +100,7 @@ const GcpAccountsListView = (props) => {
       width: utils.getColumnWidth(filteredList, null, 'Members'),
       Cell: row => <div style={{ textAlign: 'left', cursor: 'pointer' }}><OverlayTrigger placement='right' delay={row.value && row.value.length > 0 ? 250 : 100000} overlay={(props) => <Tooltip {...props}>{row.value ? row.value.join(',\n') : ''}</Tooltip>}><span>{row.value ? row.value.length : 0}</span></OverlayTrigger></div>
     }, {
-      Header: header('Budget $'),
+      Header: header('Budget €'),
       accessor: 'budget',
       width: 105,
       Cell: row => <div style={{ textAlign: 'left' }}><span style={{ width: '48px', display: 'inline-block', color: row.original.actualSpend && row.original.actualSpend/row.value >= 0.8 ? 'red' : 'inherit' }}>{row.original.actualSpend === undefined ? '?' : row.original.actualSpend}</span><span> / {row.value}</span></div>

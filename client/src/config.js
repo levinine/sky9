@@ -6,7 +6,8 @@ const development = {
   cognitoRegion: 'eu-west-1',
   cognitoClientId: '35q3n2iho6cj6t7pvq5qaat5vr',
   cognitoUserPoolId: 'eu-west-1_7OYE8xKWh',
-  cognitoSignOutUrl: 'https://myapps.microsoft.com/'
+  cognitoSignOutUrl: 'https://myapps.microsoft.com/',
+  organization: 'AWS-SRB'
 };
 
 const production = {
@@ -17,7 +18,8 @@ const production = {
   cognitoRegion: 'eu-west-1',
   cognitoClientId: '35q3n2iho6cj6t7pvq5qaat5vr',
   cognitoUserPoolId: 'eu-west-1_7OYE8xKWh',
-  cognitoSignOutUrl: 'https://myapps.microsoft.com/'
+  cognitoSignOutUrl: 'https://myapps.microsoft.com/',
+  organization: 'AWS-SRB'
 };
 
 const ukraine = {
@@ -29,7 +31,8 @@ const ukraine = {
   cognitoClientId: '2j0isfs3ku88lt3s3hbr7gbos1',
   cognitoUserPoolId: 'eu-west-1_UBS81GXuk',
   cognitoSignOutUrl: 'https://myapps.microsoft.com/',
-  appName: 'Ukraine'
+  appName: 'Ukraine',
+  organization: 'AWS-UKR'
 };
 
 const serbia = {
@@ -41,7 +44,8 @@ const serbia = {
   cognitoClientId: '35q3n2iho6cj6t7pvq5qaat5vr',
   cognitoUserPoolId: 'eu-west-1_7OYE8xKWh',
   cognitoSignOutUrl: 'https://myapps.microsoft.com/',
-  appName: 'Serbia'
+  appName: 'Serbia',
+  organization: 'AWS-SRB'
 };
 
 const romania = {
@@ -53,7 +57,8 @@ const romania = {
   cognitoClientId: '22g9jne3sbm5m1fdc5ihejt3ki',
   cognitoUserPoolId: 'eu-west-1_b5rlHKXqc',
   cognitoSignOutUrl: 'https://myapps.microsoft.com/',
-  appName: 'Romania'
+  appName: 'Romania',
+  organization: 'AWS-ROU'
 };
 
 const thoughtleadership = {
@@ -65,7 +70,8 @@ const thoughtleadership = {
   cognitoClientId: '6bl5ksn1i6ih3qko1q46mofbuh',
   cognitoUserPoolId: 'eu-west-1_O93Bywg5J',
   cognitoSignOutUrl: 'https://myapps.microsoft.com/',
-  appName: 'ThoughtLeadership / Hack9'
+  appName: 'ThoughtLeadership / Hack9',
+  organization: 'AWS-ThoughtLeadership' 
 };
 
 const recruitment = {
@@ -77,10 +83,11 @@ const recruitment = {
   cognitoClientId: '4pqhm1hnt9u8mcvcoc2e30a6eb',
   cognitoUserPoolId: 'eu-west-1_zyxKbrgO3',
   cognitoSignOutUrl: 'https://myapps.microsoft.com/',
-  appName: 'Recruitment'
+  appName: 'Recruitment',
+  organization: 'AWS-SRB-Recruitment'
 };
 
-const stage = process.env.NODE_ENV === 'production' ? production : development;
+const stage = process.env.NODE_ENV === 'production' ? recruitment : recruitment;
 
 export default {
   ...stage

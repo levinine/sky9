@@ -28,19 +28,26 @@ const getAccount = async (id, tableName) => {
   return account.Item;
 };
 
+const getTheLatestAccount = async (tableName) => {
+  let accounts = await getAccounts(tableName);
+  accounts = accounts.map(account => { return { id: account.id, createdTime: new Date(account.createdTime) }} );
+  accounts = accounts.sort((a, b) => b.createdTime - a.createdTime);
+  return accounts[0];
+}
+
 const createAccount = async (account, cloud) => {
 
   if (!account.name || !account.owner || !account.ownerFirstName || !account.ownerLastName) {
     console.log(`Can't store account ${JSON.stringify(account)}, missing one of mandatory attributes`);
     throw new Error('Missing one or more of: name, owner, ownerFirstName, ownerLastName');
   }
-  if (cloud === clouds.AWS && !account.name.startsWith(process.env.ORGANIZATION)) {
-    account.name = `${process.env.ORGANIZATION}-${account.name}`; // TODO: check if organization can be excluded, or add new env var per country
+  if (cloud === clouds.AWS) {
+    account.name = account.name.startsWith(process.env.ORGANIZATION) ? account.name : `${process.env.ORGANIZATION}-${account.name}`;
     account.adGroupName = account.name;
   }
-  if (cloud === clouds.GCP && !account.name.startsWith(process.env.GCP_ORGANIZATION)) {
+  if (cloud === clouds.GCP) {
     // do not use 'name' property, because GCP allows less characters for project name
-    account.adGroupName = `${process.env.GCP_ORGANIZATION}-${account.name}`; 
+    account.adGroupName = account.name.startsWith(process.env.GCP_ORGANIZATION) ? account.name : `${process.env.GCP_ORGANIZATION}-${account.name}`
   }
 
   account.id = `${new Date().getTime()}`;
@@ -111,6 +118,7 @@ const deleteAccount = (id, tableName) => {
 module.exports = {
   getAccounts,
   getAccount,
+  getTheLatestAccount,
   createAccount,
   updateAccount,
   addAccountHistoryRecord,

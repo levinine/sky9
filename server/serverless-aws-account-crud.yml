@@ -59,6 +59,8 @@ functions:
       - schedule: cron(2,32 8-18 * * ? *)
   CreateBudget:
     handler: src/handler/aws-account-handler.createBudget
+  # Helper lambda - Update existing accounst with their created time from service catalog service
+  # ideally, this lambda was triggered only once to set created time for stale/existing accounts.
   SyncCreatedTime:
     handler: src/handler/aws-account-handler.syncAccountsCreatedTime
     timeout: 90
@@ -68,7 +70,7 @@ functions:
           method: post
           cors: true
           authorizer: ${self:custom.authorizer}
-# Update existing accounts to status Done when Statuses are introduced
+  # Helper lambda - Update existing accounts to status Done when Statuses are introduced
   UpdateAccountsToDone:
     handler: src/handler/aws-account-handler.updateAccountsToDone
     timeout: 90
@@ -76,5 +78,14 @@ functions:
       - http:
           path: accounts/done
           method: post
+          cors: true
+          authorizer: ${self:custom.authorizer}
+  # Helper lambda - check status for all accounts that are tried to be created (stale/created/in progress/in error state)
+  GetProvisionedAcounts:
+    handler: src/handler/aws-account-handler.getProvisionedAcounts
+    events:
+      - http:
+          path: accounts/provisioned
+          method: get
           cors: true
           authorizer: ${self:custom.authorizer}
