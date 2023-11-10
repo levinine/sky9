@@ -57,7 +57,7 @@ functions:
       - schedule: cron(2,32 8-18 * * ? *)
   gcpResetBudgets:
     handler: src/handler/gcp-account-handler.resetBudgets
-    timeout: 900 # TODO: It's succeeded but warning is detected (WARNING: Function gcpSyncBudgets has timeout of 900 seconds, however, it's attached to API Gateway so it's automatically limited to 30 seconds.)
+    timeout: 900
     events:
       - http:
           path: gcp/reset-budgets
