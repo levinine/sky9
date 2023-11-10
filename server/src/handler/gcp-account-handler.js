@@ -80,6 +80,18 @@ const syncBudgets = async () => {
   }
 };
 
+
+const resetBudgets = async () => {
+  try {
+    await accountSyncService.resetBudget();
+    return okResponse({ success: true, message: 'Budget reset is done' });
+  } catch (error) {
+    console.log('Budget sync failed', error);
+    return errorResponse({ statusCode: 500, message: 'Budget reset failed'});
+  }
+};
+
+
 const syncOwners = async () => {
   try {
     const result = await accountSyncService.syncOwners();
@@ -107,5 +119,6 @@ module.exports = {
   updateAccount,
   syncBudgets,
   syncOwners,
-  syncAccounts
+  syncAccounts,
+  resetBudgets
 };
