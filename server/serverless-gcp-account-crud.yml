@@ -55,3 +55,13 @@ functions:
           cors: true
           authorizer: ${self:custom.authorizer}
       - schedule: cron(2,32 8-18 * * ? *)
+  gcpResetBudgets:
+    handler: src/handler/gcp-account-handler.resetBudgets
+    timeout: 900
+    events:
+      - http:
+          path: gcp/reset-budgets
+          method: post # TODO: use node v15.14.0 (otherwise post api does not work)
+          cors: true
+          authorizer: ${self:custom.authorizer}
+      - schedule: cron(0 6 1 * ? *) # Run at 6:00 am (UTC+0) every 1st day of the month

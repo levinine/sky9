@@ -108,9 +108,25 @@ const syncBudgets = async () => {
   return { success: true, message: 'Budget sync is done' };
 }
 
+
+const resetBudget = async () => {
+
+  // get existing accounts from dynamodb
+  const accounts = await accountService.getAccounts(tableName);
+
+  // update budgets to 0
+  for (const account of accounts) {
+    await accountService.updateAccount({ id: account.id, actualSpend: `0` }, tableName);
+    console.log(`Account with id ${account.id} has reset budget`)
+  }
+
+  return { success: true, message: 'Budget reset is done' };
+}
+
 module.exports = {
   syncAccounts,
   syncAccountsMembers,
   syncOwners,
-  syncBudgets
+  syncBudgets,
+  resetBudget
 };
