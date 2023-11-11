@@ -44,7 +44,7 @@ const updateAccount = async (event) => {
     }
 
     // update account project in dynamodb
-        const updatedAccount = await accountService.updateAccount(account, tableName);
+    const updatedAccount = await accountService.updateAccount(account, tableName);
     
     return okResponse(updatedAccount);
   } catch (error) {
