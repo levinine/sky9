@@ -129,7 +129,7 @@ const AccountsView = () => {
                   refreshList={refreshList}
                   apiFunction={
                     show === 'Create new AWS account' ?
-                    serviceHandler.createAccount : serviceHandler.updateAccount
+                    awsServices.createAccount : awsServices.updateAccount
                   }
                   handleViewChange={handleViewChange} />
               </div>
@@ -161,7 +161,7 @@ const AccountsView = () => {
                   refreshList={refreshList}
                   apiFunction={
                     show === 'Create new GCP account' ?
-                    serviceHandler.createAccount : serviceHandler.updateAccount
+                    gcpServices.createAccount : gcpServices.updateAccount
                   }
                   handleViewChange={handleViewChange} />
               </div>

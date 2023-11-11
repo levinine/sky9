@@ -114,7 +114,7 @@ const getBudgetList = async () => {
     // use next token to get all pages/budgets
     do {
       response = await gcpClient.request({ method: 'GET', url: !nextToken ? url : `${url}?pageToken=${nextToken}` });
-      budgets.push(response.budgets);
+      budgets = budgets.concat(response.data.budgets);
       nextToken = response.nextPageToken ? response.nextPageToken : null;
     } while (nextToken);
 
@@ -129,7 +129,7 @@ const updateBudget = async (budget, newAmount) => {
   console.log(`Updating GCP project budget amount, new amount: ${newAmount}, budget: ${JSON.stringify(budget)}`);
   try {
     const gcpClient = await getGcpAuthClient();
-    const url = `https://billingbudgets.googleapis.com/v1/billingAccounts/${process.env.GCP_BILLING_ACCOUNT_ID}/budgets/${budget.name}`;
+    const url = `https://billingbudgets.googleapis.com/v1/${budget.name}`;
     const body = {
       amount: budget.amount
     };

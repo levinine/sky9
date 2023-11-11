@@ -38,14 +38,13 @@ const updateAccount = async (event) => {
     if (oldStateAccount.budget != account.budget) {
       const budgets = await getBudgetList();
       const budgetsForUpdate = budgets.filter(budget => budget.displayName === `${account.name}${budgetNameSuffix.EMAIL}` || budget.displayName === `${account.name}${budgetNameSuffix.PUBSUB}`);
-
       await Promise.all(budgetsForUpdate.map(async (budget) => {
         await updateBudget(budget, account.budget);
       }));
     }
 
     // update account project in dynamodb
-    const updatedAccount = await accountService.updateAccount(account, tableName);
+        const updatedAccount = await accountService.updateAccount(account, tableName);
     
     return okResponse(updatedAccount);
   } catch (error) {

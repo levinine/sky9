@@ -24,7 +24,7 @@ const getGcpAuthClient = async () => {
         key: gcpAccountKeys.private_key,
         scopes: ['https://www.googleapis.com/auth/cloud-platform'],
       });
-      return client;
+            return client;
     } else {
       return client;
     }

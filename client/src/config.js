@@ -87,7 +87,7 @@ const recruitment = {
   organization: 'AWS-SRB-Recruitment'
 };
 
-const stage = process.env.NODE_ENV === 'production' ? recruitment : recruitment;
+const stage = process.env.NODE_ENV === 'production' ? serbia : serbia;
 
 export default {
   ...stage
